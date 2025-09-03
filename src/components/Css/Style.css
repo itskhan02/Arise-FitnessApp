@@ -1,0 +1,135 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Manrope:wght@200..800&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Noto+Sans+Gunjala+Gondi:wght@400..700&family=Roboto+Slab:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Manrope:wght@200..800&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Noto+Sans+Arabic:wght@100..900&family=Noto+Sans+Gunjala+Gondi:wght@400..700&family=Roboto+Slab:wght@100..900&display=swap');
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Manrope:wght@200..800&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Noto+Sans+Arabic&family=Noto+Sans+Gunjala+Gondi:wght@400..700&family=Roboto+Slab:wght@100..900&family=Winky+Rough:ital,wght@0,300..900;1,300..900&display=swap');
+
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  text-decoration: none;
+  outline: none;
+  border: none;
+  text-transform: none;
+  transition: all 0.22s ease;
+  justify-content: center;
+}
+
+#root {
+max-width: 100%;
+  margin: 0 auto;
+}
+
+html {
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+body {
+  font-family: "Poppins", sans-serif;
+}
+
+.qoute {
+  font-family: "Nunito", serif;
+  line-height: 2.5rem;
+  margin: 1rem 0;
+  color: #060606;
+  padding: 0 1rem;
+} 
+
+.qoute h2 {
+  font-size: 2.3rem;
+  font-weight: 800;
+  line-height: 5rem;
+}
+
+.qoute h3 {
+  font-size: 1.7rem;
+  font-weight: 800;
+  line-height: 4rem;
+}
+
+.qoute p {
+  font-size: 1.3rem;
+  font-weight: 800;
+  line-height: 2.5rem;
+}
+
+.cssbuttons-io-button {
+  background: #0c0c70;
+  color: white;
+  font-family: inherit;
+  padding: 0.35em;
+  padding-left: 1.2em;
+  font-size: 17px;
+  font-weight: 500;
+  border-radius: 0.9em;
+  border: none;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  box-shadow: inset 0 0 1.6em -0.6em #0000FF;
+  overflow: hidden;
+  position: relative;
+  height: 2.8em;
+  padding-right: 3.3em;
+}
+
+.cssbuttons-io-button .icon {
+  background: white;
+  margin-left: 1em;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.2em;
+  width: 2.2em;
+  border-radius: 0.7em;
+  box-shadow: 0.1em 0.1em 0.6em 0.2em #0000FF;
+  right: 0.3em;
+  transition: all 0.3s;
+}
+
+.cssbuttons-io-button:hover .icon {
+  width: calc(100% - 0.6em);
+}
+
+.cssbuttons-io-button .icon svg {
+  width: 1.1em;
+  transition: transform 0.3s;
+  color: #0000FF;
+}
+
+.cssbuttons-io-button:hover .icon svg {
+  transform: translateX(0.1em);
+}
+
+.cssbuttons-io-button:active .icon {
+  transform: scale(0.95);
+}
+
+/* .goal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.9rem;
+
+} */
+
+.select-goal {
+  justify-content: flex-start;
+  width: 15rem;
+  height: 4rem;
+  font-size: 1.2rem;
+  color: white;
+  font-weight: 500;
+}
+
+.focus-card::-webkit-scrollbar { 
+  width: 0; 
+  height: 0;
+}
+.focus-card { 
+  outline: none; 
+}
