@@ -44,7 +44,7 @@ const Level = () => {
         gap: "2rem",
         justifyContent: "center",
         background: "#00002e",
-        boxShadow: "0 0 20px 10px #3a1c71, 0 0 30px 10px #0e2483ff inset",
+        boxShadow: "0 0 30px 5px #3a1c71 inset",
         overflow: "hidden",
         position: "relative",
       }}
