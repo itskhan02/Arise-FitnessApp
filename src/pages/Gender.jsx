@@ -1,13 +1,23 @@
 import { MoveRight } from "lucide-react";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Gender = ({ onSelect, selectedGender, onNext, onBack }) => {
     const [localSelected, setLocalSelected] = useState(selectedGender || null);
     const navigate = useNavigate();
 
+    useEffect(() => {
+        // Load gender from sessionStorage on mount
+        const savedGender = sessionStorage.getItem("userGender");
+        if (savedGender) {
+            setLocalSelected(savedGender);
+            if (onSelect) onSelect(savedGender);
+        }
+    }, [onSelect]);
+
     const handleSelect = (gender) => {
         setLocalSelected(gender);
+        sessionStorage.setItem("userGender", gender);
         if (onSelect) onSelect(gender);
     };
 
@@ -31,29 +41,11 @@ const Gender = ({ onSelect, selectedGender, onNext, onBack }) => {
                 gap: "2rem",
                 justifyContent: "center",
                 minHeight: "100vh",
-                // background: "linear-gradient(135deg, #101325ff 0%, #14257aff 60%, #3d1090ff 100%)",
                 background: "#00002e",
                 boxShadow: "0 0 20px 10px #3a1c71, 0 0 30px 10px #0e2483ff inset",
                 overflow: "hidden",
             }}
         >
-            {/* <div style={{ width: "100%", display: "flex", justifyContent: "flex-start" }}>
-                <button
-                    style={{
-                        margin: "1rem",
-                        padding: "0.5rem 1rem",
-                        borderRadius: "0.5rem",
-                        border: "none",
-                        background: "#444",
-                        color: "#fff",
-                        cursor: "pointer",
-                        fontSize: "1rem"
-                    }}
-                    onClick={handleBack}
-                >
-                    ← Back
-                </button>
-            </div> */}
             <h2
                 className="gender"
                 style={{
@@ -74,8 +66,7 @@ const Gender = ({ onSelect, selectedGender, onNext, onBack }) => {
                 }}
             >
                 <div
-                    className={`option-card ${localSelected === "male" ? "selected" : ""
-                        }`}
+                    className={`option-card ${localSelected === "male" ? "selected" : ""}`}
                     style={{
                         cursor: "pointer",
                         border:
@@ -113,8 +104,7 @@ const Gender = ({ onSelect, selectedGender, onNext, onBack }) => {
                 </div>
 
                 <div
-                    className={`option-card ${localSelected === "female" ? "selected" : ""
-                        }`}
+                    className={`option-card ${localSelected === "female" ? "selected" : ""}`}
                     style={{
                         cursor: "pointer",
                         border:
