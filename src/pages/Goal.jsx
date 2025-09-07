@@ -5,7 +5,7 @@ import { MoveLeft, MoveRight } from "lucide-react";
 
 const Goal = () => {
   const categories = [
-    { name: 'Gain Weight', key: 'G' },
+    { name: 'Bodybuilding', key: 'B' },
     { name: 'Lose Weight', key: 'L' },
     { name: 'Stay Fit', key: 'F' },
   ];
