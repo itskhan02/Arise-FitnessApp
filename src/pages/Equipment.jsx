@@ -15,6 +15,11 @@ const Equipment = () => {
   const [goals, setGoals] = useState([]);
 
   useEffect(() => {
+    // Remember selected equipment from sessionStorage
+    const savedEquipment = sessionStorage.getItem("userEquipment");
+    if (savedEquipment) {
+      setSelectedEquipment(JSON.parse(savedEquipment));
+    }
     const savedGoals = sessionStorage.getItem("userGoal");
     if (savedGoals) {
       setGoals(JSON.parse(savedGoals));
@@ -23,6 +28,7 @@ const Equipment = () => {
 
   const selectEquipment = (key) => {
     setSelectedEquipment(key);
+    sessionStorage.setItem("userEquipment", JSON.stringify(key));
   };
 
   const handleBack = () => navigate(-1);
