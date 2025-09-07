@@ -9,15 +9,34 @@ const levels = [
   { key: "advanced", name: "Advanced" },
 ];
 
+const equipmentOptions = [
+  { key: "Full Gym", name: "Full Gym" },
+  { key: "Garage Gym", name: "Garage Gym" },
+  { key: "Dumbbell Only", name: "Dumbbell Only" },
+  { key: "At Home", name: "At Home" },
+];
+
 const Level = () => {
   const navigate = useNavigate();
   const [selectedLevel, setSelectedLevel] = useState("");
+  const [goals, setGoals] = useState([]);
+  const [selectedEquipment, setSelectedEquipment] = useState("");
 
   useEffect(() => {
     // Remember selected level from sessionStorage
     const savedLevel = sessionStorage.getItem("userLevel");
     if (savedLevel) {
       setSelectedLevel(JSON.parse(savedLevel));
+    }
+    // Load selected goals from sessionStorage
+    const savedGoals = sessionStorage.getItem("userGoal");
+    if (savedGoals) {
+      setGoals(JSON.parse(savedGoals));
+    }
+    // Load selected equipment from sessionStorage
+    const savedEquipment = sessionStorage.getItem("userEquipment");
+    if (savedEquipment) {
+      setSelectedEquipment(JSON.parse(savedEquipment));
     }
   }, []);
 
@@ -69,6 +88,98 @@ const Level = () => {
       <h2 style={{ color: "#fff", fontSize: "1.8rem", fontWeight: "600" }}>
         Select Your Training Level
       </h2>
+      {goals.length > 0 && (
+        <div
+          style={{
+            color: "#8adca6ff",
+            marginBottom: "1rem",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            width: "100%",
+            maxWidth: "650px",
+          }}
+        >
+          <span style={{ fontWeight: "bold", color: "#fff", marginBottom: "0.5rem", textAlign: "center", width: "100%" }}>
+            Selected Goals:
+          </span>
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "0.5rem",
+              justifyContent: "center",
+              width: "100%",
+              maxWidth: "650px",
+            }}
+          >
+            {goals.map((goal) => (
+              <span
+                key={goal.key}
+                style={{
+                  background: "#16997681",
+                  color: "#fff",
+                  borderRadius: "0.5rem",
+                  padding: "0.3rem 1rem",
+                  fontWeight: "500",
+                  fontSize: "1rem",
+                  boxShadow: "0 0 4px #8adca6ff",
+                  textAlign: "center",
+                  minWidth: "120px",
+                  display: "inline-block",
+                }}
+              >
+                {goal.name}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+      {selectedEquipment && (
+        <div
+          style={{
+            color: "#8adca6ff",
+            marginBottom: "1rem",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            width: "100%",
+            maxWidth: "650px",
+          }}
+        >
+          <span style={{ fontWeight: "bold", color: "#fff", marginBottom: "0.5rem", textAlign: "center", width: "100%" }}>
+            Selected Equipment:
+          </span>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              width: "100%",
+              maxWidth: "650px",
+            }}
+          >
+            <span
+              style={{
+                background: "#16997681",
+                color: "#fff",
+                borderRadius: "0.5rem",
+                padding: "0.3rem 1rem",
+                fontWeight: "500",
+                fontSize: "1rem",
+                boxShadow: "0 0 4px #8adca6ff",
+                textAlign: "center",
+                minWidth: "120px",
+                display: "inline-block",
+              }}
+            >
+              {
+                equipmentOptions.find(eq => eq.key === selectedEquipment)?.name ||
+                selectedEquipment
+              }
+            </span>
+          </div>
+        </div>
+      )}
       <div
         className="level-list"
         style={{
