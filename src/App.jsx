@@ -5,6 +5,7 @@ import './components/Css/Style.css';
 import Gender from './pages/Gender'; // <-- fix import path
 import Goal from './pages/Goal';
 import Equipment from './pages/Equipment';
+import Level from './pages/Level';
 
 
 const App = () => {
@@ -17,6 +18,7 @@ const App = () => {
           <Route path="/gender" element={<Gender/>} />
           <Route path="/goal" element={<Goal/>} />
           <Route path="/equipment" element={<Equipment/>}/>
+          <Route path='/level' element={<Level/>}/>
           {/* 
           <Route path="/gender" element={<Gender/>} />
           <Route path="/gender" element={<Gender/>} />
