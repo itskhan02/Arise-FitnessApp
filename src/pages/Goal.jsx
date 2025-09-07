@@ -5,9 +5,14 @@ import { MoveLeft, MoveRight } from "lucide-react";
 
 const Goal = () => {
   const categories = [
-    { name: 'Bodybuilding', key: 'B' },
-    { name: 'Lose Weight', key: 'L' },
-    { name: 'Stay Fit', key: 'F' },
+    { name: 'Bodybuilding', key: 'b' },
+    { name: 'Muscle & Sculpting', key: 'm' },
+    { name: 'Powerbuilding', key: 'p' },
+    { name: 'Athletics', key: 'a' },
+    { name: 'Powerlifting', key: 'l' },
+    { name: 'Bodyweight Fitness', key: 'f' },
+    { name: 'Olympic Weightlifting', key: 'o' },
+    { name: 'At-Home & Calisthenics', key: 'c' },
   ];
 
   const navigate = useNavigate();
