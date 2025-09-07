@@ -35,7 +35,7 @@ const Equipment = () => {
 
   const handleNext = () => {
     sessionStorage.setItem("userEquipment", JSON.stringify(selectedEquipment));
-    navigate("/next");
+    navigate("/level");
   };
 
   return (
