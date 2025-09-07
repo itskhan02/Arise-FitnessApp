@@ -4,7 +4,7 @@ import Landing from './components/Landing';
 import './components/Css/Style.css';
 import Gender from './pages/Gender'; // <-- fix import path
 import Goal from './pages/Goal';
-import Focusarea from './pages/Focusarea';
+import Equipment from './pages/Equipment';
 
 
 const App = () => {
@@ -16,7 +16,7 @@ const App = () => {
           <Route path="/" element={<Landing/>} />
           <Route path="/gender" element={<Gender/>} />
           <Route path="/goal" element={<Goal/>} />
-          <Route path="/focus" element={<Focusarea/>} />
+          <Route path="/equipment" element={<Equipment/>}/>
           {/* 
           <Route path="/gender" element={<Gender/>} />
           <Route path="/gender" element={<Gender/>} />
