@@ -75,30 +75,50 @@ const Equipment = () => {
         Select Your Equipment
       </h2>
       {goals.length > 0 && (
-        <div style={{ color: "#8adca6ff", marginBottom: "1rem" }}>
-          <span style={{ fontWeight: "bold", color: "#fff", marginRight: "0.5rem" }}>
+        <div
+          style={{
+            color: "#8adca6ff",
+            marginBottom: "1rem",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center", // <-- changed from flex-start to center
+            width: "100%",
+            maxWidth: "650px",
+          }}
+        >
+          <span style={{ fontWeight: "bold", color: "#fff", marginBottom: "0.5rem", textAlign: "center", width: "100%" }}>
             Selected Goals:
           </span>
-          {goals.map((goal, idx) => (
-            <span
-              key={goal.key}
-              style={{
-                background: "#16997681",
-                color: "#fff",
-                borderRadius: "0.5rem",
-                padding: "0.3rem 1rem",
-                fontWeight: "500",
-                fontSize: "1rem",
-                marginRight: "0.5rem",
-                boxShadow: "0 0 4px #8adca6ff",
-                textAlign: "center",
-                minWidth: "120px",
-                display: "inline-block",
-              }}
-            >
-              {goal.name}
-            </span>
-          ))}
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "0.5rem",
+              justifyContent: "center", // <-- added to center the goals
+              width: "100%",
+              maxWidth: "650px",
+            }}
+          >
+            {goals.map((goal) => (
+              <span
+                key={goal.key}
+                style={{
+                  background: "#16997681",
+                  color: "#fff",
+                  borderRadius: "0.5rem",
+                  padding: "0.3rem 1rem",
+                  fontWeight: "500",
+                  fontSize: "1rem",
+                  boxShadow: "0 0 4px #8adca6ff",
+                  textAlign: "center",
+                  minWidth: "120px",
+                  display: "inline-block",
+                }}
+              >
+                {goal.name}
+              </span>
+            ))}
+          </div>
         </div>
       )}
       <div
