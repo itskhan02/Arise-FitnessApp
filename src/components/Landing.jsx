@@ -16,16 +16,16 @@ const Landing = () => {
       <div
         className="landing-page"
         style={{
-          height: "98vh",
+          height: "99vh",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
           flexDirection: "column",
           gap: "2rem",
-          margin: ".3rem",
-          background:"linear-gradient(135deg, #03071bff 0%, #08113eff 30%, #1c0d37ff 100%)",
-          boxShadow:"0 0 40px 10px #3a1c71, 0 0 80px 10px #0e2483ff inset",
-          borderRadius: "1rem",
+          margin: "4px",
+          background:"linear-gradient(90deg, #050a29ff 0%, #08113eff 40%, #1c0d37ff 150%)",
+          boxShadow:"0 0 40px 20px #3a1c71, 0 0 80px 20px #0e2483ff ",
+          borderRadius: ".5rem",
           position: "relative",
           overflow: "hidden",
         }}
