@@ -1,13 +1,13 @@
 import { MoveRight } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const Gender = ({ onSelect, selectedGender, onNext, onBack }) => {
     const [localSelected, setLocalSelected] = useState(selectedGender || null);
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Load gender from sessionStorage on mount
         const savedGender = sessionStorage.getItem("userGender");
         if (savedGender) {
             setLocalSelected(savedGender);
@@ -23,13 +23,14 @@ const Gender = ({ onSelect, selectedGender, onNext, onBack }) => {
 
     const handleNext = () => {
         if (onNext) onNext(localSelected);
-        navigate("/goal");
+        navigate("/details");
     };
 
     const handleBack = () => {
         if (onBack) onBack();
         navigate(-1);
     };
+
 
     return (
         <div
@@ -57,31 +58,51 @@ const Gender = ({ onSelect, selectedGender, onNext, onBack }) => {
             >
                 Select Your Gender
             </h2>
+
             <div
                 className="options-grid"
                 style={{
                     display: "flex",
                     gap: "2rem",
                     marginBottom: "2rem",
+                    position: "relative",
+                    height: "400px",
                 }}
             >
-                <div
+                {/* Male Card */}
+                <motion.div
                     className={`option-card ${localSelected === "male" ? "selected" : ""}`}
                     style={{
                         cursor: "pointer",
-                        border:
-                            localSelected === "male"
-                                ? "1px solid #8adca6ff"
-                                : "1px solid #0505de",
-                        borderRadius: "1rem",
-                        padding: "2rem 1.5rem",
-                        background: localSelected === "male" ? "#16997681" : "#17188baf",
+                        // border:
+                        //     localSelected === "male"
+                        //         ? "1px solid #8adca6ff"
+                        //         : "1px solid #0505de",
+                        // borderRadius: "1rem",
+                        padding: "0.5rem 0.6rem",
+                        // background: localSelected === "male" ? "#16997681" : "#17188baf",
                         color: "#fbfafaff",
-                        minWidth: "140px",
+                        minWidth: "250px",
                         textAlign: "center",
-                        position: "relative",
+                        position: "absolute",
                     }}
                     onClick={() => handleSelect("male")}
+                    whileHover={{ scale: 1.05}}
+                    whileTap={{ scale: 0.95 }}
+                    animate={{
+                        x: localSelected === "female" ? -200 : localSelected === "male" ? 0 : -150,
+                        y: localSelected === "female" ? 20 : 0,
+                        scale:
+                            localSelected === "male"
+                                ? 1.15
+                                : localSelected === "female"
+                                ? 0.9
+                                : 0.95,
+                        zIndex: localSelected === "male" ? 20 : localSelected === "female" ? 5 : 10,
+                        opacity: localSelected === "female" ? 0.7 : 1,
+                    }}
+                    // transition={{ type: "spring", stiffness: 80, damping: 18, duration: 0.1, ease: "easeInOut" }}
+                    transition={{ duration: 0.2, ease: "easeInOut" }}
                 >
                     {localSelected === "male" && (
                         <div
@@ -96,30 +117,56 @@ const Gender = ({ onSelect, selectedGender, onNext, onBack }) => {
                             ✓
                         </div>
                     )}
-                    <div
-                        className="option-icon male-icon"
-                        style={{ fontSize: "2.5rem", marginBottom: "1rem" }}
-                    ></div>
+                    <motion.img
+                        src="/public/Male.png"
+                        alt="Male"
+                        style={{
+                            width: "350px",
+                            height: "350px",
+                            marginBottom: "1rem",
+                            objectFit: "contain",
+                        }}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.1 }}
+                    />
                     <h3>Male</h3>
-                </div>
+                </motion.div>
 
-                <div
+                {/* Female Card */}
+                <motion.div
                     className={`option-card ${localSelected === "female" ? "selected" : ""}`}
                     style={{
                         cursor: "pointer",
-                        border:
-                            localSelected === "female"
-                                ? "1px solid #8adca6ff"
-                                : "1px solid #0505de",
+                        // border:
+                        //     localSelected === "female"
+                        //         ? "1px solid #8adca6ff"
+                        //         : "1px solid #0505de",
                         borderRadius: "1rem",
-                        padding: "2rem 1.5rem",
-                        background: localSelected === "female" ? "#1d896c81" : "#17188baf",
+                        padding: "0.5rem 0.7rem",
+                        // background: localSelected === "female" ? "#1d896c81" : "#17188baf",
                         color: "#fff",
-                        minWidth: "140px",
+                        minWidth: "250px",
                         textAlign: "center",
-                        position: "relative",
+                        position: "absolute",
                     }}
                     onClick={() => handleSelect("female")}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    animate={{
+                        x: localSelected === "male" ? 200 : localSelected === "female" ? 0 : 150,
+                        y: localSelected === "male" ? 20 : 0,
+                        scale:
+                            localSelected === "female"
+                                ? 1.15
+                                : localSelected === "male"
+                                ? 0.9
+                                : 0.95,
+                        zIndex: localSelected === "female" ? 20 : localSelected === "male" ? 5 : 10,
+                        opacity: localSelected === "male" ? 0.7 : 1,
+                    }}
+                    // transition={{ type: "spring", stiffness: 100, damping: 10, duration: 0.1, ease: "easeInOut" }}
+                    transition={{ duration: 0.2, ease: "easeInOut" }}
                 >
                     {localSelected === "female" && (
                         <div
@@ -134,12 +181,21 @@ const Gender = ({ onSelect, selectedGender, onNext, onBack }) => {
                             ✓
                         </div>
                     )}
-                    <div
-                        className="option-icon female-icon"
-                        style={{ fontSize: "2.5rem", marginBottom: "1rem" }}
-                    ></div>
+                    <motion.img
+                        src="/public/Female.png"
+                        alt="Female"
+                        style={{
+                            width: "350px",
+                            height: "350px",
+                            marginBottom: "0.6rem",
+                            objectFit: "contain",
+                        }}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.1 }}
+                    />
                     <h3>Female</h3>
-                </div>
+                </motion.div>
             </div>
 
             <div className="action-buttons" style={{ display: "flex", gap: "1rem" }}>

@@ -1,93 +1,303 @@
-// import React from 'react'
-// import  { useState } from 'react';
-// import { Button, message, Steps, theme, Progress } from 'antd';
-// import { MoveLeft } from 'lucide-react';
-// import Gender from './Gender';
+import React, { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  Typography,
+  Slider,
+  Box,
+  Divider
+} from "@mui/material";
+import { Ruler, Weight, Calendar, MoveRight, MoveLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-// const steps = [
-//   {
-//     title: 'Gender',
-//     content:<Gender/>,
-//   },
-//   {
-//     title: 'Second',
-//     content: 'Second-content',
-//   },
-//   {
-//     title: 'Last',
-//     content: 'Last-content',
-//   },
-// ];
 
-// const Goal = () => {
-//   const { token } = theme.useToken();
-//   const [current, setCurrent] = useState(0);
 
-//   const next = () => {
-//     setCurrent(current + 1);
-//   };
 
-//   const percent = ((current + 1) / steps.length) * 100;
+const Details = () => {
+  const [height, setHeight] = useState(() => Number(sessionStorage.getItem("height")) || 170);
+  const [weight, setWeight] = useState(() => Number(sessionStorage.getItem("weight")) || 65);
+  const [age, setAge] = useState(() => Number(sessionStorage.getItem("age")) || 25);
 
-//   const contentStyle = {
-//     lineHeight: '260px',
-//     textAlign: 'center',
-//     color: token.colorTextTertiary,
-//     backgroundColor: token.colorFillAlter,
-//     borderRadius: token.borderRadiusLG,
-//     border: `1px dashed ${token.colorBorder}`,
-//     marginTop: 16,
-//   };
+  useEffect(() => {
+    sessionStorage.setItem("height", height);
+    sessionStorage.setItem("weight", weight);
+    sessionStorage.setItem("age", age);
+  }, [height, weight, age]);
 
-//   return (
-//     <>
-//       <div
-//         className="landing-page"
-//         style={{
-//           height: "98vh",
-//           display: "flex",
-//           justifyContent: "space-around",
-//           alignItems: "center",
-//           flexDirection: "column",
-//           gap: "2rem",
-//           margin: ".5rem",
-//           background: "linear-gradient(135deg, #101325ff 0%, #14257aff 60%, #3d1090ff 100%)",
-//           boxShadow: "0 0 40px 10px #3a1c71, 0 0 80px 10px #151e48ff inset",
-//           borderRadius: "2rem",
-//           position: "relative",
-//           overflow: "hidden",
-//         }}>
-//         <div style={{ display: "flex", alignItems: "center", width: "100%", maxWidth: 500, marginBottom: 2 }}>
-//           {current > 0 && (
-//             <Button style={{ marginRight: 16, backgroundColor: "transparent", border: "none", color: "#fff" }} onClick={() => setCurrent(current - 1)}>
-//               <MoveLeft size={32} /> 
-//             </Button>
-//           )}
-//           <Progress
-//             percent={percent}
-//             showInfo={false}
-//             strokeColor={token.colorPrimary}
-//             style={{ flex: 1 }}
-//           />
-//         </div>
-//         <div style={{ ...contentStyle, height: "70vh", width: "97%", border: "1px transparent", borderRadius: "1rem", lineHeight: 1.5 }}>
-//           {steps[current].content}
-//         </div>
-//         <div style={{ marginTop: "2rem",height: "10vh", width: "100%", maxWidth: 500, display: "flex", justifyContent: "center" }}>
-//           {current === steps.length - 1 && (
-//             <Button type="primary" onClick={() => message.success('Processing complete!')}>
-//               Done
-//             </Button>
-//           )}
-//           {current < steps.length - 1 && (
-//             <Button type="primary" onClick={() => next()}>
-//               Next
-//             </Button>
-//           )}
-//         </div>
-//       </div>
-//     </>
-//   );
-// };
+  const heightMarks = Array.from({ length: 16 }, (_, i) => {
+    const value = 100 + i * 10;
+    return { value, label: value % 20 === 0 ? `${value}` : "" };
+  });
 
-// export default Goal
+  const weightMarks = Array.from({ length: 18 }, (_, i) => {
+    const value = 30 + i * 10;
+    return { value, label: value % 50 === 0 ? `${value}` : "" };
+  });
+
+  const ageMarks = Array.from({ length: 10 }, (_, i) => {
+    const value = 10 + i * 10;
+    return { value, label: value % 20 === 0 || value === 10 ? `${value}` : "" };
+  });
+
+  const sliderStyles = {
+    color: "#6365f125",
+    height: 3,
+    "& .MuiSlider-track": { border: "none" },
+    "& .MuiSlider-thumb": {
+      height: 22,
+      width: 8,
+      bgcolor: "#0c65f5ff",
+      border: "2px solid #6365f10a",
+      "&:hover, &.Mui-focusVisible": {
+        boxShadow: "0px 0px 0px 8px rgba(99,102,241,0.2)",
+      },
+      "&:before": { display: "none" },
+    },
+    "& .MuiSlider-mark": {
+      height: 14,
+      width: 2,
+      bgcolor: "rgba(255, 255, 255, 0.95)",
+      opacity: 0.6,
+      "&.MuiSlider-markActive": { bgcolor: "#c9e0e9ff", opacity: 1 },
+    },
+    "& .MuiSlider-markLabel": {
+      fontSize: "0.7rem",
+      color: "rgba(255, 255, 255, 1)",
+    },
+    "& .MuiSlider-rail": { opacity: 0.3, bgcolor: "rgba(255, 255, 255, 1)" },
+  };
+
+  const navigate= useNavigate()
+
+    const handleNext = () => {
+        navigate("/goal");
+    };
+
+  const handleBack = () => navigate(-1);
+
+  return (
+    <>
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          background:
+            "linear-gradient(135deg, #100c22ff 0%, #26145cff 50%, #120695ff 100%)",
+          p: { xs: 2, sm: 3, md: 2 },
+          gap: 3,
+          position: "relative",
+        }}
+      >
+        <button
+          style={{
+            position: "absolute",
+            top: "0.8rem",
+            left: "1rem",
+            padding: "0.5rem 1rem",
+            borderRadius: "0.5rem",
+            border: "none",
+            color: "#acaab4ff",
+            cursor: "pointer",
+            background: "transparent",
+            zIndex: 2,
+          }}
+          onClick={handleBack}
+        >
+          <MoveLeft size={34} />
+        </button>
+
+        <Card
+          sx={{
+            width: { xs: "100%", sm: "90%", md: "560px" },
+            height: { xs: "auto", sm: "auto", md: "80vh" },
+            borderRadius: 3,
+            boxShadow: "0 8px 30px rgba(0,0,0,0.4)",
+            background: "transparent",
+            backdropFilter: "blur(12px)",
+            color: "white",
+            position: "relative",
+          }}
+        >
+          <CardContent
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              p: { xs: 2, sm: 3, md: 4 },
+              gap: 2,
+            }}
+          >
+            <Typography
+              variant="h5"
+              sx={{
+                fontWeight: "bold",
+                textAlign: "center",
+                mb: { xs: 2, md: 2 },
+                fontSize: { xs: "1.2rem", md: "1.6rem" },
+              }}
+            >
+              Body Metrics
+            </Typography>
+
+            {/* HEIGHT */}
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                mb: 1,
+                flexWrap: "wrap",
+              }}
+            >
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  fontSize: { xs: "0.9rem", md: "1.1rem" },
+                }}
+              >
+                <Ruler size={22} /> Height
+              </Typography>
+              <Typography
+                variant="h5"
+                sx={{
+                  fontWeight: "bold",
+                  color: "#c7d2fe",
+                  fontSize: { xs: "1rem", md: "1.3rem" },
+                }}
+              >
+                {height}{" "}
+                <span style={{ fontSize: "0.9rem", color: "#a5b4fc" }}>cm</span>
+              </Typography>
+            </Box>
+            <Slider
+              value={height}
+              min={100}
+              max={250}
+              step={1}
+              marks={heightMarks}
+              onChange={(_, newValue) => setHeight(newValue)}
+              sx={sliderStyles}
+            />
+
+            <Divider sx={{ my: 2, borderColor: "rgba(255, 255, 255, 0.61)" }} />
+
+            {/* WEIGHT */}
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                mb: 1,
+                flexWrap: "wrap",
+              }}
+            >
+              <Typography
+                variant="subtitle1"
+                sx={{ display: "flex", alignItems: "center", gap: 1, fontSize: { xs: "0.9rem", md: "1.1rem" } }}
+              >
+                <Weight size={22} /> Weight
+              </Typography>
+              <Typography
+                variant="h5"
+                sx={{
+                  fontWeight: "bold",
+                  color: "#c7d2fe",
+                  fontSize: { xs: "1rem", md: "1.3rem" },
+                }}
+              >
+                {weight}{" "}
+                <span style={{ fontSize: "0.9rem", color: "#a5b4fc" }}>kg</span>
+              </Typography>
+            </Box>
+            <Slider
+              value={weight}
+              min={30}
+              max={200}
+              step={1}
+              marks={weightMarks}
+              onChange={(_, newValue) => setWeight(newValue)}
+              sx={sliderStyles}
+            />
+
+            <Divider sx={{ my: 2, borderColor: "rgba(255, 255, 255, 0.61)" }} />
+
+            {/* AGE */}
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                mb: 1,
+                flexWrap: "wrap",
+              }}
+            >
+              <Typography
+                variant="subtitle1"
+                sx={{ display: "flex", alignItems: "center", gap: 1, fontSize: { xs: "0.9rem", md: "1.1rem" } }}
+              >
+                <Calendar size={18} /> Age
+              </Typography>
+              <Typography
+                variant="h5"
+                sx={{
+                  fontWeight: "bold",
+                  color: "#c7d2fe",
+                  fontSize: { xs: "1rem", md: "1.3rem" },
+                }}
+              >
+                {age}{" "}
+                <span style={{ fontSize: "0.9rem", color: "#a5b4fc" }}>yrs</span>
+              </Typography>
+            </Box>
+            <Slider
+              value={age}
+              min={10}
+              max={100}
+              step={1}
+              marks={ageMarks}
+              onChange={(_, newValue) => setAge(newValue)}
+              sx={sliderStyles}
+            />
+          </CardContent>
+        </Card>
+
+        {/* NEXT BUTTON */}
+        <div
+          className="action-buttons"
+          style={{
+            display: "flex",
+            gap: "1rem",
+            justifyContent: "center",
+            width: "100%",
+          }}
+        >
+          <button
+            className="btn btn-primary"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              padding: "0.75rem 1.5rem",
+              borderRadius: "0.5rem",
+              border: "1px solid #0bdcf8ff",
+              background: "#02013b",
+              color: "#fff",
+              cursor: "pointer",
+              transition: "all 0.3s ease",
+            }}
+            onClick={handleNext}
+          >
+            Next <MoveRight size={24} />
+          </button>
+        </div>
+      </Box>
+    </>
+  );
+};
+
+export default Details;

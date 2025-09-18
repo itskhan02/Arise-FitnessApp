@@ -6,6 +6,7 @@ import Gender from './pages/Gender'; // <-- fix import path
 import Goal from './pages/Goal';
 import Equipment from './pages/Equipment';
 import Level from './pages/Level';
+import Details from './pages/Details';
 
 
 const App = () => {
@@ -19,6 +20,7 @@ const App = () => {
           <Route path="/goal" element={<Goal/>} />
           <Route path="/equipment" element={<Equipment/>}/>
           <Route path='/level' element={<Level/>}/>
+          <Route path='/details' element={<Details/>}/>
           {/* 
           <Route path="/gender" element={<Gender/>} />
           <Route path="/gender" element={<Gender/>} />

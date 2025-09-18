@@ -4,7 +4,6 @@ import { MoveLeft, MoveRight } from "lucide-react";
 
 const levels = [
   { key: "beginner", name: "Beginner" },
-  { key: "novice", name: "Novice" },
   { key: "intermediate", name: "Intermediate" },
   { key: "advanced", name: "Advanced" },
 ];
@@ -49,7 +48,7 @@ const Level = () => {
 
   const handleNext = () => {
     sessionStorage.setItem("userLevel", JSON.stringify(selectedLevel));
-    navigate("/next");
+    navigate("/focus");
   };
 
   return (
@@ -60,7 +59,7 @@ const Level = () => {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        gap: "2rem",
+        gap: "1.5rem",
         justifyContent: "center",
         background: "#00002e",
         boxShadow: "0 0 30px 5px #3a1c71 inset",
@@ -85,9 +84,11 @@ const Level = () => {
       >
         <MoveLeft size={34} />
       </button>
+
       <h2 style={{ color: "#fff", fontSize: "1.8rem", fontWeight: "600" }}>
         Select Your Training Level
       </h2>
+
       {goals.length > 0 && (
         <div
           style={{
@@ -100,7 +101,15 @@ const Level = () => {
             maxWidth: "650px",
           }}
         >
-          <span style={{ fontWeight: "bold", color: "#fff", marginBottom: "0.5rem", textAlign: "center", width: "100%" }}>
+          <span
+            style={{
+              fontWeight: "bold",
+              color: "#fff",
+              marginBottom: "0.5rem",
+              textAlign: "center",
+              width: "100%",
+            }}
+          >
             Selected Goals:
           </span>
           <div
@@ -135,11 +144,11 @@ const Level = () => {
           </div>
         </div>
       )}
+
       {selectedEquipment && (
         <div
           style={{
             color: "#8adca6ff",
-            marginBottom: "1rem",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -147,7 +156,15 @@ const Level = () => {
             maxWidth: "650px",
           }}
         >
-          <span style={{ fontWeight: "bold", color: "#fff", marginBottom: "0.5rem", textAlign: "center", width: "100%" }}>
+          <span
+            style={{
+              fontWeight: "bold",
+              color: "#fff",
+              marginBottom: "0.5rem",
+              textAlign: "center",
+              width: "100%",
+            }}
+          >
             Selected Equipment:
           </span>
           <div
@@ -173,13 +190,15 @@ const Level = () => {
               }}
             >
               {
-                equipmentOptions.find(eq => eq.key === selectedEquipment)?.name ||
-                selectedEquipment
+                equipmentOptions.find(
+                  (eq) => eq.key === selectedEquipment
+                )?.name || selectedEquipment
               }
             </span>
           </div>
         </div>
       )}
+
       <div
         className="level-list"
         style={{
@@ -193,17 +212,19 @@ const Level = () => {
         {levels.map((level) => (
           <div
             key={level.key}
-            className={`level-card${selectedLevel === level.key ? " selected" : ""}`}
+            className={`level-card${
+              selectedLevel === level.key ? " selected" : ""
+            }`}
             style={{
               cursor: "pointer",
-              border: selectedLevel === level.key
-                ? "1px solid #8adca6ff"
-                : "1px solid #0505de",
+              border:
+                selectedLevel === level.key
+                  ? "1px solid #8adca6ff"
+                  : "1px solid #0505de",
               borderRadius: "1rem",
               padding: "1.2rem 2rem",
-              background: selectedLevel === level.key
-                ? "#16997681"
-                : "#17188baf",
+              background:
+                selectedLevel === level.key ? "#16997681" : "#17188baf",
               color: "#fff",
               width: "320px",
               minHeight: "56px",
@@ -235,13 +256,14 @@ const Level = () => {
           </div>
         ))}
       </div>
+
       <div style={{ display: "flex", gap: "1rem" }}>
         <button
           className="btn btn-primary"
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "0.5rem",
+            gap: "0.8rem",
             padding: "0.75rem 1.5rem",
             borderRadius: "0.5rem",
             border: "1px solid #0bdcf8ff ",
@@ -259,4 +281,5 @@ const Level = () => {
     </div>
   );
 };
+
 export default Level;
