@@ -23,7 +23,7 @@ const Gender = ({ onSelect, selectedGender, onNext, onBack }) => {
 
     const handleNext = () => {
         if (onNext) onNext(localSelected);
-        navigate("/details");
+        navigate("/bodystats");
     };
 
     const handleBack = () => {

@@ -46,7 +46,7 @@ const Landing = () => {
         </div>
         <button
           className="cssbuttons-io-button"
-          onClick={() => setShowDialog(true)} // Open dialog
+          onClick={() => setShowDialog(true)} 
         >
           Get started
           <div className="icon">

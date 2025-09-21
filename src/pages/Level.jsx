@@ -48,7 +48,7 @@ const Level = () => {
 
   const handleNext = () => {
     sessionStorage.setItem("userLevel", JSON.stringify(selectedLevel));
-    navigate("/focus");
+    navigate("/workout-day");
   };
 
   return (
@@ -93,7 +93,6 @@ const Level = () => {
         <div
           style={{
             color: "#8adca6ff",
-            marginBottom: "1rem",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",

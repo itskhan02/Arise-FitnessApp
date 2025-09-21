@@ -133,3 +133,42 @@ body {
 .focus-card { 
   outline: none; 
 }
+
+
+.days-grid {
+  display: grid;
+  width: 100%;
+  max-width: 800px; 
+  margin: 0 auto;  
+  gap: 1.5rem;    
+}
+
+
+@media (min-width: 769px) {
+  .days-grid {
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-areas:
+      "sun sun mon mon tue tue"
+      ". wed wed thu thu ."
+      ". fri fri sat sat .";
+  }
+}
+
+@media (max-width: 768px) {
+  .days-grid {
+    max-width: 500px;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-areas:
+      "sun mon"
+      "tue wed"
+      "thu fri"
+      "sat sat"; 
+  }
+}
+
+
+
+
+.level-card:hover {
+    border-color: #58a6ff !important;
+}

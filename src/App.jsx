@@ -6,7 +6,12 @@ import Gender from './pages/Gender'; // <-- fix import path
 import Goal from './pages/Goal';
 import Equipment from './pages/Equipment';
 import Level from './pages/Level';
-import Details from './pages/Details';
+import WorkoutDay from './pages/Schedule';
+import Bodystats from './pages/Bodystats';
+import Setup from './pages/Setup';
+import Login from './components/Login';
+import Register from './components/Register';
+import ForgotPassword from './components/ForgotPassword';
 
 
 const App = () => {
@@ -20,12 +25,12 @@ const App = () => {
           <Route path="/goal" element={<Goal/>} />
           <Route path="/equipment" element={<Equipment/>}/>
           <Route path='/level' element={<Level/>}/>
-          <Route path='/details' element={<Details/>}/>
-          {/* 
-          <Route path="/gender" element={<Gender/>} />
-          <Route path="/gender" element={<Gender/>} />
-          <Route path="/gender" element={<Gender/>} /> 
-          */}
+          <Route path='/bodystats' element={<Bodystats/>}/>
+          <Route path="/workout-day" element={<WorkoutDay/>} />
+          <Route path="/setup" element={<Setup/>} />
+          <Route path="/login" element={<Login/>} />
+          <Route path="/register" element={<Register/>} />
+          <Route path="/reset-password" element={<ForgotPassword/>} />
         </Routes>
       </Router>
     </>

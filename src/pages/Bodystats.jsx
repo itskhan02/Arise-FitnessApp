@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 
 
 
-const Details = () => {
+const Bodystats = () => {
   const [height, setHeight] = useState(() => Number(sessionStorage.getItem("height")) || 170);
   const [weight, setWeight] = useState(() => Number(sessionStorage.getItem("weight")) || 65);
   const [age, setAge] = useState(() => Number(sessionStorage.getItem("age")) || 25);
@@ -54,9 +54,9 @@ const Details = () => {
       "&:before": { display: "none" },
     },
     "& .MuiSlider-mark": {
-      height: 14,
+      height: 16,
       width: 2,
-      bgcolor: "rgba(255, 255, 255, 0.95)",
+      bgcolor: "rgba(250, 250, 250, 1)",
       opacity: 0.6,
       "&.MuiSlider-markActive": { bgcolor: "#c9e0e9ff", opacity: 1 },
     },
@@ -84,8 +84,8 @@ const Details = () => {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          background:
-            "linear-gradient(135deg, #100c22ff 0%, #26145cff 50%, #120695ff 100%)",
+          background: "#05053bff",
+          boxShadow: "0 0 30px 5px #3a1c71 inset",
           p: { xs: 2, sm: 3, md: 2 },
           gap: 3,
           position: "relative",
@@ -114,6 +114,7 @@ const Details = () => {
             width: { xs: "100%", sm: "90%", md: "560px" },
             height: { xs: "auto", sm: "auto", md: "80vh" },
             borderRadius: 3,
+            border: "1px solid #0bdcf8ff",
             boxShadow: "0 8px 30px rgba(0,0,0,0.4)",
             background: "transparent",
             backdropFilter: "blur(12px)",
@@ -184,7 +185,7 @@ const Details = () => {
               sx={sliderStyles}
             />
 
-            <Divider sx={{ my: 2, borderColor: "rgba(255, 255, 255, 0.61)" }} />
+            <Divider sx={{ my: 2, borderColor: "rgba(255, 255, 255, 0.9)" }} />
 
             {/* WEIGHT */}
             <Box
@@ -224,7 +225,7 @@ const Details = () => {
               sx={sliderStyles}
             />
 
-            <Divider sx={{ my: 2, borderColor: "rgba(255, 255, 255, 0.61)" }} />
+            <Divider sx={{ my: 2, borderColor: "rgba(255, 255, 255, 0.9)" }} />
 
             {/* AGE */}
             <Box
@@ -300,4 +301,4 @@ const Details = () => {
   );
 };
 
-export default Details;
+export default Bodystats;
