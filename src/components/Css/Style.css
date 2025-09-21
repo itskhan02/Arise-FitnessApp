@@ -19,7 +19,7 @@
 }
 
 #root {
-max-width: 100%;
+  max-width: 100%;
   margin: 0 auto;
 }
 
@@ -27,6 +27,7 @@ html {
   overflow-x: hidden;
   scroll-behavior: smooth;
 }
+
 body {
   font-family: "Poppins", sans-serif;
 }
@@ -37,7 +38,7 @@ body {
   margin: 1rem 0;
   color: #060606;
   padding: 0 1rem;
-} 
+}
 
 .qoute h2 {
   font-size: 2.3rem;
@@ -126,21 +127,22 @@ body {
   font-weight: 500;
 }
 
-.focus-card::-webkit-scrollbar { 
-  width: 0; 
+.focus-card::-webkit-scrollbar {
+  width: 0;
   height: 0;
 }
-.focus-card { 
-  outline: none; 
+
+.focus-card {
+  outline: none;
 }
 
 
 .days-grid {
   display: grid;
   width: 100%;
-  max-width: 800px; 
-  margin: 0 auto;  
-  gap: 1.5rem;    
+  max-width: 800px;
+  margin: 0 auto;
+  gap: 1.5rem;
 }
 
 
@@ -162,13 +164,20 @@ body {
       "sun mon"
       "tue wed"
       "thu fri"
-      "sat sat"; 
+      "sat sat";
   }
 }
 
-
-
-
 .level-card:hover {
-    border-color: #58a6ff !important;
+  border-color: #58a6ff !important;
+}
+ .clerk-sign-in {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  text-align: center;
 }

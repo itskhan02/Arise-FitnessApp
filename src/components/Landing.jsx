@@ -1,6 +1,7 @@
 import { CircleAlert } from "lucide-react";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { BiUserCircle } from 'react-icons/bi';
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -9,6 +10,10 @@ const Landing = () => {
   const handleAccept = () => {
     setShowDialog(false);
     navigate("/gender"); // Navigate only after accepting
+  };
+
+    const handleSkip = () => {
+    navigate("/login");
   };
 
   return (
@@ -23,13 +28,36 @@ const Landing = () => {
           flexDirection: "column",
           gap: "2rem",
           margin: "4px",
-          background:"linear-gradient(90deg, #050a29ff 0%, #08113eff 40%, #1c0d37ff 150%)",
-          boxShadow:"0 0 40px 20px #3a1c71, 0 0 80px 20px #0e2483ff ",
+          background:
+            "linear-gradient(90deg, #050a29ff 0%, #08113eff 40%, #1c0d37ff 150%)",
+          boxShadow: "0 0 40px 20px #3a1c71, 0 0 80px 20px #0e2483ff ",
           borderRadius: ".5rem",
           position: "relative",
           overflow: "hidden",
         }}
       >
+        <button
+          style={{
+            position: "absolute",
+            top: "0.8rem",
+            right: "1rem",
+            padding: "0.5rem 0.5rem",
+            borderRadius: "0.5rem",
+            border: "1px solid #0bdcf8ff",
+            background: "transparent",
+            color: "#fff",
+            cursor: "pointer",
+            zIndex: 2,
+            width: "100px",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.3rem",
+          }}
+          onClick={handleSkip}
+        >
+        <BiUserCircle size={30} style={{ marginRight: "0.5rem" }} />
+        Login
+        </button>
         <div
           className="qoute"
           style={{ textAlign: "center", alignItems: "center", color: "#fff" }}
@@ -46,7 +74,7 @@ const Landing = () => {
         </div>
         <button
           className="cssbuttons-io-button"
-          onClick={() => setShowDialog(true)} 
+          onClick={() => setShowDialog(true)}
         >
           Get started
           <div className="icon">
@@ -81,7 +109,7 @@ const Landing = () => {
             alignItems: "center",
             zIndex: 1000,
           }}
-        > 
+        >
           <div
             style={{
               display: "flex",
@@ -94,15 +122,31 @@ const Landing = () => {
               border: "1px solid #0bdcf8ff",
               borderRadius: "1rem",
               maxWidth: "400px",
-              height:"17rem",
+              height: "17rem",
               textAlign: "center",
               color: "#fff",
               boxShadow: "0px 4px 20px rgba(0,0,0,0.2)",
             }}
           >
-            <h3 style={{ display: "flex", alignItems: "center", gap: "0.8rem", fontSize: "1.2rem" }}><CircleAlert size={20}/> Notification</h3>
-            <div style={{ fontSize: "1rem", textAlign: "center"}}><p>You have acquired the qualification to become a <span style={{ color: "#0bdcf8ff",  }}><i>Player.</i></span></p>
-            <p>Will You accept?</p></div>
+            <h3
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.8rem",
+                fontSize: "1.2rem",
+              }}
+            >
+              <CircleAlert size={20} /> Notification
+            </h3>
+            <div style={{ fontSize: "1rem", textAlign: "center" }}>
+              <p>
+                You have acquired the qualification to become a{" "}
+                <span style={{ color: "#0bdcf8ff" }}>
+                  <i>Player.</i>
+                </span>
+              </p>
+              <p>Will You accept?</p>
+            </div>
             <div
               style={{
                 marginTop: "1.5rem",

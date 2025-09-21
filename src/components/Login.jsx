@@ -1,11 +1,60 @@
-import React from 'react'
+import { SignIn, useAuth } from '@clerk/clerk-react'; // Import useAuth
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+  const { isSignedIn } = useAuth(); // Check if the user is signed in
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isSignedIn) {
+      navigate('/home');
+    }
+  }, [isSignedIn, navigate]);
+
   return (
     <>
-      login page
+      <div className="login-page"
+        style={{
+          height: "99vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          flexDirection: "column",
+          gap: "2rem",
+          margin: "4px",
+          background:
+            "linear-gradient(90deg, #050a29ff 0%, #08113eff 40%, #1c0d37ff 150%)",
+          boxShadow: "0 0 40px 20px #3a1c71, 0 0 80px 20px #0e2483ff",
+          borderRadius: ".5rem",
+          overflow: "hidden",
+        }}>
+        <SignIn 
+          className="clerk-sign-in"
+          appearance={{
+            variables: {
+              colorBackground: "transparent",
+              colorForeground: "#fff",
+              colorPrimary: "#0a1effff",
+              colorText: "#fff",
+              colorMutedForeground: "#f0e8ffff",
+              colorMuted: "transparent",
+              colorPrimaryForeground: "#fff",
+              colorInputForeground: "#fff",
+              colorInputBackground: "transparent",
+              colorBorder: "#02afffff",
+              border: "1px solid #02afffff",
+              colorInputPlaceholder: "#341e8bff",
+              borderRadius: "0.5rem",
+              fontSizeBase: "1rem",
+              fontWeightBase: "500",
+              shadowBase: "0 0 10px 2px #fefefeff",
+            },
+          }}
+        />
+      </div>
     </>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;

@@ -81,7 +81,7 @@ const Equipment = () => {
             marginBottom: "1rem",
             display: "flex",
             flexDirection: "column",
-            alignItems: "center", // <-- changed from flex-start to center
+            alignItems: "center",
             width: "100%",
             maxWidth: "650px",
           }}
@@ -94,7 +94,7 @@ const Equipment = () => {
               display: "flex",
               flexWrap: "wrap",
               gap: "0.5rem",
-              justifyContent: "center", // <-- added to center the goals
+              justifyContent: "center",
               width: "100%",
               maxWidth: "650px",
             }}

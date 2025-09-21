@@ -1,5 +1,6 @@
-import React from 'react'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import React from 'react';
+import { useAuth } from '@clerk/clerk-react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Landing from './components/Landing';
 import './components/Css/Style.css';
 import Gender from './pages/Gender'; // <-- fix import path
@@ -11,16 +12,16 @@ import Bodystats from './pages/Bodystats';
 import Setup from './pages/Setup';
 import Login from './components/Login';
 import Register from './components/Register';
-import ForgotPassword from './components/ForgotPassword';
-
+import Dashboard from './components/Dashboard';
 
 const App = () => {
+  const { isSignedIn } = useAuth(); // Check if the user is signed in
 
   return (
     <>
       <Router>
         <Routes>
-          <Route path="/" element={<Landing/>} />
+          <Route path="/" element={isSignedIn ? <Navigate to="/home" /> : <Landing />} />
           <Route path="/gender" element={<Gender/>} />
           <Route path="/goal" element={<Goal/>} />
           <Route path="/equipment" element={<Equipment/>}/>
@@ -30,7 +31,8 @@ const App = () => {
           <Route path="/setup" element={<Setup/>} />
           <Route path="/login" element={<Login/>} />
           <Route path="/register" element={<Register/>} />
-          <Route path="/reset-password" element={<ForgotPassword/>} />
+          <Route path="/home" element={<Dashboard/>} />
+          <Route path="*" element={<h1>404 Not Found</h1>} />
         </Routes>
       </Router>
     </>
