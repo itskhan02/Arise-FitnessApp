@@ -13,6 +13,7 @@ import Setup from './pages/Setup';
 import Login from './components/Login';
 import Register from './components/Register';
 import Dashboard from './components/Dashboard';
+import Focusarea from './pages/FocusArea';
 
 const App = () => {
   const { isSignedIn } = useAuth(); // Check if the user is signed in
@@ -24,6 +25,7 @@ const App = () => {
           <Route path="/" element={isSignedIn ? <Navigate to="/home" /> : <Landing />} />
           <Route path="/gender" element={<Gender/>} />
           <Route path="/goal" element={<Goal/>} />
+          <Route path="/focusarea" element={<Focusarea/>} />
           <Route path="/equipment" element={<Equipment/>}/>
           <Route path='/level' element={<Level/>}/>
           <Route path='/bodystats' element={<Bodystats/>}/>

@@ -70,7 +70,7 @@ const Bodystats = () => {
   const navigate= useNavigate()
 
     const handleNext = () => {
-        navigate("/goal");
+        navigate("/focusarea");
     };
 
   const handleBack = () => navigate(-1);

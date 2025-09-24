@@ -29,29 +29,7 @@ const Login = () => {
           borderRadius: ".5rem",
           overflow: "hidden",
         }}>
-        <SignIn 
-          className="clerk-sign-in"
-          appearance={{
-            variables: {
-              colorBackground: "transparent",
-              colorForeground: "#fff",
-              colorPrimary: "#0a1effff",
-              colorText: "#fff",
-              colorMutedForeground: "#f0e8ffff",
-              colorMuted: "transparent",
-              colorPrimaryForeground: "#fff",
-              colorInputForeground: "#fff",
-              colorInputBackground: "transparent",
-              colorBorder: "#02afffff",
-              border: "1px solid #02afffff",
-              colorInputPlaceholder: "#341e8bff",
-              borderRadius: "0.5rem",
-              fontSizeBase: "1rem",
-              fontWeightBase: "500",
-              shadowBase: "0 0 10px 2px #fefefeff",
-            },
-          }}
-        />
+        <SignIn />
       </div>
     </>
   );

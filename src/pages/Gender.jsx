@@ -87,7 +87,7 @@ const Gender = ({ onSelect, selectedGender, onNext, onBack }) => {
                         position: "absolute",
                     }}
                     onClick={() => handleSelect("male")}
-                    // whileHover={{ scale: 1.05}}
+                    whileHover={localSelected !== "male" ? { scale: 1.05 } : {}}
                     whileTap={{ scale: 0.95 }}
                     animate={{
                         x: localSelected === "female" ? -200 : localSelected === "male" ? 0 : -150,
@@ -151,7 +151,7 @@ const Gender = ({ onSelect, selectedGender, onNext, onBack }) => {
                         position: "absolute",
                     }}
                     onClick={() => handleSelect("female")}
-                    whileHover={{ scale: 1.05 }}
+                    whileHover={localSelected !== "female" ? { scale: 1.05 } : {}}
                     whileTap={{ scale: 0.95 }}
                     animate={{
                         x: localSelected === "male" ? 200 : localSelected === "female" ? 0 : 150,

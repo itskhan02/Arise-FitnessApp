@@ -181,3 +181,25 @@ body {
   background-color: #fff;
   text-align: center;
 }
+
+.css-93wjf5-MuiButtonBase-root-MuiTab-root {
+  color: rgb(11, 56, 233) !important;
+  width: 50px !important;
+}
+
+.css-93wjf5-MuiButtonBase-root-MuiTab-root:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+
+  padding: 0 !important;
+  min-width: 60px !important;
+  border-radius: 60% !important;
+}
+
+.css-93wjf5-MuiButtonBase-root-MuiTab-root.Mui-selected {
+  padding: 0 !important;
+  min-width: 70px !important;
+}
+
+.css-1qltlow-MuiTabs-indicator {
+  display: none !important;
+}
