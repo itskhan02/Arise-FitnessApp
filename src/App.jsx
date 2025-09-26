@@ -14,6 +14,10 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Dashboard from './components/Dashboard';
 import Focusarea from './pages/FocusArea';
+import Weight from './pages/Weight';
+import GoalWeight from './pages/GoalWeight';
+import Age from './pages/Age';
+import Height from './pages/Height';
 
 const App = () => {
   const { isSignedIn } = useAuth(); // Check if the user is signed in
@@ -34,6 +38,10 @@ const App = () => {
           <Route path="/login" element={<Login/>} />
           <Route path="/register" element={<Register/>} />
           <Route path="/home" element={<Dashboard/>} />
+          <Route path="/height" element={<Height/>} />
+          <Route path="/weight" element={<Weight/>} />
+          <Route path="/goal-weight" element={<GoalWeight/>} />
+          <Route path="/age" element={<Age/>} />
           <Route path="*" element={<h1>404 Not Found</h1>} />
         </Routes>
       </Router>

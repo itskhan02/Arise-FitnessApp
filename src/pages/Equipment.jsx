@@ -4,15 +4,16 @@ import { MoveLeft, MoveRight } from "lucide-react";
 
 const equipmentOptions = [
   { key: "Full Gym", name: "Full Gym" },
-  { key: "Garage Gym", name: "Garage Gym" },
-  { key: "Dumbbell Only", name: "Dumbbell Only" },
-  { key: "At Home", name: "At Home" },
+  // { key: "Garage Gym", name: "Garage Gym" },
+  { key: "Dumbbell", name: "Dumbbell Only" },
+  { key: "Body Weight", name: "Body Weight" },
 ];
 
 const Equipment = () => {
   const navigate = useNavigate();
   const [selectedEquipment, setSelectedEquipment] = useState("");
-  const [goals, setGoals] = useState([]);
+  // const [goals, setGoals] = useState([]);
+  const [focusarea, setFocusArea] = useState([]);
 
   useEffect(() => {
     // Remember selected equipment from sessionStorage
@@ -20,9 +21,13 @@ const Equipment = () => {
     if (savedEquipment) {
       setSelectedEquipment(JSON.parse(savedEquipment));
     }
-    const savedGoals = sessionStorage.getItem("userGoal");
-    if (savedGoals) {
-      setGoals(JSON.parse(savedGoals));
+    // const savedGoals = sessionStorage.getItem("userGoal");
+    // if (savedGoals) {
+    //   setGoals(JSON.parse(savedGoals));
+    // }
+    const savedFocusArea = sessionStorage.getItem("userFocusArea"); // Retrieve focus areas
+    if (savedFocusArea) {
+      setFocusArea(JSON.parse(savedFocusArea));
     }
   }, []);
 
@@ -71,10 +76,10 @@ const Equipment = () => {
       >
         <MoveLeft size={34} />
       </button>
-      <h2 style={{ color: "#fff", fontSize: "1.8rem", fontWeight: "600" }}>
+      <h2 style={{ color: "#fff", fontSize: "1.8rem", fontWeight: "600", position: "absolute", top: "4rem" }}>
         Select Your Equipment
       </h2>
-      {goals.length > 0 && (
+      {/* {goals.length > 0 && (
         <div
           style={{
             color: "#8adca6ff",
@@ -116,6 +121,53 @@ const Equipment = () => {
                 }}
               >
                 {goal.name}
+              </span>
+            ))}
+          </div>
+        </div>
+      )} */}
+      {focusarea && focusarea.length > 0 && (
+        <div
+          style={{
+            color: "#8adca6ff",
+            marginBottom: "1rem",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            width: "100%",
+            maxWidth: "650px",
+          }}
+        >
+          <span style={{ fontWeight: "bold", color: "#fff", marginBottom: "0.5rem", textAlign: "center", width: "100%" }}>
+            Selected Focus Areas:
+          </span>
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "0.5rem",
+              justifyContent: "center",
+              width: "100%",
+              maxWidth: "650px",
+            }}
+          >
+            {focusarea.map((area) => (
+              <span
+                key={area}
+                style={{
+                  background: "#16997681",
+                  color: "#fff",
+                  borderRadius: "0.5rem",
+                  padding: "0.3rem 1rem",
+                  fontWeight: "500",
+                  fontSize: "1rem",
+                  boxShadow: "0 0 4px #8adca6ff",
+                  textAlign: "center",
+                  minWidth: "120px",
+                  display: "inline-block",
+                }}
+              >
+                {area}
               </span>
             ))}
           </div>

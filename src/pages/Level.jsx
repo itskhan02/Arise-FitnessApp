@@ -20,6 +20,7 @@ const Level = () => {
   const [selectedLevel, setSelectedLevel] = useState("");
   const [goals, setGoals] = useState([]);
   const [selectedEquipment, setSelectedEquipment] = useState("");
+  const [focusAreas, setFocusAreas] = useState([]); // Add state for focus areas
 
   useEffect(() => {
     // Remember selected level from sessionStorage
@@ -36,6 +37,11 @@ const Level = () => {
     const savedEquipment = sessionStorage.getItem("userEquipment");
     if (savedEquipment) {
       setSelectedEquipment(JSON.parse(savedEquipment));
+    }
+    // Load selected focus areas from sessionStorage
+    const savedFocusAreas = sessionStorage.getItem("userFocusArea"); // Retrieve focus areas
+    if (savedFocusAreas) {
+      setFocusAreas(JSON.parse(savedFocusAreas));
     }
   }, []);
 
@@ -194,6 +200,61 @@ const Level = () => {
                 )?.name || selectedEquipment
               }
             </span>
+          </div>
+        </div>
+      )}
+
+      {focusAreas.length > 0 && (
+        <div
+          style={{
+            color: "#8adca6ff",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            width: "100%",
+            maxWidth: "650px",
+          }}
+        >
+          <span
+            style={{
+              fontWeight: "bold",
+              color: "#fff",
+              marginBottom: "0.5rem",
+              textAlign: "center",
+              width: "100%",
+            }}
+          >
+            Selected Focus Areas:
+          </span>
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "0.5rem",
+              justifyContent: "center",
+              width: "100%",
+              maxWidth: "650px",
+            }}
+          >
+            {focusAreas.map((area) => (
+              <span
+                key={area}
+                style={{
+                  background: "#16997681",
+                  color: "#fff",
+                  borderRadius: "0.5rem",
+                  padding: "0.3rem 1rem",
+                  fontWeight: "500",
+                  fontSize: "1rem",
+                  boxShadow: "0 0 4px #8adca6ff",
+                  textAlign: "center",
+                  minWidth: "120px",
+                  display: "inline-block",
+                }}
+              >
+                {area}
+              </span>
+            ))}
           </div>
         </div>
       )}

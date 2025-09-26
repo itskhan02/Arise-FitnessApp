@@ -3,41 +3,51 @@ import { useNavigate } from "react-router-dom";
 import { MoveLeft, MoveRight } from "lucide-react";
 
 const bodyParts = [
-  { id: "full", name: "Full Body", img: "/public/body.png" },
-  { id: "chest", name: "Chest", img: "/public/chest.png" },
-  { id: "back", name: "Back", img: "/public/back.png" },
-  { id: "arms", name: "Arms", img: "/public/arms.png" },
-  { id: "shoulders", name: "Shoulders", img: "/public/shoulder.png" },
+  { id: "Full Body", name: "Full Body", img: "/public/body.png" },
+  { id: "Chest", name: "Chest", img: "/public/chest.png" },
+  { id: "Back", name: "Back", img: "/public/back.png" },
+  { id: "Arms", name: "Arms", img: "/public/arms.png" },
+  { id: "Shoulders", name: "Shoulders", img: "/public/shoulder.png" },
   { id: "legs", name: "Legs", img: "/public/leg.png" },
-  { id: "abs", name: "Abs", img: "/public/abs.png" },
+  { id: "Abs", name: "Abs", img: "/public/abs.png" },
 ];
 
-const Focusarea = () => {
+const FocusArea = () => {
   const navigate = useNavigate();
-  const [selected, setSelected] = useState([]);
+  const [selected, setSelected] = useState(() => {
+    const savedFocusArea = sessionStorage.getItem("userFocusArea");
+    return savedFocusArea ? JSON.parse(savedFocusArea) : [];
+  });
 
   const handleBack = () => navigate(-1);
 
   const handleNext = () => {
     console.log("Selected parts:", selected);
+    const dataToSave = selected.includes("Full Body") ? ["Full Body"] : selected; 
+    sessionStorage.setItem("userFocusArea", JSON.stringify(dataToSave)); 
     navigate("/equipment");
   };
 
   const toggleSelection = (id) => {
-    if (id === "full") {
-      setSelected((prev) => (prev.includes("full") ? [] : bodyParts.map((p) => p.id)));
+    if (id === "Full Body") {
+      setSelected((prev) => {
+        const updated = prev.includes("Full Body") ? [] : bodyParts.map((p) => p.id);
+        sessionStorage.setItem("userFocusArea", JSON.stringify(updated));
+        return updated;
+      });
       return;
     }
 
     setSelected((prev) => {
       let next = prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id];
 
-      if (next.length === bodyParts.length - 1 && !next.includes("full")) {
-        next.push("full");
-      } else if (next.length < bodyParts.length && next.includes("full")) {
-        next = next.filter((x) => x !== "full");
+      if (next.length === bodyParts.length - 1 && !next.includes("Full Body")) {
+        next.push("Full Body");
+      } else if (next.length < bodyParts.length && next.includes("Full Body")) {
+        next = next.filter((x) => x !== "Full Body");
       }
 
+      sessionStorage.setItem("userFocusArea", JSON.stringify(next));
       return next;
     });
   };
@@ -117,6 +127,7 @@ const Focusarea = () => {
             flexDirection: "column",
             gap: "1.7rem",
             padding: "1rem 0",
+            alignItems: "center",
           }}
         >
           {bodyParts.map((part) => (
@@ -127,11 +138,11 @@ const Focusarea = () => {
                 display: "flex",
                 flexDirection: "row",
                 alignItems: "center",
-                justifyContent: "space-between",
-                gap: "1rem",
+                justifyContent: "space-around",
+                gap: "6rem",
                 fontSize: "1.2rem",
-                width: "100%",
-                height: "5.5rem",
+                width: "85%",
+                height: "5rem",
                 cursor: "pointer",
                 textAlign: "center",
                 border: selected.includes(part.id) ? "1px solid #4caf50" : "1px solid #0505de",
@@ -196,4 +207,4 @@ const Focusarea = () => {
   );
 };
 
-export default Focusarea;
+export default FocusArea;
