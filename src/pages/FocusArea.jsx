@@ -3,13 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { MoveLeft, MoveRight } from "lucide-react";
 
 const bodyParts = [
-  { id: "Full Body", name: "Full Body", img: "/public/body.png" },
-  { id: "Chest", name: "Chest", img: "/public/chest.png" },
-  { id: "Back", name: "Back", img: "/public/back.png" },
-  { id: "Arms", name: "Arms", img: "/public/arms.png" },
-  { id: "Shoulders", name: "Shoulders", img: "/public/shoulder.png" },
-  { id: "legs", name: "Legs", img: "/public/leg.png" },
-  { id: "Abs", name: "Abs", img: "/public/abs.png" },
+  { id: "Full Body", name: "Full Body", img: "body.png" },
+  { id: "Chest", name: "Chest", img: "chest.png" },
+  { id: "Back", name: "Back", img: "back.png" },
+  { id: "Arms", name: "Arms", img: "arms.png" },
+  { id: "Shoulders", name: "Shoulders", img: "shoulder.png" },
+  { id: "legs", name: "Legs", img: "leg.png" },
+  { id: "Abs", name: "Abs", img: "abs.png" },
 ];
 
 const FocusArea = () => {
