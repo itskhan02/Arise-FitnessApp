@@ -138,7 +138,7 @@ const Weight = () => {
       </button>
 
       <div style={{ textAlign: "center", marginTop: "3.5rem", marginBottom: "2rem" }}>
-        <h1 style={{ fontSize: "2rem", color: "#fff", margin: 0 }}>
+        <h1 style={{ fontSize: "1.5rem", color: "#fff", margin: 0 }}>
           What's your current weight?
         </h1>
       </div>

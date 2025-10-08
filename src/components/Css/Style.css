@@ -565,8 +565,9 @@ h2 {
     left: 0;
     right: 0;
     height: 2px;
+    width: 13rem;
     background-color: #0bdcf8ff;
-    transform: translateY(-50%);
+    transform: translateX(-60%);
     z-index: 1;
 }
 
@@ -611,7 +612,7 @@ h2 {
     height: 300px;
     overflow-y: scroll;
     scrollbar-width: none;
-    border-right: 2px solid #5a5a5a;
+    border-right: 2px solid #0bdcf8ff;
     position: relative;
 }
 
@@ -623,25 +624,29 @@ h2 {
 }
 
 /* Tablet */
-@media (min-width: 768px) {
+@media (min-width: 769px) and (max-width: 1024px) {
     .content-wrapper { gap: 20px; max-width: 600px; margin-top: 80px; }
-    .ruler-container { width: 70px; height: 350px; }
+    .ruler-container { width: 70px; height: 450px; }
     .character-image { width: 250px; max-height: 400px; }
     .unit-toggle-container { width: 250px; }
     .height-value { font-size: 52px; }
+    .selector-line { width: 14rem; transform: translateX(-69%); top: 14%;}
+    .height-display-container { top: 6rem; left: 11rem; }
 }
 
 /* Desktop */
-@media (min-width: 1024px) {
+@media (min-width: 1025px) {
     .content-wrapper { gap: 30px; max-width: 700px; }
     .ruler-container { width: 80px; height: 550px; }
     .character-image { width: 280px; max-height: 450px; }
     .unit-toggle-container { width: 300px; }
     .height-value { font-size: 56px; }
+    .selector-line { width: 16rem; transform: translateX(-69%); top: 20%; }
+    .height-display-container { top: 4rem; }
 }
 
 /* Small Mobile */
-@media (max-width: 480px) {
+@media (min-width: 360px) and (max-width: 768px) {
     .content-wrapper { gap: 8px; max-width: 400px;  }
     .ruler-container { width: 80px; height: 420px; }
     .character-image { width: 190px; max-height: 350px; }
@@ -649,12 +654,16 @@ h2 {
     .height-value { font-size: 42px; }
     .main-content { padding: 0 15px; }
     .next-button { bottom: 20px; padding: 14px; font-size: 16px; }
+    .selector-line { width: 13rem; transform: translateX(-62%); top: 20%;}
+    .height-display-container { top: 4rem; }
 }
 
 /* Very Small Mobile */
-@media (max-width: 360px) {
+@media (min-width: 144px) and (max-width: 360px) {
     .content-wrapper { gap: 5px; max-width: 320px; margin-top: 40px; }
-    .ruler-container { width: 45px; height: 220px; }
+    .ruler-container { width: 45px; height: 280px; }
     .character-image { width: 140px; max-height: 280px; }
     .height-value { font-size: 38px; }
+    .selector-line { width: 8rem; transform: translateX(-65%); top: 12%;}
+    .height-display-container { top: 1.5rem; left: 9rem; }
 }
