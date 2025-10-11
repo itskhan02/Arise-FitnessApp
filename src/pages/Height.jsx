@@ -4,18 +4,22 @@ import { MoveRight, MoveLeft } from "lucide-react";
 
 const Height = () => {
   const navigate = useNavigate();
-  const [unit, setUnit] = useState("cm");
-  const [heightCm, setHeightCm] = useState(170);
-  const [displayHeightCm, setDisplayHeightCm] = useState(170);
+  const [unit, setUnit] = useState(() => sessionStorage.getItem("heightUnit") || "cm");
+  const [heightCm, setHeightCm] = useState(
+    () => Number(sessionStorage.getItem("originalHeight")) || 150
+  );
+  const [displayHeightCm, setDisplayHeightCm] = useState(
+    () => Number(sessionStorage.getItem("originalHeight")) || 150
+  );
   const rulerRef = useRef(null);
   const animationRef = useRef(null);
   const isDragging = useRef(false);
   const startY = useRef(0);
   const startScroll = useRef(0);
 
-  const MIN_CM = 100;
-  const MAX_CM = 250;
-  const PIXELS_PER_UNIT = 20;
+  const MIN_CM = 127;
+  const MAX_CM = 220;
+  const PIXELS_PER_UNIT = 36;
   const SUBDIVISIONS = 10;
 
   useEffect(() => {
@@ -25,6 +29,11 @@ const Height = () => {
       rulerRef.current.scrollTop = initialScrollTop;
     }
   }, []);
+
+  useEffect(() => {
+    sessionStorage.setItem("heightUnit", unit);
+    sessionStorage.setItem("originalHeight", heightCm);
+  }, [unit, heightCm]);
 
 
   useEffect(() => {
@@ -87,8 +96,12 @@ const Height = () => {
 
   const convertCmToFtIn = (cm) => {
     const totalInches = cm / 2.54;
-    const feet = Math.floor(totalInches / 12);
-    const inches = Math.round(totalInches % 12);
+    let feet = Math.floor(totalInches / 12);
+    let inches = Math.round(totalInches % 12);
+    if (inches === 12) {
+      feet += 1;
+      inches = 0;
+    }
     return { feet, inches };
   };
 
@@ -126,6 +139,9 @@ const Height = () => {
       </div>
     );
   }, [SUBDIVISIONS]);
+
+  const userGender = sessionStorage.getItem("userGender");
+  const characterImage = userGender === "female" ? "/public/luna.png" : "/public/toji.png";
 
   const displayedHeight =
     unit === "cm"
@@ -197,7 +213,7 @@ const Height = () => {
           marginBottom: "1rem",
         }}
       >
-        <h1 style={{ fontSize: "2rem", color: "#fff", margin: 0 }}>
+        <h1 className="heading"  style={{ color: "#fff", margin: 0 }}>
           What's your height?
         </h1>
       </div>
@@ -276,7 +292,7 @@ const Height = () => {
           }}
         >
           <img
-            src="/public/toji.png"
+            src={characterImage}
             alt="Fitness model"
             className="character-image"
             onError={(e) => {

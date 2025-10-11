@@ -241,7 +241,7 @@ const Goal = () => {
         <MoveLeft size={34} />
       </button>
 
-      <h2 style={{ color: "#fff", fontSize: "1.8rem", fontWeight: "600" }}>
+      <h2 className="heading" style={{ color: "#fff", fontSize: "1.8rem", }}>
         Choose Your Goal
       </h2>
 

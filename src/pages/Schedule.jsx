@@ -14,7 +14,10 @@ const days = [
 
 const Schedule = () => {
   const navigate = useNavigate();
-  const [selectedDays, setSelectedDays] = useState([]); 
+  const [selectedDays, setSelectedDays] = useState(() => {
+    const savedDays = sessionStorage.getItem("userSchedule");
+    return savedDays ? JSON.parse(savedDays) : [];
+  });
   const handleBack = () => {
     navigate(-1);
   };
@@ -23,8 +26,15 @@ const Schedule = () => {
     setSelectedDays((prev) =>
       prev.includes(dayKey)
         ? prev.filter((k) => k !== dayKey)
-        : [...prev, dayKey] 
+        : [...prev, dayKey]
     );
+  };
+
+  const handleNext = () => {
+    if (selectedDays.length > 0) {
+      sessionStorage.setItem("userSchedule", JSON.stringify(selectedDays));
+      navigate("/setup");
+    }
   };
 
   return (
@@ -60,12 +70,10 @@ const Schedule = () => {
         >
           <MoveLeft size={34} />
         </button>
-        <h2
+        <h2  className="heading" 
           style={{
             color: "#fff",
             marginBottom: "2rem",
-            fontSize: "1.8rem",
-            fontWeight: "600",
             position:"fixed",
             top:"4rem",
           }}
@@ -146,7 +154,7 @@ const Schedule = () => {
               opacity: selectedDays.length === 0 ? 0.5 : 1,
               cursor: selectedDays.length === 0 ? "not-allowed" : "pointer",
             }}
-            onClick={() => navigate("/setup")}
+            onClick={handleNext}
             disabled={selectedDays.length === 0}
           >
             Next <MoveRight size={24} />
@@ -158,4 +166,3 @@ const Schedule = () => {
 };
 
 export default Schedule;
-

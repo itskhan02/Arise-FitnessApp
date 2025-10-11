@@ -52,6 +52,8 @@ const GoalWeight = () => {
         padding: "1.5rem",
         display: "flex",
         flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "space-around",
       }}
     >
       {/* Back Button */}
@@ -78,7 +80,7 @@ const GoalWeight = () => {
 
       {/* Header */}
       <div style={{ textAlign: "center", marginTop: "3.5rem", marginBottom: "2rem" }}>
-        <h1 style={{ fontSize: "2rem", color: "#fff", margin: 0 }}>What's your target weight?</h1>
+        <h2 className="heading"  style={{  color: "#fff", margin: 0 }}>What's your target weight?</h2>
       </div>
 
       {/* Unit Toggle */}
@@ -90,6 +92,7 @@ const GoalWeight = () => {
           background: "#17188baf",
           borderRadius: "9999px",
           padding: "0.25rem",
+          width: "200px",
         }}
       >
         <button
@@ -128,11 +131,13 @@ const GoalWeight = () => {
 
       {/* Slider Section */}
       <div
-        style={{
+       style={{
           flex: 1,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          width: "100%",
+          minHeight: "30vh",
           justifyContent: "center",
           color: "#fff",
         }}

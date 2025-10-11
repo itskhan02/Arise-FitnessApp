@@ -98,7 +98,7 @@ const FocusArea = () => {
           zIndex: 20,
         }}
       >
-        <h2 style={{ color: "#fff", margin: 0 }}>Select your focus Area</h2>
+        <h2 className="heading" style={{ color: "#fff", margin: 0 }}>Select your focus Area</h2>
       </div>
 
       <div

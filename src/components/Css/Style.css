@@ -632,6 +632,8 @@ h2 {
     .height-value { font-size: 52px; }
     .selector-line { width: 14rem; transform: translateX(-69%); top: 14%;}
     .height-display-container { top: 6rem; left: 11rem; }
+    .heading { font-size: 1.8rem ;}
+    .bmi-box { width: 50%; }
 }
 
 /* Desktop */
@@ -643,6 +645,8 @@ h2 {
     .height-value { font-size: 56px; }
     .selector-line { width: 16rem; transform: translateX(-69%); top: 20%; }
     .height-display-container { top: 4rem; }
+    .heading { font-size: 1.8rem ;}
+    .bmi-box { width: 50%; }
 }
 
 /* Small Mobile */
@@ -656,6 +660,8 @@ h2 {
     .next-button { bottom: 20px; padding: 14px; font-size: 16px; }
     .selector-line { width: 13rem; transform: translateX(-62%); top: 20%;}
     .height-display-container { top: 4rem; }
+    .heading { font-size: 1.4rem ;}
+    .bmi-box { width: 90%; }
 }
 
 /* Very Small Mobile */
@@ -666,4 +672,6 @@ h2 {
     .height-value { font-size: 38px; }
     .selector-line { width: 8rem; transform: translateX(-65%); top: 12%;}
     .height-display-container { top: 1.5rem; left: 9rem; }
+    .heading { font-size: 1.3rem ;}
+    .bmi-box { width: 90%; }
 }

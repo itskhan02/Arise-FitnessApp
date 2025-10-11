@@ -48,14 +48,7 @@ const Gender = ({ onSelect, selectedGender, onNext, onBack }) => {
             }}
         >
             <h2
-                className="gender"
-                style={{
-                    color: "#fff",
-                    marginBottom: "2rem",
-                    fontSize: "1.8rem",
-                    fontWeight: "600",
-                }}
-            >
+                className="heading" style={{color: "#fff", marginBottom: "2rem", }}>
                 Select Your Gender
             </h2>
 
@@ -67,6 +60,8 @@ const Gender = ({ onSelect, selectedGender, onNext, onBack }) => {
                     marginBottom: "2rem",
                     position: "relative",
                     height: "400px",
+                    width: "100%",
+                    maxWidth: "550px",
                 }}
             >
                 {/* Male Card */}
@@ -83,6 +78,7 @@ const Gender = ({ onSelect, selectedGender, onNext, onBack }) => {
                         // background: localSelected === "male" ? "#16997681" : "#17188baf",
                         color: "#fbfafaff",
                         minWidth: "250px",
+                        width: "clamp(180px, 50vw, 250px)",
                         textAlign: "center",
                         position: "absolute",
                     }}
@@ -91,6 +87,7 @@ const Gender = ({ onSelect, selectedGender, onNext, onBack }) => {
                     whileTap={{ scale: 0.95 }}
                     animate={{
                         x: localSelected === "female" ? -200 : localSelected === "male" ? 0 : -150,
+                        x: localSelected === "female" ? "-80%" : localSelected === "male" ? "0%" : "-50%",
                         y: localSelected === "female" ? 20 : 0,
                         scale:
                             localSelected === "male"
@@ -121,8 +118,10 @@ const Gender = ({ onSelect, selectedGender, onNext, onBack }) => {
                         src="/public/Male.png"
                         alt="Male"
                         style={{
-                            width: "350px",
-                            height: "350px",
+                            width: "300px",
+                            height: "370px",
+                            width: "100%",
+                            
                             marginBottom: "1rem",
                             objectFit: "contain",
                         }}
@@ -147,6 +146,7 @@ const Gender = ({ onSelect, selectedGender, onNext, onBack }) => {
                         // background: localSelected === "female" ? "#1d896c81" : "#17188baf",
                         color: "#fff",
                         minWidth: "250px",
+                        width: "clamp(180px, 50vw, 250px)",
                         textAlign: "center",
                         position: "absolute",
                     }}
@@ -155,6 +155,7 @@ const Gender = ({ onSelect, selectedGender, onNext, onBack }) => {
                     whileTap={{ scale: 0.95 }}
                     animate={{
                         x: localSelected === "male" ? 200 : localSelected === "female" ? 0 : 150,
+                        x: localSelected === "male" ? "80%" : localSelected === "female" ? "0%" : "50%",
                         y: localSelected === "male" ? 20 : 0,
                         scale:
                             localSelected === "female"
@@ -185,8 +186,9 @@ const Gender = ({ onSelect, selectedGender, onNext, onBack }) => {
                         src="/public/Female.png"
                         alt="Female"
                         style={{
-                            width: "350px",
-                            height: "350px",
+                            width: "300px",
+                            height: "370px",
+                            width: "100%",
                             marginBottom: "0.6rem",
                             objectFit: "contain",
                         }}

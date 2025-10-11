@@ -52,8 +52,8 @@ const Age = () => {
         <MoveLeft size={34} />
       </button>
 
-      <div style={{ textAlign: "center", marginTop: "3.5rem", marginBottom: "2rem" }}>
-        <h1 style={{ fontSize: "2rem", color: "#fff", margin: 0 }}>What's your age?</h1>
+      <div  style={{ textAlign: "center", marginTop: "3rem", marginBottom: "2rem" }}>
+        <h1 className="heading" style={{  color: "#fff", margin: 0 }}>What's your age?</h1>
       </div>
 
       {/*Slider */}

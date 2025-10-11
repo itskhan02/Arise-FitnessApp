@@ -137,10 +137,10 @@ const Weight = () => {
         <MoveLeft size={34} />
       </button>
 
-      <div style={{ textAlign: "center", marginTop: "3.5rem", marginBottom: "2rem" }}>
-        <h1 style={{ fontSize: "1.5rem", color: "#fff", margin: 0 }}>
+      <div style={{ textAlign: "center", marginTop: "3rem", marginBottom: "2rem" }}>
+        <h2 className="heading" style={{ color: "#fff", margin: 0 }}>
           What's your current weight?
-        </h1>
+        </h2>
       </div>
 
       {/* Unit Toggle */}
@@ -148,10 +148,11 @@ const Weight = () => {
         style={{
           display: "flex",
           justifyContent: "center",
-          marginBottom: "2rem",
+          marginBottom: "-2rem",
           background: "#17188baf",
           borderRadius: "9999px",
           padding: "0.25rem",
+          width: "200px",
         }}
       >
         <button
@@ -193,6 +194,8 @@ const Weight = () => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          width: "100%",
+          minHeight: "30vh",
           justifyContent: "center",
           color: "#fff",
         }}
@@ -240,18 +243,18 @@ const Weight = () => {
       </div>
 
       {/* BMI Box */}
-      <div
+      <div className="bmi-box"
         style={{
           background: "#dbeafe",
           borderRadius: "1rem",
           padding: "1rem",
-          marginBottom: "1rem",
+          marginBottom: "2rem",
         }}
       >
         <div
           style={{
             textAlign: "center",
-            fontWeight: "500",
+            fontWeight: "600",
             marginBottom: "0.5rem",
             color: "#1e3a8a",
           }}
@@ -261,7 +264,7 @@ const Weight = () => {
         <div
           style={{
             textAlign: "center",
-            fontSize: "2rem",
+            fontSize: "1.5rem",
             fontWeight: "700",
             marginBottom: "0.5rem",
             color: "#111",
@@ -276,7 +279,7 @@ const Weight = () => {
           style={{
             textAlign: "center",
             fontSize: "0.7rem",
-            color: "#888",
+            color: "#484848ff",
             marginTop: "0.5rem",
           }}
         >

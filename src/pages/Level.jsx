@@ -91,7 +91,7 @@ const Level = () => {
         <MoveLeft size={34} />
       </button>
       
-      <h2 style={{ color: "#fff", fontSize: "1.8rem", fontWeight: "600" }}>
+      <h2 className="heading" style={{ color: "#fff", }}>
         Select Your Training Level
       </h2>
 

@@ -76,9 +76,9 @@ const Equipment = () => {
       >
         <MoveLeft size={34} />
       </button>
-      <h2 style={{ color: "#fff", fontSize: "1.8rem", fontWeight: "600", position: "absolute", top: "4rem" }}>
-        Select Your Equipment
-      </h2>
+      <div style={{ textAlign: "center", marginTop: "3rem", marginBottom: "2rem" }}>
+        <h1 className="heading" style={{  color: "#fff", margin: 0 }}>Select Your Equipment</h1>
+      </div>
       {/* {goals.length > 0 && (
         <div
           style={{
