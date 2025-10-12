@@ -91,7 +91,7 @@ const Dashboard = () => {
                   padding: "0.5rem",
                   borderRadius: isActive ? "3rem" : "50%",
                   height: "3rem",
-                  width: isActive ? "auto" : "3rem",
+                  width: isActive ? "3rem" : "3rem",
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",

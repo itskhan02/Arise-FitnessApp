@@ -7,7 +7,7 @@ const Age = () => {
   const navigate = useNavigate();
 
   // Load saved DOB from sessionStorage or default
-  const savedDOB = sessionStorage.getItem("userDOB") || "2002-12-15";
+  const savedDOB = sessionStorage.getItem("userDOB") || "2000-01-01";
   const initialAge = sessionStorage.getItem("userAge") || 22;
 
   const [dob, setDob] = useState(savedDOB);

@@ -1,10 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  useUser,
-  SignedIn,
-  SignedOut,
-  SignInButton,
-} from "@clerk/clerk-react";
+import { useUser, SignedIn, SignedOut, SignInButton } from "@clerk/clerk-react";
 import { Home, User2 } from "lucide-react";
 import { BsBarChart } from "react-icons/bs";
 import { CgGym } from "react-icons/cg";
@@ -24,31 +19,50 @@ const Profile = () => {
 
   const [details, setDetails] = useState({
     fullName: "",
-    age: "",
-    height: "",
-    weight: "",
+    dob: "2000-01-01", // YYYY-MM-DD
+    age: 0,
+    height: 170, // cm
+    weight: 65, // kg
     level: "Beginner",
     customImage: "",
+    gender: "",
   });
 
   const [isEditingName, setIsEditingName] = useState(false);
   const [tempName, setTempName] = useState("");
 
+  // Compute age from DOB
+  const calculateAge = (dob) => {
+    const birthDate = new Date(dob);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+    return age;
+  };
+
+  // Load data from Clerk or sessionStorage
   useEffect(() => {
-    const savedDetails = JSON.parse(sessionStorage.getItem("userDetails")) || {
+    const savedDetails = {
       fullName: user?.fullName || "",
-      age: "25",
-      height: "170 cm",
-      weight: "65 kg",
-      level: "Beginner",
-      customImage: "",
+      dob: sessionStorage.getItem("userDOB") || "2000-01-01",
+      age: parseInt(sessionStorage.getItem("userAge")) || 0,
+      height: Math.round(parseFloat(sessionStorage.getItem("originalHeight"))) || 170,
+      weight: parseFloat(sessionStorage.getItem("userWeight")) || 65,
+      level: JSON.parse(sessionStorage.getItem("userLevel")) || "Beginner",
+      customImage:
+        JSON.parse(sessionStorage.getItem("userDetails"))?.customImage || "",
+      gender: sessionStorage.getItem("userGender") || "",
     };
+    savedDetails.age = calculateAge(savedDetails.dob); 
     setDetails(savedDetails);
     setTempName(savedDetails.fullName);
   }, [user]);
 
+
   const handleFieldChange = (field, value) => {
     const updated = { ...details, [field]: value };
+    if (field === "dob") updated.age = calculateAge(value);
     setDetails(updated);
     sessionStorage.setItem("userDetails", JSON.stringify(updated));
   };
@@ -65,12 +79,17 @@ const Profile = () => {
     }
   };
 
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
     const file = e.target.files[0];
-    if (file) {
+    if (file && user) {
       const reader = new FileReader();
-      reader.onload = () => {
+      reader.onload = async () => {
         handleFieldChange("customImage", reader.result);
+        try {
+          await user.update({ imageUrl: reader.result });
+        } catch (err) {
+          console.error("Failed to update Clerk image:", err);
+        }
       };
       reader.readAsDataURL(file);
     }
@@ -91,7 +110,8 @@ const Profile = () => {
         fontSize: "1.2rem",
         position: "relative",
         overflowY: "auto",
-        paddingBottom: "6rem",
+        overflowX: "hidden",
+        padding: "2rem",
       }}
     >
       <SignedIn>
@@ -148,7 +168,7 @@ const Profile = () => {
             />
           </div>
 
-          {/* Editable Full Name with Edit/Save button */}
+          {/* Editable Full Name */}
           <div
             style={{
               display: "flex",
@@ -231,7 +251,9 @@ const Profile = () => {
               </>
             ) : (
               <>
-                <h2 style={{ fontWeight: "600", fontSize: "1.5rem", margin: 1 }}>
+                <h2
+                  style={{ fontWeight: "600", fontSize: "1.5rem", margin: 1 }}
+                >
                   {details.fullName || "User"}
                 </h2>
                 <button
@@ -254,9 +276,18 @@ const Profile = () => {
               </>
             )}
           </div>
-          {/* <p style={{ color: "#818080ff", fontSize: "0.9rem" }}>
-            {user?.primaryEmailAddress?.emailAddress}
-          </p> */}
+          {details.gender && (
+            <p
+              style={{
+                textTransform: "capitalize",
+                color: "#ccc",
+                fontSize: "1rem",
+                margin: 0,
+              }}
+            >
+              {details.gender}
+            </p>
+          )}
         </div>
 
         {/* PERSONAL DETAILS CARD */}
@@ -284,39 +315,60 @@ const Profile = () => {
           <div
             style={{ display: "flex", flexDirection: "column", gap: "0.8rem" }}
           >
+            <div>
+              <label>DOB</label>
+              <input
+                type="date"
+                value={details.dob}
+                onChange={(e) => handleFieldChange("dob", e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "0.6rem",
+                  boxSizing: "border-box",
+                  borderRadius: "8px",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  background: "rgba(255,255,255,0.1)",
+                  color: "#fff",
+                  outline: "none",
+                  fontSize: "0.95rem",
+                }}
+              />
+            </div>
             {["age", "height", "weight", "level"].map((field) => (
               <div key={field}>
-                <label
-                  style={{
-                    fontSize: "0.9rem",
-                    color: "#ccc",
-                    textTransform: "capitalize",
-                    display: "block",
-                    marginBottom: "0.3rem",
-                  }}
-                >
-                  {field}
-                </label>
+                <label>{field}</label>
                 <input
-                  type="text"
+                  type={(field === "age" || field === "level") ? "text" : "number"}
                   value={details[field]}
-                  onChange={(e) =>
-                    handleFieldChange(field, e.target.value)
-                  }
+                  onChange={(e) => handleFieldChange(field, e.target.value)}
                   style={{
                     width: "100%",
                     padding: "0.6rem",
                     borderRadius: "8px",
                     border: "1px solid rgba(255,255,255,0.2)",
-                    background: "rgba(255,255,255,0.1)",
+                    background: "rgba(243, 238, 238, 0.1)",
                     color: "#fff",
                     outline: "none",
                     fontSize: "0.95rem",
                   }}
+                  disabled={field === "age" || field === "height" || field === "level"}
                 />
               </div>
             ))}
           </div>
+          <style>{`
+            input[type="date"]::-webkit-calendar-picker-indicator {
+              filter: invert(1);              
+              font-size: 1.2rem;
+              cursor: pointer;
+            }
+            input[type=number]::-webkit-inner-spin-button,
+            input[type=number]::-webkit-outer-spin-button {
+              -webkit-appearance: none;
+              margin: 0;
+            }
+            input[type=number] { -moz-appearance: textfield; }
+          `}</style>
         </div>
 
         {/* NAVIGATION */}
@@ -337,7 +389,6 @@ const Profile = () => {
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
-
             return (
               <div
                 key={item.label}
@@ -347,7 +398,7 @@ const Profile = () => {
                   padding: "0.5rem",
                   borderRadius: isActive ? "3rem" : "50%",
                   height: "3rem",
-                  width: isActive ? "auto" : "3rem",
+                  width: isActive ? "3rem" : "3rem",
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
@@ -361,11 +412,7 @@ const Profile = () => {
                   transition: "all 0.3s ease",
                 }}
               >
-                <Icon
-                  size={28}
-                  color={isActive ? "#fff" : "#fff8f8ff"}
-                  style={{ transition: "color 0.3s ease" }}
-                />
+                <Icon size={28} color={isActive ? "#fff" : "#fff8f8ff"} />
               </div>
             );
           })}
@@ -394,7 +441,7 @@ const Profile = () => {
                 height: "2.8rem",
                 padding: "0.75rem 1.5rem",
                 borderRadius: "0.5rem",
-                border: "1px solid #0bdcf8ff ",
+                border: "1px solid #0bdcf8ff",
                 background: "#02013b",
                 color: "#fff",
                 cursor: "pointer",
