@@ -48,8 +48,8 @@ const Schedule = () => {
           gap: "2rem",
           justifyContent: "center",
           minHeight: "100vh",
-          background: "#00002e",
-          boxShadow: "0 0 30px 5px #3a1c71 inset",
+          background: "linear-gradient(180deg, #00002e, #0a0a5a)",
+          boxShadow: "0 0 20px 10px #3a1c71, 0 0 30px 10px #0e2483ff inset",
           overflow: "hidden",
         }}
       >
@@ -92,7 +92,7 @@ const Schedule = () => {
           }}
         >
           {days.map((day) => (
-            <div
+            <div 
               key={day.key}
               className={`level-card${
                 selectedDays.includes(day.key) ? " selected" : ""
@@ -108,8 +108,6 @@ const Schedule = () => {
                 background:
                   selectedDays.includes(day.key) ? "#16997681" : "#17188baf",
                 color: "#fff",
-                width: "180px",
-                minHeight: "2rem",
                 textAlign: "center",
                 position: "relative",
                 display: "flex",
@@ -156,6 +154,15 @@ const Schedule = () => {
             }}
             onClick={handleNext}
             disabled={selectedDays.length === 0}
+            onMouseOver={(e) => {
+            e.currentTarget.style.background =
+              "linear-gradient(90deg, #1e3a8a, #06b6d4)";
+            e.currentTarget.style.boxShadow = "0 0 12px #06b6d4";
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.background = "#02013b";
+            e.currentTarget.style.boxShadow = "none";
+          }}
           >
             Next <MoveRight size={24} />
           </button>

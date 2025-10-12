@@ -1,82 +1,156 @@
-import { SignedIn, UserButton } from "@clerk/clerk-react";
 import React from "react";
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import { Heart, PhoneCallIcon, User2Icon } from "lucide-react";
+import {
+  useUser,
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  UserButton,
+} from "@clerk/clerk-react";
+import { Home, User2 } from "lucide-react";
+import { BsBarChart } from "react-icons/bs";
+import { CgGym } from "react-icons/cg";
+import { useLocation, useNavigate } from "react-router-dom";
+
+const navItems = [
+  { icon: Home, label: "Home", path: "/home" },
+  { icon: CgGym, label: "Exercises", path: "/exercises" },
+  { icon: BsBarChart, label: "Progress", path: "/progress" },
+  { icon: User2, label: "Profile", path: "/profile" },
+];
 
 const Dashboard = () => {
-  const [value, setValue] = React.useState(0);   
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);  
-
-  };
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { user } = useUser();
 
   return (
-    <>
-      <div
-        style={{
-          height: "100vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          flexDirection: "column",
-          gap: "2rem",
-          background:
-            "linear-gradient(90deg, #050a29ff 0%, #08113eff 40%, #1c0d37ff 150%)",
-          color: "#fff",
-          fontSize: "1.5rem",
-        }}
-      >
+    <div
+      style={{
+        height: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column",
+        gap: "2rem",
+        background:
+          "linear-gradient(90deg, #050a29ff 0%, #08113eff 40%, #1c0d37ff 150%)",
+        color: "#fff",
+        fontSize: "1.5rem",
+        position: "relative",
+      }}
+    >
+      {/* ------- SIGNED IN ------- */}
+      <SignedIn>
         <div
           style={{
             position: "absolute",
-            top: "0.8rem",
+            top: "1rem",
             left: "1rem",
-            padding: "0.5rem 0.5rem",
-            borderRadius: "0.5rem",
-            background: "transparent",
-            color: "#fff",
-            cursor: "pointer",
             zIndex: 2,
           }}
         >
-          <SignedIn
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-              background: "transparent",
-              color: "#fff",
-              cursor: "pointer",
-              zIndex: 2,
-            }}
-          >
-            <UserButton />
-          </SignedIn>
+          <UserButton />
         </div>
-        Welcome to your Dashboard!
-        <Tabs
-        style={{
-          position: "absolute",
-          bottom: "2rem",
-          borderRadius: "2rem",
-          background: "rgba(255, 255, 255, 0.1)",
-          boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
-          color: "#fff",
-          minWidth: "250px",
-          padding: "0.5rem 0.5rem",
-        }}
-          value={value}
-          onChange={handleChange}
-          aria-label="icon label tabs example">
-          <Tab icon={<PhoneCallIcon/>}/>
-          <Tab icon={<Heart/>}/>
-          <Tab icon={<User2Icon />}/>
-          <Tab icon={<User2Icon />} />
-        </Tabs>
-      </div>
-    </>
+
+        {/* Dashboard  */}
+
+        <div style={{ textAlign: "center" }}>
+          <h1 style={{ fontWeight: "600", fontSize: "2rem" }}>
+            Welcome, {user?.firstName || "User"} 👋
+          </h1>
+          <p style={{ color: "#aaa", fontSize: "1rem", marginTop: "0.5rem" }}>
+            You’re logged in to your personalized dashboard.
+          </p>
+        </div>
+
+        {/* NAVIGATION */}
+        <div
+          style={{
+            position: "fixed",
+            bottom: "2rem",
+            display: "flex",
+            justifyContent: "space-around",
+            alignItems: "center",
+            background: "rgba(0, 67, 200, 0.89)",
+            backdropFilter: "blur(10px)",
+            borderRadius: "9999px",
+            padding: "0.6rem 1rem",
+            width: "18rem",
+          }}
+        >
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.path;
+
+            return (
+              <div
+                key={item.label}
+                onClick={() => navigate(item.path)}
+                style={{
+                  cursor: "pointer",
+                  padding: "0.5rem",
+                  borderRadius: isActive ? "3rem" : "50%",
+                  height: "3rem",
+                  width: isActive ? "auto" : "3rem",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  background: isActive
+                    ? "radial-gradient(circle, #0034deff 0%, #00c3ff 90%)"
+                    : "transparent",
+                  boxShadow: isActive
+                    ? "0 0 15px rgba(11, 220, 248, 0.6)"
+                    : "none",
+                  transition: "all 0.3s ease",
+                }}
+              >
+                <Icon
+                  size={28}
+                  color={isActive ? "#fff" : "#fff8f8ff"}
+                  style={{ transition: "color 0.3s ease" }}
+                />
+              </div>
+            );
+          })}
+        </div>
+      </SignedIn>
+
+      {/* --------- SIGNED OUT --------- */}
+      <SignedOut>
+        <div
+          style={{
+            textAlign: "center",
+            color: "#ccc",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "1.5rem",
+          }}
+        >
+          <p>Please sign in to access your dashboard.</p>
+          <SignInButton mode="modal">
+            <button
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                height: "2.8rem",
+                padding: "0.75rem 1.5rem",
+                borderRadius: "0.5rem",
+                border: "1px solid #0bdcf8ff",
+                background: "#02013b",
+                color: "#fff",
+                cursor: "pointer",
+                fontSize: "1rem",
+              }}
+            >
+              Sign In
+            </button>
+          </SignInButton>
+        </div>
+      </SignedOut>
+    </div>
   );
 };
 

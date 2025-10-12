@@ -38,9 +38,12 @@ const Weight = () => {
     (parseFloat(savedHeight) > 10 ? parseFloat(savedHeight) / 100 : parseFloat(savedHeight)) : 
     1.7;
 
-  const displayWeight = unit === "kg" 
-    ? Math.max(40, Math.min(120, parseFloat(weight.toFixed(1)))) 
-    : Math.max(90, Math.min(265, parseFloat((weight * 2.20462).toFixed(1)))); 
+  const handleUnitChange = (newUnit) => {
+    if (unit === newUnit) return;
+
+    sessionStorage.setItem("weightUnit", newUnit);
+    setUnit(newUnit);
+  };
 
   const handleBack = () => navigate(-1);
 
@@ -55,24 +58,32 @@ const Weight = () => {
     navigate("/goal-weight");
   };
 
-  const handleWeightChange = (e) => {
-    let newDisplayWeight = parseFloat(e.target.value);
-    
-    if (unit === "kg") {
-      newDisplayWeight = Math.max(40, Math.min(120, newDisplayWeight));
-    } else {
-      newDisplayWeight = Math.max(90, Math.min(265, newDisplayWeight));
+  const handleTextInputChange = (e) => {
+    const value = e.target.value;
+    if (value === "" || isNaN(parseFloat(value))) {
+      setWeight(0); 
+      return;
     }
-
-    const newWeightKg = unit === "kg" ? newDisplayWeight : newDisplayWeight / 2.20462;
     
-    if (newWeightKg >= 30 && newWeightKg <= 300) {
-      setWeight(parseFloat(newWeightKg.toFixed(1)));
-    }
+    const displayValue = parseFloat(value);
+    const newWeightInKg = unit === "kg" ? displayValue : displayValue / 2.20462;
+    setWeight(newWeightInKg);
   };
 
+  // Handler for the range slider
+  const handleSliderChange = (e) => {
+    const displayValue = parseFloat(e.target.value);
+    const newWeightInKg = unit === "kg" ? displayValue : displayValue / 2.20462;
+    setWeight(newWeightInKg);
+  };
+
+  // Calculate display value based on unit
+  const displayWeight = unit === "kg"
+    ? parseFloat(weight.toFixed(1))
+    : parseFloat((weight * 2.20462).toFixed(1));
+
   const min = unit === "kg" ? 40 : 90;
-  const max = unit === "kg" ? 120 : 265;
+  const max = unit === "kg" ? 180 : 397;
 
   // BMI calculation
   const bmi = weight && heightInMeters ? weight / (heightInMeters * heightInMeters) : 0;
@@ -92,7 +103,7 @@ const Weight = () => {
   // Tick marks
   const generateTicks = () => {
     const ticks = [];
-    const numTicks = 8;
+    const numTicks = 10;
     for (let i = 0; i < numTicks; i++) {
       const value = min + ((max - min) * i) / (numTicks - 1);
       ticks.push(unit === "kg" ? Math.round(value) : Math.round(value));
@@ -106,7 +117,7 @@ const Weight = () => {
       style={{
         height: "100vh",
         position: "relative",
-        background: "#00002e",
+        background: "linear-gradient(180deg, #00002e, #0a0a5a)",
         boxShadow: "0 0 20px 10px #3a1c71, 0 0 30px 10px #0e2483ff inset",
         padding: "1.5rem",
         display: "flex",
@@ -144,11 +155,11 @@ const Weight = () => {
       </div>
 
       {/* Unit Toggle */}
+     
       <div
         style={{
           display: "flex",
           justifyContent: "center",
-          marginBottom: "-2rem",
           background: "#17188baf",
           borderRadius: "9999px",
           padding: "0.25rem",
@@ -156,7 +167,7 @@ const Weight = () => {
         }}
       >
         <button
-          onClick={() => setUnit("kg")}
+          onClick={() => handleUnitChange("kg")}
           style={{
             flex: 1,
             padding: "0.75rem 1rem",
@@ -166,12 +177,13 @@ const Weight = () => {
             fontWeight: "600",
             border: "none",
             cursor: "pointer",
+            transition: "all 0.2s",
           }}
         >
           kg
         </button>
         <button
-          onClick={() => setUnit("lbs")}
+          onClick={() => handleUnitChange("lbs")}
           style={{
             flex: 1,
             padding: "0.75rem 1rem",
@@ -181,6 +193,7 @@ const Weight = () => {
             fontWeight: "600",
             border: "none",
             cursor: "pointer",
+            transition: "all 0.2s",
           }}
         >
           lbs
@@ -200,9 +213,29 @@ const Weight = () => {
           color: "#fff",
         }}
       >
-        <div style={{ fontSize: "3rem", fontWeight: "300", marginBottom: "1rem" }}>
-          {displayWeight}{" "}
+        <div style={{ display: "flex", alignItems: "baseline", gap: "0.5rem", fontSize: "3rem", fontWeight: "300", marginBottom: "1rem" }}>
+          <input
+            type="number"
+            value={weight > 0 ? displayWeight : ""}
+            onChange={handleTextInputChange}
+            className="weight-input"
+            style={{
+              background: "transparent",
+              border: "none",
+              color: "white",
+              textAlign: "left",
+              width: `${(displayWeight.toString().length || 1) * 0.6}em`,
+              fontSize: "2.5rem",
+              fontWeight: 300,
+              outline: "none",
+            }}
+          />
           <span style={{ fontSize: "1.5rem", color: "#aaa" }}>{unit}</span>
+          <style>{`
+            .weight-input::-webkit-outer-spin-button,
+            .weight-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+            .weight-input { -moz-appearance: textfield; }
+          `}</style>
         </div>
 
         <input
@@ -210,27 +243,27 @@ const Weight = () => {
           min={min}
           max={max}
           step={0.1}
-          value={displayWeight}
-          onChange={handleWeightChange}
+          value={unit === 'kg' ? Math.max(min, Math.min(max, displayWeight)) : Math.max(min, Math.min(485, displayWeight))}
+          onChange={handleSliderChange}
           style={{
-            width: "100%",
-            maxWidth: "400px",
+            width: "90%",
+            maxWidth: "430px",
             height: "8px",
             borderRadius: "4px",
-            background: "#17188baf",
+            background: "linear-gradient(90deg, #4f46e5, #06b6d4)",
             appearance: "none",
             outline: "none",
             cursor: "pointer",
+            boxShadow: "0 0 8px #06b6d4",
           }}
         />
 
-        {/* Tick Marks */}
         <div
           style={{
             display: "flex",
             justifyContent: "space-between",
             width: "100%",
-            maxWidth: "400px",
+            maxWidth: "440px",
             marginTop: "0.5rem",
             fontSize: "0.9rem",
             color: "#aaa",
@@ -272,19 +305,19 @@ const Weight = () => {
         >
           {formattedBMI}
         </div>
-        <div style={{ textAlign: "center", fontSize: "0.9rem", color: "#555" }}>
+        <div style={{ textAlign: "center", fontSize: "0.9rem", color: "#424141ff" }}>
           {bmiMessage}
         </div>
         <div
           style={{
             textAlign: "center",
-            fontSize: "0.7rem",
+            fontSize: "0.8rem",
             color: "#484848ff",
             marginTop: "0.5rem",
           }}
         >
           Based on: {weight.toFixed(1)}kg, {heightInMeters.toFixed(2)}m
-          {originalHeight && ` (${originalHeight}${originalHeightUnit})`}
+          {originalHeight && ` (${Math.round(originalHeight)}${originalHeightUnit})`}
         </div>
       </div>
 
@@ -303,6 +336,15 @@ const Weight = () => {
             background: "#02013b",
             color: "#fff",
             cursor: "pointer",
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.background =
+              "linear-gradient(90deg, #1e3a8a, #06b6d4)";
+            e.currentTarget.style.boxShadow = "0 0 12px #06b6d4";
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.background = "#02013b";
+            e.currentTarget.style.boxShadow = "none";
           }}
         >
           Next <MoveRight />

@@ -18,6 +18,9 @@ import Weight from './pages/Weight';
 import GoalWeight from './pages/GoalWeight';
 import Age from './pages/Age';
 import Height from './pages/Height';
+import Exercises from './pages/Exercises';
+import Progress from './pages/Progress';
+import Profile from './pages/Profile';
 
 const App = () => {
   const { isSignedIn } = useAuth(); // Check if the user is signed in
@@ -42,6 +45,9 @@ const App = () => {
           <Route path="/weight" element={<Weight/>} />
           <Route path="/goal-weight" element={<GoalWeight/>} />
           <Route path="/age" element={<Age/>} />
+          <Route path="/exercises" element={<Exercises/>} />
+          <Route path='/progress' element={<Progress/>}/>
+          <Route path='/profile' element={<Profile/>}/>
           <Route path="*" element={<h1>404 Not Found</h1>} />
         </Routes>
       </Router>

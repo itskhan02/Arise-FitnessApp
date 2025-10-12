@@ -2,6 +2,7 @@ import { CircleAlert } from "lucide-react";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BiUserCircle } from 'react-icons/bi';
+import IMG from '/public/dagger.png';
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -28,9 +29,11 @@ const Landing = () => {
           flexDirection: "column",
           gap: "2rem",
           margin: "4px",
-          background:
-            "linear-gradient(90deg, #050a29ff 0%, #08113eff 40%, #1c0d37ff 150%)",
-          boxShadow: "0 0 40px 20px #3a1c71, 0 0 80px 20px #0e2483ff ",
+          // background:
+          //   "linear-gradient(90deg, #050a29ff 0%, #08113eff 40%, #1c0d37ff 150%)",
+          // boxShadow: "0 0 40px 20px #3a1c71, 0 0 80px 20px #0e2483ff ",
+          background: "linear-gradient(180deg, #00002e, #0a0a5a)",
+          boxShadow: "0 0 20px 10px #3a1c71, 0 0 30px 10px #0e2483ff inset",
           borderRadius: ".5rem",
           position: "relative",
           overflow: "hidden",
@@ -59,13 +62,13 @@ const Landing = () => {
         Login
         </button>
         <div
-          className="qoute"
-          style={{ textAlign: "center", alignItems: "center", color: "#fff" }}
+          className="qoute "
+          style={{ textAlign: "center", alignItems: "center", color: "#fff", margin: "1rem 0", padding: "0 1rem", fontFamily: "'Nunito', serif", lineHeight: "5rem" }}
         >
           <h2>Welcome to Arise System</h2>
           <h3>Your Training Arc Starts Here</h3>
           <p>
-            Push past limits. Grow stronger every day. Begin your journey now.
+            Push past your limits. Grow stronger every day. Begin your journey now.
           </p>
           <p>
             Join us to achieve your health and wellness goals with personalized
@@ -76,27 +79,14 @@ const Landing = () => {
           className="cssbuttons-io-button"
           onClick={() => setShowDialog(true)}
         >
-          Get started
           <div className="icon">
-            <svg
-              height="24"
-              width="24"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M0 0h24v24H0z" fill="none"></path>
-              <path
-                d="M16.172 11l-5.364-5.364 1.414-1.414L20 
-                12l-7.778 7.778-1.414-1.414L16.172 
-                13H4v-2z"
-                fill="currentColor"
-              ></path>
-            </svg>
+            <img src={IMG} alt="" style={{ height: "2rem", width: "7rem" }} />
           </div>
+          Get started
         </button>
       </div>
       {showDialog && (
-        <div
+        <div 
           style={{
             position: "fixed",
             top: 0,
@@ -111,6 +101,7 @@ const Landing = () => {
           }}
         >
           <div
+          className="dialog-box"
             style={{
               display: "flex",
               flexDirection: "column",

@@ -48,26 +48,26 @@ const Setup = () => {
           justifyContent: "center",
           alignItems: "center",
           flexDirection: "column",
-          gap: "2rem",
+          gap: "6rem",
           margin: "4px",
-          background:
-            "linear-gradient(90deg, #050a29ff 0%, #08113eff 40%, #1c0d37ff 150%)",
-          boxShadow: "0 0 40px 20px #3a1c71, 0 0 80px 20px #0e2483ff",
+          background: "linear-gradient(180deg, #00002e, #0a0a5a)",
+          boxShadow: "0 0 20px 10px #3a1c71, 0 0 30px 10px #0e2483ff inset",
           borderRadius: ".5rem",
           overflow: "hidden",
         }}
       >
-      <div
-        className="qoute"
-        style={{
-          textAlign: "center", 
-          alignItems: "center", 
-          color: "#fff",
-          // position: "relative",
-          // top: "-5rem",
+        <div
+          className="qoute"
+          style={{
+            textAlign: "center",
+            alignItems: "center",
+            color: "#fff",
+            // position: "relative",
+            // top: "-5rem",
           }}
-      ><p>Analyzing your data to create your personalized fitness plan...</p>
-      </div>
+        >
+          <p>Analyzing your data to create your personalized fitness plan...</p>
+        </div>
         <div
           className="loader"
           style={{
@@ -80,43 +80,77 @@ const Setup = () => {
             width: "80%",
           }}
         >
-          {/* Progress Bar */}
           <div
+            className="progress-container"
             style={{
-              width: "60%",
-              height: "2rem",
-              background: "#3a3a3a",
-              borderRadius: "5px",
-              overflow: "hidden",
               position: "relative",
+              width: "100%",
+              marginBottom: "1rem",
             }}
           >
+            {/* Loader Avatar */}
             <div
+              className="avatar"
               style={{
-                width: `${progress}%`,
-                height: "100%",
-                background: "linear-gradient(90deg, #8adca6ff, #0bdcf8ff)",
-                transition: "width 0.3s ease",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "#fff",
-                fontWeight: "bold",
-                fontSize: "0.8rem",
-                position: "relative",
+                width: "6rem",
+                height: "4rem",
+                position: "absolute",
+                bottom: "1.9rem", // Position it above the progress bar
+                left: `calc(${progress}% )`, // Center the avatar on the progress head
+                transform: "translateX(-50%)",
+                transition: "left 0.3s ease",
+                zIndex: 2,
               }}
             >
-              {progress}%
+              <img
+                src="jinwoo.png"
+                alt="Avatar"
+                style={{ width: "100%", objectFit: "cover" }}
+              />
+            </div>
+            {/* Progress Bar */}
+            <div
+              className="progress-bar"
+              style={{
+                height: "2rem",
+                background: "#3a3a3a",
+                borderRadius: "5px",
+                overflow: "hidden",
+                width: "100%",
+              }}
+            >
+              <div
+                style={{
+                  width: `${progress}%`,
+                  height: "100%",
+                  background: "linear-gradient(90deg, #8adca6ff, #0bdcf8ff)",
+                  transition: "width 0.3s ease",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#fff",
+                  fontWeight: "bold",
+                  fontSize: "0.8rem",
+                  position: "relative",
+                }}
+              >
+                {progress}%
+              </div>
             </div>
           </div>
-                      <p style={{ textAlign: "center", marginBottom: "2rem", marginTop: "2rem" }}>
+          <p
+            style={{
+              textAlign: "center",
+              marginBottom: "2rem",
+              marginTop: "2rem",
+            }}
+          >
             {statusText}
           </p>
-
         </div>
       </div>
       {showPopup && (
-        <div
+        <div className="setup"
           style={{
             position: "fixed",
             top: "50%",
@@ -130,9 +164,9 @@ const Setup = () => {
             boxShadow: "0 0 20px rgba(0, 0, 0, 0.5)",
             zIndex: 1000,
             textAlign: "center",
-            fontSize: "1.2rem",
-            width: "28rem",
-            height: "18rem",
+            fontSize: "1.3rem",
+            // width: "28rem",
+            // height: "18rem",
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
@@ -146,11 +180,12 @@ const Setup = () => {
           <p>Please log in to continue.</p>
           <button
             style={{
-              marginTop: "1rem",
+              marginTop: "1.5rem",
               padding: "0.5rem 1rem",
               border: "1px solid #0bdcf8ff ",
               borderRadius: "3px",
               width: "6rem",
+              height: "3rem",
               background: "#02013b",
               color: "#fff",
               cursor: "pointer",

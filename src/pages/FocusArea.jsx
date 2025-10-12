@@ -59,7 +59,9 @@ const FocusArea = () => {
         height: "100vh",
         position: "relative",
         overflow: "hidden",
-        background: "#00002e",
+        // background: "#00002e",
+        // boxShadow: "0 0 20px 10px #3a1c71, 0 0 30px 10px #0e2483ff inset",
+        background: "linear-gradient(180deg, #00002e, #0a0a5a)",
         boxShadow: "0 0 20px 10px #3a1c71, 0 0 30px 10px #0e2483ff inset",
         padding: 0,
       }}
@@ -132,22 +134,23 @@ const FocusArea = () => {
         >
           {bodyParts.map((part) => (
             <div
+              className="focus-item"
               key={part.id}
               onClick={() => toggleSelection(part.id)}
               style={{
                 display: "flex",
                 flexDirection: "row",
                 alignItems: "center",
-                justifyContent: "space-around",
-                gap: "6rem",
+                justifyContent: "space-between",
+                
                 fontSize: "1.2rem",
                 width: "85%",
-                height: "5rem",
                 cursor: "pointer",
+                contain: "content",
                 textAlign: "center",
                 border: selected.includes(part.id) ? "1px solid #4caf50" : "1px solid #0505de",
                 borderRadius: "0.75rem",
-                padding: "1.2rem",
+                padding: "2rem",
                 background: selected.includes(part.id) ? "#16997681" : "#17188baf",
                 transition: "all 0.2s ease",
               }}
@@ -193,6 +196,15 @@ const FocusArea = () => {
           }}
           onClick={handleNext}
           disabled={selected.length === 0}
+          onMouseOver={(e) => {
+            e.currentTarget.style.background =
+              "linear-gradient(90deg, #1e3a8a, #06b6d4)";
+            e.currentTarget.style.boxShadow = "0 0 12px #06b6d4";
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.background = "#02013b";
+            e.currentTarget.style.boxShadow = "none";
+          }}
         >
           Next <MoveRight />
         </button>
