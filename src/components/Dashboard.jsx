@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   useUser,
   SignedIn,
@@ -10,6 +10,10 @@ import { Home, User2 } from "lucide-react";
 import { BsBarChart } from "react-icons/bs";
 import { CgGym } from "react-icons/cg";
 import { useLocation, useNavigate } from "react-router-dom";
+import DailyStreakTracker from "./DailyStreakTracker";
+import WorkoutDay from "./WorkoutDay";
+import Quest from "./Quest";
+import Calories from "./Calories";
 
 const navItems = [
   { icon: Home, label: "Home", path: "/home" },
@@ -23,10 +27,35 @@ const Dashboard = () => {
   const location = useLocation();
   const { user } = useUser();
 
+  // load/save checked days for the streak tracker
+  const LOCAL_KEY = "streak-checked-days";
+  const [checkedDays, setCheckedDays] = useState([]);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(LOCAL_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) setCheckedDays(parsed);
+      }
+    } catch (e) {
+      console.warn("Failed to parse streak checked days from localStorage", e);
+    }
+  }, []);
+
+  const handleCheckedDaysChange = (newCheckedDays) => {
+    setCheckedDays(newCheckedDays);
+    try {
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(newCheckedDays));
+    } catch (e) {
+      console.warn("Failed to save streak checked days to localStorage", e);
+    }
+  };
+
   return (
     <div
       style={{
-        height: "100vh",
+        minHeight: "100vh",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -37,6 +66,7 @@ const Dashboard = () => {
         color: "#fff",
         fontSize: "1.5rem",
         position: "relative",
+        padding: "6rem 1rem 8rem 1rem",
       }}
     >
       {/* ------- SIGNED IN ------- */}
@@ -53,16 +83,17 @@ const Dashboard = () => {
         </div>
 
         {/* Dashboard  */}
-
-        <div style={{ textAlign: "center" }}>
-          <h1 style={{ fontWeight: "600", fontSize: "2rem" }}>
-            Welcome, {user?.firstName || "User"} 👋
-          </h1>
-          <p style={{ color: "#aaa", fontSize: "1rem", marginTop: "0.5rem" }}>
-            You’re logged in to your personalized dashboard.
-          </p>
+        <DailyStreakTracker
+          userName={user?.firstName}
+          initialCheckedDays={checkedDays}
+          onCheckedDaysChange={handleCheckedDaysChange}
+        />
+        <div >
+          <Calories/>
         </div>
-
+        <WorkoutDay />
+        <Quest />
+        
         {/* NAVIGATION */}
         <div
           style={{
@@ -103,6 +134,19 @@ const Dashboard = () => {
                     ? "0 0 15px rgba(11, 220, 248, 0.6)"
                     : "none",
                   transition: "all 0.3s ease",
+                }}
+                onMouseEnter={(e) => {
+                  if (!isActive) {
+                    e.target.style.transform = "scale(1.2)";
+                    e.target.style.boxShadow = "0 0 15px rgba(11, 220, 248, 0.6)";
+                    e.target.style.transition = "all 0.3s ease";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) {
+                    e.target.style.transform = "scale(1)";
+                    e.target.style.boxShadow = "none";
+                  }
                 }}
               >
                 <Icon

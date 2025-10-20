@@ -10,7 +10,7 @@ const Landing = () => {
 
   const handleAccept = () => {
     setShowDialog(false);
-    navigate("/gender"); // Navigate only after accepting
+    navigate("/gender");
   };
 
     const handleSkip = () => {

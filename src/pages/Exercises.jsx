@@ -9,6 +9,8 @@ import { Home, User2 } from "lucide-react";
 import { BsBarChart } from "react-icons/bs";
 import { CgGym } from "react-icons/cg";
 import { useLocation, useNavigate } from "react-router-dom";
+import Calories from "../components/Calories";
+
 
 const navItems = [
   { icon: Home, label: "Home", path: "/home" },
@@ -21,6 +23,14 @@ const Exercises = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useUser();
+
+  const userWeight = 72; // fetched from user profile
+  const todayExercises = [
+    { name: "Jumping Jacks", met: 8, time: 10 },
+    { name: "Plank", met: 5, time: 5 },
+    { name: "Cycling", met: 9, time: 20 },
+  ];
+
 
   return (
     <div
@@ -49,7 +59,12 @@ const Exercises = () => {
           <p style={{ color: "#aaa", fontSize: "1rem", marginTop: "0.5rem" }}>
             Exercise page coming soon.
           </p>
-        </div>
+        </div>  
+        <div>
+      <Calories exercises={todayExercises} userWeight={userWeight} />
+    </div>
+
+
 
         {/* NAVIGATION */}
         <div
@@ -92,6 +107,19 @@ const Exercises = () => {
                     : "none",
                   transition: "all 0.3s ease",
                 }}
+                onMouseEnter={(e) => {
+                  if (!isActive) {
+                    e.target.style.transform = "scale(1.2)";
+                    e.target.style.boxShadow = "0 0 15px rgba(11, 220, 248, 0.6)";
+                    e.target.style.transition = "all 0.3s ease";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) {
+                    e.target.style.transform = "scale(1)";
+                    e.target.style.boxShadow = "none";
+                  }
+                }}
               >
                 <Icon
                   size={28}
@@ -99,6 +127,7 @@ const Exercises = () => {
                   style={{ transition: "color 0.3s ease" }}
                 />
               </div>
+
             );
           })}
         </div>

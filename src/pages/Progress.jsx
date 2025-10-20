@@ -91,6 +91,19 @@ const Progress = () => {
                     : "none",
                   transition: "all 0.3s ease",
                 }}
+                onMouseEnter={(e) => {
+                  if (!isActive) {
+                    e.target.style.transform = "scale(1.2)";
+                    e.target.style.boxShadow = "0 0 15px rgba(11, 220, 248, 0.6)";
+                    e.target.style.transition = "all 0.3s ease";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) {
+                    e.target.style.transform = "scale(1)";
+                    e.target.style.boxShadow = "none";
+                  }
+                }}
               >
                 <Icon
                   size={28}
