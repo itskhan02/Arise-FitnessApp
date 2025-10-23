@@ -7,7 +7,7 @@ import Gender from './pages/Gender'; // <-- fix import path
 import Goal from './pages/Goal';
 import Equipment from './pages/Equipment';
 import Level from './pages/Level';
-import WorkoutDay from './pages/Schedule';
+import Schedule from './pages/Schedule';
 import Bodystats from './pages/Bodystats';
 import Setup from './pages/Setup';
 import Login from './components/Login';
@@ -23,7 +23,7 @@ import Progress from './pages/Progress';
 import Profile from './pages/Profile';
 
 const App = () => {
-  const { isSignedIn } = useAuth(); // Check if the user is signed in
+  const { isSignedIn } = useAuth(); 
 
   return (
     <>
@@ -36,7 +36,7 @@ const App = () => {
           <Route path="/equipment" element={<Equipment/>}/>
           <Route path='/level' element={<Level/>}/>
           <Route path='/bodystats' element={<Bodystats/>}/>
-          <Route path="/workout-day" element={<WorkoutDay/>} />
+          <Route path="/workout-day" element={<Schedule/>} />
           <Route path="/setup" element={<Setup/>} />
           <Route path="/login" element={<Login/>} />
           <Route path="/register" element={<Register/>} />

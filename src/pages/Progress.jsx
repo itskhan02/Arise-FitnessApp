@@ -4,6 +4,8 @@ import { Home,  User2, } from "lucide-react";
 import { BsBarChart} from 'react-icons/bs';
 import { CgGym } from 'react-icons/cg';
 import { useLocation, useNavigate } from "react-router-dom";
+import ProgressChart from '../components/ProgressChart';
+import StatChart from '../components/StatChart';
 
 const navItems = [
   { icon: Home, label: "Home", path: "/home" },
@@ -41,13 +43,31 @@ const Progress = () => {
       <SignedIn>
 
         {/* Progress  */}
-        <div style={{ textAlign: "center" }}>
-          <h1 style={{ fontWeight: "600", fontSize: "2rem" }}>
-            Welcome, {user?.firstName || "User"} 👋
-          </h1>
-          <p style={{ color: "#aaa", fontSize: "1rem", marginTop: "0.5rem" }}>
-            Progress page coming soon.
-          </p>
+        <div className="main-content-card"
+        style={{
+          width: "100%",
+        }}
+        >
+        <div  className="sub-content" style={{ width: "100%" }}>
+            
+            <ProgressChart />
+            <StatChart/>
+
+
+
+          <div className="cal"
+            style={{
+              width: "100%",
+              maxWidth: "1200px",
+              display: "flex",
+              gap: "2rem",
+              flexWrap: "wrap",
+              justifyContent: "center",
+            }}
+          >
+
+          </div>
+        </div>
         </div>
 
         {/* NAVIGATION */}

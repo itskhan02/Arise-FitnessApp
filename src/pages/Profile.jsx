@@ -4,6 +4,7 @@ import { Home, User2 } from "lucide-react";
 import { BsBarChart } from "react-icons/bs";
 import { CgGym } from "react-icons/cg";
 import { useLocation, useNavigate } from "react-router-dom";
+import UserLevel from "../components/UserLevel";
 
 const navItems = [
   { icon: Home, label: "Home", path: "/home" },
@@ -19,10 +20,10 @@ const Profile = () => {
 
   const [details, setDetails] = useState({
     fullName: "",
-    dob: "2000-01-01", // YYYY-MM-DD
+    dob: "2000-01-01", 
     age: 0,
-    height: 170, // cm
-    weight: 65, // kg
+    height: 170,
+    weight: 65,
     level: "Beginner",
     customImage: "",
     gender: "",
@@ -289,6 +290,8 @@ const Profile = () => {
             </p>
           )}
         </div>
+
+      <UserLevel />
 
         {/* PERSONAL DETAILS CARD */}
         <div

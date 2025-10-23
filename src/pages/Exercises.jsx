@@ -9,7 +9,6 @@ import { Home, User2 } from "lucide-react";
 import { BsBarChart } from "react-icons/bs";
 import { CgGym } from "react-icons/cg";
 import { useLocation, useNavigate } from "react-router-dom";
-import Calories from "../components/Calories";
 
 
 const navItems = [
@@ -60,9 +59,7 @@ const Exercises = () => {
             Exercise page coming soon.
           </p>
         </div>  
-        <div>
-      <Calories exercises={todayExercises} userWeight={userWeight} />
-    </div>
+
 
 
 
