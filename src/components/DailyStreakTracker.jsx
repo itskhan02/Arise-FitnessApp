@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Check } from "lucide-react";
 import { motion } from "framer-motion";
+import { HiMiniFire } from 'react-icons/hi2';
+import { PiHandWavingFill } from 'react-icons/pi';
 
 const fmt = (d) => d.toISOString().slice(0, 10);
 
@@ -237,7 +239,7 @@ const DailyStreakTracker = ({
           <div style={{ fontSize: "0.8rem", color: "#9aa6bf" }}>Stay consistent and achieve your goals!</div>
         </div>
         <motion.div style={{ textAlign: "right" }} whileHover={{ scale: 1.05 }}>
-          <div style={{ fontSize: "1.5rem", fontWeight: 900 }}>{currentStreak} 🔥</div>
+          <div style={{ fontSize: "1.6rem", fontWeight: 900, display: "flex", alignItems: "center", gap: 5 }}>{currentStreak} <HiMiniFire size={26} color="rgb(220, 143, 65)"/></div>
           <div style={{ fontSize: "0.75rem", color: "#9aa6bf" }}>Current Streak</div>
         </motion.div>
       </div>

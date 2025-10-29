@@ -9,6 +9,7 @@ import { Home, User2 } from "lucide-react";
 import { BsBarChart } from "react-icons/bs";
 import { CgGym } from "react-icons/cg";
 import { useLocation, useNavigate } from "react-router-dom";
+import ExerciseList from "../components/ExerciseList";
 
 
 const navItems = [
@@ -34,7 +35,7 @@ const Exercises = () => {
   return (
     <div
       style={{
-        height: "100vh",
+        height: "auto",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -55,9 +56,11 @@ const Exercises = () => {
           <h1 style={{ fontWeight: "600", fontSize: "2rem" }}>
             Welcome, {user?.firstName || "User"} 👋
           </h1>
-          <p style={{ color: "#aaa", fontSize: "1rem", marginTop: "0.5rem" }}>
+          {/* <p style={{ color: "#aaa", fontSize: "1rem", marginTop: "0.5rem" }}>
             Exercise page coming soon.
-          </p>
+          </p> */}
+
+          <ExerciseList />
         </div>  
 
 
