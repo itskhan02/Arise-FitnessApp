@@ -177,13 +177,13 @@ const WaterIntake = () => {
           maxWidth: 500,
           margin: "0",
           background:
-          "linear-gradient(145deg, rgba(15,23,42,0.95), rgba(3,7,18,0.95))",
-        borderRadius: 20,
-        padding: "1rem",
-        color: "#fff",
-        boxShadow: "0 12px 35px rgba(0,0,0,0.4)",
-        border: "1px solid rgba(255,255,255,0.05)",
-        backdropFilter: "blur(12px)",
+            "linear-gradient(145deg, rgba(15,23,42,0.95), rgba(3,7,18,0.95))",
+          borderRadius: 20,
+          padding: "1rem",
+          color: "#fff",
+          boxShadow: "0 12px 35px rgba(0,0,0,0.4)",
+          border: "1px solid rgba(255,255,255,0.05)",
+          backdropFilter: "blur(12px)",
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
@@ -193,35 +193,35 @@ const WaterIntake = () => {
       >
         {/* Top number + progress */}
         <div style={{ textAlign: "center", padding: "6px 8px" }}>
-        <div
-          style={{
-            fontSize: "2rem",
-            fontWeight: 800,
-            color: "#2563eb",
-            lineHeight: 1,
-          }}
-        >
-          {totalIntake}
-        </div>
-        <div style={{ marginTop: 6, color: "#475569", fontSize: 13 }}>
-          <span style={{ fontWeight: 700, marginRight: 8 }}>
-            {Math.round(progress)}% completed
-          </span>
-          Goal {goal} ml
-        </div>
+          <div
+            style={{
+              fontSize: "2rem",
+              fontWeight: 800,
+              color: "#2563eb",
+              lineHeight: 1,
+            }}
+          >
+            {totalIntake}
+          </div>
+          <div style={{ marginTop: 6, color: "#475569", fontSize: 13 }}>
+            <span style={{ fontWeight: 700, marginRight: 8 }}>
+              {Math.round(progress)}% completed
+            </span>
+            Goal {goal} ml
+          </div>
         </div>
 
         {/* droplets row */}
         <div
-        style={{
-          display: "flex",
-          justifyContent: "space-around",
-          alignItems: "flex-start",
-          marginTop: "0.7rem",
-          marginBottom: "1rem",
-          width: "160px",
-        }}
-      >
+          style={{
+            display: "flex",
+            justifyContent: "space-around",
+            alignItems: "flex-start",
+            marginTop: "0.7rem",
+            marginBottom: "1rem",
+            width: "160px",
+          }}
+        >
           {presets.map((p) => (
             <Droplet key={p} value={p} />
           ))}
@@ -229,28 +229,37 @@ const WaterIntake = () => {
 
         {/* Record Drink button */}
         <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          marginBottom: "0.5rem",
-        }}
-      >
-        <button
-          onClick={recordCustom}
           style={{
-            background: "linear-gradient(90deg,#3b82f6,#06b6d4)",
-            color: "#fff",
-            padding: "0.5rem 0.8rem",
-            borderRadius: 999,
-            border: "none",
-            fontWeight: 800,
-            fontSize: "1rem",
-            boxShadow: "0 10px 30px rgba(59,130,246,0.18)",
-            cursor: "pointer",
+            display: "flex",
+            justifyContent: "center",
+            marginBottom: "0.5rem",
           }}
         >
-          Record
-        </button>
+          <button
+            onClick={recordCustom}
+            style={{
+              padding: "0.5rem 0.8rem",
+              borderRadius: "0.8rem",
+              border: "none",
+              fontWeight: 800,
+              fontSize: "1rem",
+              border: "1px solid #0bdcf8ff ",
+              background: "#02013b",
+              color: "#fff",
+              cursor: "pointer",
+            }}
+            onMouseOver={(e) => {
+            e.currentTarget.style.background =
+              "linear-gradient(90deg, #1e3a8a, #06b6d4)";
+            e.currentTarget.style.boxShadow = "0 0 12px #06b6d4";
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.background = "#02013b";
+            e.currentTarget.style.boxShadow = "none";
+          }}
+          >
+            Record
+          </button>
         </div>
       </div>
       {/* Custom Amount Popup */}
@@ -344,17 +353,19 @@ const WaterIntake = () => {
                     transition: "background 0.2s",
                   }}
                   onMouseEnter={(e) =>
-                    (e.currentTarget.style.background = "rgba(59, 130, 246, 0.2)")
+                    (e.currentTarget.style.background =
+                      "rgba(59, 130, 246, 0.2)")
                   }
                   onMouseLeave={(e) =>
-                    (e.currentTarget.style.background = "rgba(59, 130, 246, 0.1)")
+                    (e.currentTarget.style.background =
+                      "rgba(59, 130, 246, 0.1)")
                   }
                 >
                   <GlassWater size={24} color="#3b82f6" />
                   <span style={{ fontWeight: 700, fontSize: "1rem" }}>
-                    {amount} <span style={{ fontSize: "0.7rem", opacity: 0.7 }}>ml</span>
+                    {amount}{" "}
+                    <span style={{ fontSize: "0.7rem", opacity: 0.7 }}>ml</span>
                   </span>
-                  
                 </button>
               ))}
             </div>

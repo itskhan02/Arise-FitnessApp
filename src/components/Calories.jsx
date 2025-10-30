@@ -38,7 +38,7 @@ const Calories = ({ exercises, userWeight = 70 }) => {
         backdropFilter: "blur(12px)",
         lineHeight: "2",
         }}>
-      <h5 style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "0.5rem" }}>
+      <h5 style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "0.5rem", color: "#4178f0ff", fontWeight: "600", fontSize: "1.4rem" }}>
         Calories Burned <HiMiniFire size={26} color="rgb(220, 143, 65)"/>{" "}
       </h5>
       <span style={{ display: "flex", justifyContent: "center", alignItems: "center", color: "#f56a37ff" }}>{totalCalories} kcal</span>

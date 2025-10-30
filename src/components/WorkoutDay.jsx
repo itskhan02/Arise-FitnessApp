@@ -51,7 +51,7 @@ const WorkoutDay = () => {
       }}
     >
       <h3 style={{ 
-                color: "#775acdff",
+                color: "#4178f0ff",
                 fontWeight: "600",
                 fontSize: "1.4rem", 
                 }}
@@ -74,16 +74,26 @@ const WorkoutDay = () => {
         <button
           onClick={handleStartWorkout}
           style={{
-            background:
-              "linear-gradient(90deg, rgba(99,102,241,1), rgba(168,85,247,1))",
-            color: "#fff",
             border: "none",
-            padding: "0.6rem 1.2rem",
+            padding: "0.5rem 1rem",
             borderRadius: "10px",
             fontSize: "1.1rem",
             fontWeight: "600",
+            border: "1px solid #0bdcf8ff ",
+            background: "#02013b",
+            color: "#fff",
+            cursor: "pointer",
             cursor: "pointer",
             transition: "all 0.3s ease",
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.background =
+              "linear-gradient(90deg, #1e3a8a, #06b6d4)";
+            e.currentTarget.style.boxShadow = "0 0 12px #06b6d4";
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.background = "#02013b";
+            e.currentTarget.style.boxShadow = "none";
           }}
         >
           Start

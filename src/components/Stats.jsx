@@ -1,35 +1,34 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import StatChart from "./StatChart";
 
 const USER_PROGRESS_KEY = "user_progress_history";
 
 const Stats = () => {
-  const [userStats, setUserStats] = useState([]);
+  const [stats, setStats] = useState({
+    strength: 0,
+    stamina: 0,
+    agility: 0,
+    endurance: 0,
+    mobility: 0,
+  });
+
+  const loadStats = () => {
+    const data = JSON.parse(localStorage.getItem(USER_PROGRESS_KEY) || "{}");
+    const dates = Object.keys(data).sort();
+    if (dates.length > 0) {
+      const latest = data[dates[dates.length - 1]];
+      if (latest?.stats) setStats(latest.stats);
+    }
+  };
 
   useEffect(() => {
-    const progressHistoryRaw = localStorage.getItem(USER_PROGRESS_KEY);
-    if (progressHistoryRaw) {
-      const progressHistory = JSON.parse(progressHistoryRaw);
-      const allDates = Object.keys(progressHistory).sort();
-      if (allDates.length > 0) {
-        const latestDate = allDates[allDates.length - 1];
-        const latestStats = progressHistory[latestDate].stats;
-
-        const chartData = [
-          { stat: "Strength", value: latestStats.strength || 0 },
-          { stat: "Stamina", value: latestStats.stamina || 0 },
-          { stat: "Agility", value: latestStats.agility || 0 },
-          { stat: "Endurance", value: latestStats.endurance || 0 }, 
-          { stat: "Mobility", value: latestStats.mobility || 0 }, 
-        ];
-        setUserStats(chartData);
-      }
-    }
+    loadStats();
+    const updateHandler = () => loadStats();
+    window.addEventListener("userExpUpdated", updateHandler);
+    return () => window.removeEventListener("userExpUpdated", updateHandler);
   }, []);
 
-  return (
-    <StatChart stats={userStats} />
-  );
+  return <StatChart stats={stats} />;
 };
 
 export default Stats;

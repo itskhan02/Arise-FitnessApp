@@ -35,9 +35,9 @@ const Exercises = () => {
   return (
     <div
       style={{
-        height: "auto",
+        height: "100vh",
         display: "flex",
-        justifyContent: "center",
+        justifyContent: "flex-start",
         alignItems: "center",
         flexDirection: "column",
         gap: "2rem",
@@ -52,7 +52,7 @@ const Exercises = () => {
       <SignedIn>
 
         {/* Exercises Content */}
-        <div style={{ textAlign: "center" }}>
+        <div style={{ textAlign: "center", marginTop: "1.3rem", height: "96vh" }}>
           <h1 style={{ fontWeight: "600", fontSize: "2rem" }}>
             Welcome, {user?.firstName || "User"} 👋
           </h1>

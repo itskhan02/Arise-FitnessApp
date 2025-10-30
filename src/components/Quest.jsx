@@ -9,8 +9,9 @@ import {
 } from "react-icons/fa";
 
 const QUEST_HISTORY_KEY = "quest_history";
+const USER_PROGRESS_KEY = "user_progress_history";
 
-const DailyQuestSession = () => {
+const DailyQuest = () => {
   const exercises = [
     "Push-ups",
     "Pull-ups",
@@ -44,7 +45,13 @@ const DailyQuestSession = () => {
   const [quests, setQuests] = useState([]);
   const [exp, setExp] = useState(0);
   const [level, setLevel] = useState(1);
-  const [stats, setStats] = useState({ strength: 0, stamina: 0, agility: 0 });
+  const [stats, setStats] = useState({
+    strength: 0,
+    stamina: 0,
+    agility: 0,
+    endurance: 0,
+    mobility: 0,
+  });
   const [chestOpened, setChestOpened] = useState(false);
   const [timer, setTimer] = useState(null);
   const [activeQuest, setActiveQuest] = useState(null);
@@ -66,7 +73,6 @@ const DailyQuestSession = () => {
     if (!history[today]) {
       history[today] = [];
     }
-    // Avoid duplicates for the same day
     if (!history[today].includes(questName)) {
       history[today].push(questName);
     }
@@ -74,6 +80,29 @@ const DailyQuestSession = () => {
   };
 
   useEffect(() => {
+
+    const progressHistoryRaw = localStorage.getItem(USER_PROGRESS_KEY);
+    if (progressHistoryRaw) {
+      const progressHistory = JSON.parse(progressHistoryRaw);
+      const allDates = Object.keys(progressHistory).sort();
+      if (allDates.length > 0) {
+        const latestDate = allDates[allDates.length - 1];
+        const latestProgress = progressHistory[latestDate];
+        if (latestProgress) {
+          setLevel(latestProgress.level || 1);
+          setExp(latestProgress.exp || 0);
+          setStats(
+            latestProgress.stats || {
+              strength: 0,
+              stamina: 0,
+              agility: 0,
+              endurance: 0,
+              mobility: 0,
+            },
+          );
+        }
+      }
+    }
     setQuests(getRandomQuests());
   }, []);
 
@@ -93,10 +122,56 @@ const DailyQuestSession = () => {
     }
   }, [timer, activeQuest]);
 
-  // Load quests once on mount
+  const saveProgress = (newLevel, newExp, newStats) => {
+    const today = new Date().toISOString().slice(0, 10);
+    const progressHistory =
+      JSON.parse(localStorage.getItem(USER_PROGRESS_KEY)) || {};
+
+    const existingProgress = progressHistory[today] || {
+      level: level,
+      exp: exp,
+      stats: stats || {
+        strength: 0,
+        stamina: 0,
+        agility: 0,
+        endurance: 0,
+        mobility: 0,
+      },
+    };
+
+    const updatedExp = existingProgress.exp + newExp;
+    const updatedStats = { ...existingProgress.stats };
+
+    for (const key of Object.keys(newStats)) {
+      updatedStats[key] = (updatedStats[key] || 0) + (newStats[key] || 0);
+    }
+
+    let currentLevel = existingProgress.level;
+    let expForNextLevel = Math.floor(1000 * Math.pow(1.1, currentLevel - 1));
+    let remainingExp = updatedExp;
+
+    while (remainingExp >= expForNextLevel) {
+      remainingExp -= expForNextLevel;
+      currentLevel++;
+      expForNextLevel = Math.floor(1000 * Math.pow(1.1, currentLevel - 1));
+    }
+
+    progressHistory[today] = {
+      level: currentLevel,
+      exp: remainingExp,
+      stats: updatedStats,
+    };
+
+    localStorage.setItem(USER_PROGRESS_KEY, JSON.stringify(progressHistory));
+    window.dispatchEvent(new CustomEvent("userExpUpdated"));
+  };
+
   useEffect(() => {
-    setQuests(getRandomQuests());
-  }, []);
+    // Only save if it's not the initial state
+    if (level > 1 || exp > 0 || Object.values(stats).some(s => s > 0)) {
+      saveProgress(level, exp, stats);
+    }
+  }, [level, exp, stats]);
 
   const startQuest = (index) => {
     if (activeQuest !== null) {
@@ -128,30 +203,41 @@ const DailyQuestSession = () => {
     }
   };
 
-  const openChest = () => {
-    if (chestOpened) {
-      setPopup("warning");
-      return;
-    }
+const openChest = () => {
+  console.log("Chest clicked", { chestOpened, quests });
 
-    const allCompleted =
-      quests.length > 0 && quests.every((q) => q.completed && !q.failed);
-    if (!allCompleted) {
-      setPopup("warning");
-      return;
-    }
+  if (chestOpened) {
+    setPopup("warning");
+    pushToast("Chest already opened today!");
+    return;
+  }
+
+  const allCompleted =
+    quests.length > 0 && quests.every((q) => q.completed && !q.failed);
+  if (!allCompleted) {
+    setPopup("warning");
+    return;
+  }
 
     const totalExp = quests.reduce((s, q) => s + q.exp, 0);
     const newExp = exp + totalExp;
     const statKeys = Object.keys(stats);
-    const randomStat = statKeys[Math.floor(Math.random() * statKeys.length)];
-    setStats((s) => ({ ...s, [randomStat]: s[randomStat] + 1 }));
+    const randomStatKey = statKeys[Math.floor(Math.random() * statKeys.length)];
+    const newStats = { ...stats, [randomStatKey]: stats[randomStatKey] + 1 };
+    const getExpForLevel = (level) => Math.floor(1000 * Math.pow(1.1, level - 1));
 
-    if (newExp >= level * 100) {
-      setLevel((l) => l + 1);
-      setExp(newExp - level * 100);
-    } else setExp(newExp);
+    let newLevel = level;
+    let remainingExp = newExp;
+    let expToNext = getExpForLevel(newLevel);
+    while (remainingExp >= expToNext) {
+      remainingExp -= expToNext;
+      newLevel++;
+      expToNext = getExpForLevel(newLevel);
+    }
 
+    setStats(newStats);
+    setLevel(newLevel);
+    setExp(remainingExp);
     setChestOpened(true);
     setPopup("reward");
     pushToast("Chest opened — rewards claimed!");
@@ -207,16 +293,15 @@ const DailyQuestSession = () => {
       copy[activeQuest] = q;
       return copy;
     });
-    const gained = quests[activeQuest].exp;
-    const newExp = localExp + gained;
-    setLocalExp(newExp);
-    onExpChange(newExp, localLevel, localStats); // Update parent state
+    const gainedExp = quests[activeQuest].exp;
+    setExp((prevExp) => prevExp + gainedExp);
     addQuestToHistory(quests[activeQuest].name);
     setActiveQuest(null);
     setActiveStartDuration(null);
     setTimer(null);
     setIsPlankReady(false);
     pushToast("Plank finished! Rewards applied.");
+  
   };
 
   return (
@@ -227,7 +312,7 @@ const DailyQuestSession = () => {
         margin: "0 ",
         minHeight: 400,
         background:
-          "linear-gradient(145deg, rgba(15,23,42,0.95), rgba(3,7,18,0.95))",
+          "linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(3, 7, 18, 0.95))",
         borderRadius: 20,
         padding: "1rem 1.3rem",
         color: "#fff",
@@ -266,7 +351,7 @@ const DailyQuestSession = () => {
               alignItems: "center",
               gap: 8,
               fontWeight: 800,
-              color: "#775acdff",
+              color: "#4178f0ff",
               fontSize: 22,
             }}
           >
@@ -305,8 +390,10 @@ const DailyQuestSession = () => {
               }}
             >
               <div>
-                <div style={{ fontSize: "1.3rem", fontWeight: 500 }}>{q.name}</div>
-                <div style={{fontSize: "0.9rem", color: "#94a3b8" }}>
+                <div style={{ fontSize: "1.3rem", fontWeight: 500 }}>
+                  {q.name}
+                </div>
+                <div style={{ fontSize: "0.9rem", color: "#94a3b8" }}>
                   {q.name === "Plank" ? `${q.duration}s` : `${q.duration} reps`}
                 </div>
               </div>
@@ -335,16 +422,25 @@ const DailyQuestSession = () => {
                     onClick={() => startQuest(i)}
                     disabled={!!activeQuest}
                     style={{
-                      background: !!activeQuest
-                        ? "rgba(148,163,184,0.12)"
-                        : "linear-gradient(90deg, rgba(99,102,241,1), rgba(168,85,247,1))",
+                      // background: !!activeQuest
+                      //   ? "rgba(148,163,184,0.12)"
+                      //   : "linear-gradient(90deg, rgba(99,102,241,1), rgba(168,85,247,1))",
                       color: !!activeQuest ? "#93a3b8" : "#ffffffff",
-                      padding: "6px 12px",
+                      padding: "0.4rem 1rem",
+                      border: "1px solid #0bdcf8ff ",
                       borderRadius: 10,
-                      border: "none",
                       fontSize: "1.3rem",
                       fontWeight: 600,
                       cursor: !!activeQuest ? "not-allowed" : "pointer",
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.background =
+                        "linear-gradient(90deg, #1e3a8a, #06b6d4)";
+                      e.currentTarget.style.boxShadow = "0 0 12px #06b6d4";
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.background = "#02013b";
+                      e.currentTarget.style.boxShadow = "none";
                     }}
                   >
                     {q.name === "Plank" && q.started
@@ -368,7 +464,9 @@ const DailyQuestSession = () => {
             borderRadius: 12,
             fontWeight: 700,
             fontSize: "1.5rem",
-            background: chestOpened ? "#374151" : "linear-gradient(90deg, #93a8e2ff, #06b6d4)",
+            background: chestOpened
+              ? "#374151"
+              : "linear-gradient(90deg, #93a8e2ff, #06b6d4)",
             color: chestOpened ? "#9ca3af" : "#001f14",
             border: "none",
             cursor: "pointer",
@@ -378,8 +476,7 @@ const DailyQuestSession = () => {
             gap: 10,
           }}
         >
-          <GiChest size={26} />{" "}
-          {chestOpened ? "Chest Opened!" : "Open Chest"}
+          <GiChest size={26} /> {chestOpened ? "Chest Opened!" : "Open Chest"}
         </button>
       </motion.div>
 
@@ -627,7 +724,7 @@ const DailyQuestSession = () => {
   );
 };
 
-export default DailyQuestSession;
+export default DailyQuest;
 
 
 
@@ -1207,5 +1304,3 @@ export default DailyQuestSession;
 // };
 
 // export default DailyQuest; 
-
-

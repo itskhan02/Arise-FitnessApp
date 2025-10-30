@@ -109,10 +109,11 @@ const Profile = () => {
           "linear-gradient(90deg, #050a29ff 0%, #08113eff 40%, #1c0d37ff 150%)",
         color: "#fff",
         fontSize: "1.2rem",
+        paddingTop: "13rem",
         position: "relative",
         overflowY: "auto",
         overflowX: "hidden",
-        padding: "2rem",
+        padding: "8rem",
       }}
     >
       <SignedIn>
@@ -360,7 +361,7 @@ const Profile = () => {
             ))}
           </div>
           <style>{`
-            input[type="date"]::-webkit-calendar-picker-indicator {
+            input[type="date"]::-webkit-calendar-picker-indicator {npm ru
               filter: invert(1);              
               font-size: 1.2rem;
               cursor: pointer;

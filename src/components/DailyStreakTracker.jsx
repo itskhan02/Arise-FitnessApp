@@ -232,7 +232,7 @@ const DailyStreakTracker = ({
       <div style={titleRow}>
         <div>
           {userName && (
-            <div style={{ fontSize: "1.3rem", fontWeight: 600, color: "#6b98f8ff", marginBottom: "0.5rem" }}>
+            <div style={{ fontSize: "1.3rem", fontWeight: 600, color: "#4178f0ff", marginBottom: "0.5rem" }}>
               Hi, {userName} 👋
             </div>
           )}
@@ -263,7 +263,7 @@ const DailyStreakTracker = ({
             whileHover={!completedSet.has(today) && new Date(today).getDay() !== 0 ? { scale: 1.05 } : {}}
             whileTap={!completedSet.has(today) && new Date(today).getDay() !== 0 ? { scale: 0.95 } : {}}
             style={{
-              background: completedSet.has(today) || new Date(today).getDay() === 0 ? "linear-gradient(90deg,#059669,#10b981)" : "linear-gradient(90deg,#6366f1,#06b6d4)",
+              background: completedSet.has(today) || new Date(today).getDay() === 0 ? "linear-gradient(90deg,#059669,#10b981)" : "#02013b",
               color: "#fff",
               padding: "0.75rem 0.8rem",
               borderRadius: 12,
@@ -274,10 +274,19 @@ const DailyStreakTracker = ({
               alignItems: "center",
               gap: 8,
               fontSize: "1rem",
+              borderRadius: "0.5rem",
+              border: "1px solid #0bdcf8ff ",
+              // background: "#02013b",
+              color: "#fff",
+              cursor: "pointer",
               fontWeight: 800,
               cursor: completedSet.has(today) || new Date(today).getDay() === 0 ? "not-allowed" : "pointer",
               boxShadow: completedSet.has(today) || new Date(today).getDay() === 0 ? "0 0 12px rgba(16,185,129,0.5)" : "0 4px 12px rgba(99,102,241,0.4)",
             }}
+            onMouseOver={(e) => {
+            e.currentTarget.style.background = completedSet.has(today) || new Date(today).getDay() === 0 ? "linear-gradient(90deg,#059669,#10b981)" : "#02013b";
+            e.currentTarget.style.boxShadow = "0 0 12px #06b6d4";
+          }}
           >
             <Check size={16} /> {new Date(today).getDay() === 0 ? "Rest" : completedSet.has(today) ? "Checked In" : "Check In"}
           </motion.button>

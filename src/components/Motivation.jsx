@@ -110,7 +110,7 @@ const Motivation = () => {
         // }}
       >
         <h4 style={{ 
-          color: "#775acdff",
+          color: "#4178f0ff",
           fontWeight: "600",
           marginBottom: "0.8rem",
           fontSize: "1.4rem", 

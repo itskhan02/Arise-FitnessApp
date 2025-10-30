@@ -8,52 +8,25 @@ const UserLevel = () => {
   const [exp, setExp] = useState(0);
   const [expForNextLevel, setExpForNextLevel] = useState(1000);
 
-  const getExpForLevel = (level) => Math.floor(1000 * Math.pow(1.1, level - 1));
+  const getExpForLevel = (lvl) => Math.floor(1000 * Math.pow(1.15, lvl - 1));
 
-  useEffect(() => {
-    const progressHistoryRaw = localStorage.getItem(USER_PROGRESS_KEY);
-    if (progressHistoryRaw) {
-      const progressHistory = JSON.parse(progressHistoryRaw);
-      const allDates = Object.keys(progressHistory).sort();
-
-      if (allDates.length > 0) {
-        const latestDate = allDates[allDates.length - 1];
-        const latestProgress = progressHistory[latestDate];
-        if (latestProgress) {
-          const currentLevel = latestProgress.level || 1;
-          const currentExp = latestProgress.exp || 0;
-          setLevel(currentLevel);
-          setExp(currentExp);
-          setExpForNextLevel(getExpForLevel(currentLevel));
-        }
-      }
+  const loadProgress = () => {
+    const data = JSON.parse(localStorage.getItem(USER_PROGRESS_KEY)) || {};
+    const latest = Object.values(data).pop();
+    if (latest) {
+      setLevel(latest.level || 1);
+      setExp(latest.exp || 0);
+      setExpForNextLevel(getExpForLevel(latest.level || 1));
     }
-  }, []);
+  };
 
-  // 🔄 Listen for XP updates
   useEffect(() => {
-    const onExpGain = () => {
-      const progressHistoryRaw = localStorage.getItem(USER_PROGRESS_KEY);
-      if (progressHistoryRaw) {
-        const progressHistory = JSON.parse(progressHistoryRaw);
-        const allDates = Object.keys(progressHistory).sort();
-        if (allDates.length > 0) {
-          const latestDate = allDates[allDates.length - 1];
-          const latestProgress = progressHistory[latestDate];
-          if (latestProgress) {
-            setLevel(latestProgress.level);
-            setExp(latestProgress.exp);
-            setExpForNextLevel(getExpForLevel(latestProgress.level));
-          }
-        }
-      }
-    };
-
-    window.addEventListener("userExpUpdated", onExpGain);
-    return () => window.removeEventListener("userExpUpdated", onExpGain);
+    loadProgress();
+    window.addEventListener("userProgressUpdated", loadProgress);
+    return () => window.removeEventListener("userProgressUpdated", loadProgress);
   }, []);
 
-  const progressPercentage = Math.min((exp / expForNextLevel) * 100, 100);
+  const percent = Math.min((exp / expForNextLevel) * 100, 100);
 
   return (
     <motion.div
@@ -91,20 +64,21 @@ const UserLevel = () => {
         style={{
           width: "100%",
           background: "rgba(255,255,255,0.1)",
+          height: "10px",
           borderRadius: "10px",
+          marginTop: "10px",
           overflow: "hidden",
         }}
       >
         <motion.div
           style={{
-            width: `${progressPercentage}%`,
+            width: `${percent}%`,
+            height: "100%",
             background: "linear-gradient(90deg, #a78bfa, #f472b6)",
-            height: "8px",
-            borderRadius: "10px",
           }}
           initial={{ width: 0 }}
-          animate={{ width: `${progressPercentage}%` }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          animate={{ width: `${percent}%` }}
+          transition={{ duration: 0.6 }}
         />
       </div>
     </motion.div>
