@@ -1,12 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { GiTreasureMap, GiChest } from "react-icons/gi";
-import {
-  FaClock,
-  FaExclamationTriangle,
-  FaTimes,
-  FaCheck,
-} from "react-icons/fa";
+import { FaClock, FaExclamationTriangle, FaTimes, FaCheck } from "react-icons/fa";
 
 const QUEST_HISTORY_KEY = "quest_history";
 const USER_PROGRESS_KEY = "user_progress_history";
@@ -29,7 +24,7 @@ const DailyQuest = () => {
       const exp = Math.floor(Math.random() * 21) + 10;
       const duration =
         ex === "Plank"
-          ? Math.floor(Math.random() * 76) + 45 
+          ? Math.floor(Math.random() * 76) + 45
           : `${Math.floor(Math.random() * 20) + 10}`;
       return {
         name: ex,
@@ -70,17 +65,12 @@ const DailyQuest = () => {
   const addQuestToHistory = (questName) => {
     const today = new Date().toISOString().slice(0, 10);
     const history = JSON.parse(localStorage.getItem(QUEST_HISTORY_KEY)) || {};
-    if (!history[today]) {
-      history[today] = [];
-    }
-    if (!history[today].includes(questName)) {
-      history[today].push(questName);
-    }
+    if (!history[today]) history[today] = [];
+    if (!history[today].includes(questName)) history[today].push(questName);
     localStorage.setItem(QUEST_HISTORY_KEY, JSON.stringify(history));
   };
 
   useEffect(() => {
-
     const progressHistoryRaw = localStorage.getItem(USER_PROGRESS_KEY);
     if (progressHistoryRaw) {
       const progressHistory = JSON.parse(progressHistoryRaw);
@@ -98,7 +88,7 @@ const DailyQuest = () => {
               agility: 0,
               endurance: 0,
               mobility: 0,
-            },
+            }
           );
         }
       }
@@ -116,7 +106,7 @@ const DailyQuest = () => {
     if (timer > 0) {
       const id = setInterval(
         () => setTimer((t) => (t == null ? null : t - 1)),
-        1000,
+        1000
       );
       return () => clearInterval(id);
     }
@@ -127,51 +117,15 @@ const DailyQuest = () => {
     const progressHistory =
       JSON.parse(localStorage.getItem(USER_PROGRESS_KEY)) || {};
 
-    const existingProgress = progressHistory[today] || {
-      level: level,
-      exp: exp,
-      stats: stats || {
-        strength: 0,
-        stamina: 0,
-        agility: 0,
-        endurance: 0,
-        mobility: 0,
-      },
-    };
-
-    const updatedExp = existingProgress.exp + newExp;
-    const updatedStats = { ...existingProgress.stats };
-
-    for (const key of Object.keys(newStats)) {
-      updatedStats[key] = (updatedStats[key] || 0) + (newStats[key] || 0);
-    }
-
-    let currentLevel = existingProgress.level;
-    let expForNextLevel = Math.floor(1000 * Math.pow(1.1, currentLevel - 1));
-    let remainingExp = updatedExp;
-
-    while (remainingExp >= expForNextLevel) {
-      remainingExp -= expForNextLevel;
-      currentLevel++;
-      expForNextLevel = Math.floor(1000 * Math.pow(1.1, currentLevel - 1));
-    }
-
     progressHistory[today] = {
-      level: currentLevel,
-      exp: remainingExp,
-      stats: updatedStats,
+      level: newLevel,
+      exp: newExp,
+      stats: newStats,
     };
 
     localStorage.setItem(USER_PROGRESS_KEY, JSON.stringify(progressHistory));
-    window.dispatchEvent(new CustomEvent("userExpUpdated"));
+    window.dispatchEvent(new CustomEvent("userProgressUpdated"));
   };
-
-  useEffect(() => {
-    // Only save if it's not the initial state
-    if (level > 1 || exp > 0 || Object.values(stats).some(s => s > 0)) {
-      saveProgress(level, exp, stats);
-    }
-  }, [level, exp, stats]);
 
   const startQuest = (index) => {
     if (activeQuest !== null) {
@@ -203,32 +157,34 @@ const DailyQuest = () => {
     }
   };
 
-const openChest = () => {
-  console.log("Chest clicked", { chestOpened, quests });
+  const openChest = () => {
+    if (chestOpened) {
+      setPopup("warning");
+      pushToast("Chest already opened today!");
+      return;
+    }
 
-  if (chestOpened) {
-    setPopup("warning");
-    pushToast("Chest already opened today!");
-    return;
-  }
-
-  const allCompleted =
-    quests.length > 0 && quests.every((q) => q.completed && !q.failed);
-  if (!allCompleted) {
-    setPopup("warning");
-    return;
-  }
+    const allCompleted =
+      quests.length > 0 && quests.every((q) => q.completed && !q.failed);
+    if (!allCompleted) {
+      setPopup("warning");
+      pushToast("Complete all quests first!");
+      return;
+    }
 
     const totalExp = quests.reduce((s, q) => s + q.exp, 0);
     const newExp = exp + totalExp;
+
     const statKeys = Object.keys(stats);
     const randomStatKey = statKeys[Math.floor(Math.random() * statKeys.length)];
     const newStats = { ...stats, [randomStatKey]: stats[randomStatKey] + 1 };
-    const getExpForLevel = (level) => Math.floor(1000 * Math.pow(1.1, level - 1));
 
+    const getExpForLevel = (level) =>
+      Math.floor(1000 * Math.pow(1.1, level - 1));
     let newLevel = level;
     let remainingExp = newExp;
     let expToNext = getExpForLevel(newLevel);
+
     while (remainingExp >= expToNext) {
       remainingExp -= expToNext;
       newLevel++;
@@ -240,7 +196,8 @@ const openChest = () => {
     setExp(remainingExp);
     setChestOpened(true);
     setPopup("reward");
-    pushToast("Chest opened — rewards claimed!");
+    pushToast("Chest opened — XP & stat gained!");
+    saveProgress(newLevel, remainingExp, newStats);
   };
 
   const cancelPlank = () => {
@@ -272,8 +229,8 @@ const openChest = () => {
     pushToast(
       `Plank canceled — marked failed after ${Math.max(
         0,
-        Math.round(elapsed),
-      )}s`,
+        Math.round(elapsed)
+      )}s`
     );
   };
 
@@ -286,26 +243,20 @@ const openChest = () => {
       q.completed = true;
       q.started = false;
       q.failed = false;
-      if (elapsed > 40) {
-        const bonus = Math.round(q.exp * 0.5) || 10;
-        q.exp = q.exp + bonus;
-      }
       copy[activeQuest] = q;
       return copy;
     });
-    const gainedExp = quests[activeQuest].exp;
-    setExp((prevExp) => prevExp + gainedExp);
     addQuestToHistory(quests[activeQuest].name);
     setActiveQuest(null);
     setActiveStartDuration(null);
     setTimer(null);
     setIsPlankReady(false);
-    pushToast("Plank finished! Rewards applied.");
-  
+    pushToast("Plank completed!");
   };
 
+
   return (
-    <div
+    <div 
       style={{
         maxWidth: 600,
         width: "100%",

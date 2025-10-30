@@ -24,23 +24,28 @@ const StatChart = ({ stats }) => {
   const [chartData, setChartData] = useState({ labels: [], datasets: [] });
 
   useEffect(() => {
-    const data =
-      stats && stats.length > 0
-        ? stats
-        : [
-            { stat: "Strength", value: 5 },
-            { stat: "Stamina", value: 6 },
-            { stat: "Agility", value: 7 },
-            { stat: "Endurance", value: 4 },
-            { stat: "Mobility", value: 3 },
-          ];
+    // `stats` prop will be an object like { strength: 5, stamina: 6, ... }
+    const defaultStats = {
+      strength: 0, // Default to 0 if no stats are available
+      stamina: 0,
+      agility: 0,
+      endurance: 0,
+      mobility: 0,
+    };
+    // Use provided stats or default if none are available or empty
+    const currentStats = stats && Object.keys(stats).length > 0 ? stats : defaultStats;
+
+    const formattedStats = Object.keys(currentStats).map(key => ({
+      stat: key.charAt(0).toUpperCase() + key.slice(1), // Capitalize stat names for display
+      value: currentStats[key]
+    }));
 
     setChartData({
-      labels: data.map((s) => s.stat),
+      labels: formattedStats.map((s) => s.stat),
       datasets: [
         {
           label: "User Stats",
-          data: data.map((s) => s.value),
+          data: formattedStats.map((s) => s.value),
           backgroundColor: "rgba(0, 198, 255, 0.4)",
           borderColor: "#00c6ff",
           borderWidth: 2,
@@ -76,11 +81,11 @@ const StatChart = ({ stats }) => {
         ticks: {
           backdropColor: "transparent",
           color: "rgba(255,255,255,0.6)",
-          stepSize: 10,
+          stepSize: 20,
           font: { size: 12, weight: "600" },
         },
         min: 0,
-        max: 50,
+        max: 100,
       },
     },
   };

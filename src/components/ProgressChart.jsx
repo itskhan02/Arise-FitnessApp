@@ -30,34 +30,28 @@ const ProgressChart = () => {
   const [chartData, setChartData] = useState({ labels: [], datasets: [] });
 
   useEffect(() => {
-    // 1. Get streak data
     const streakRaw = localStorage.getItem(STREAK_KEY);
     const streakData = streakRaw ? JSON.parse(streakRaw) : { completed: [] };
     const checkedInDays = new Set(streakData.completed || []);
 
-    // 2. Get quest history data
     const questHistoryRaw = localStorage.getItem(QUEST_HISTORY_KEY);
     const questHistory = questHistoryRaw ? JSON.parse(questHistoryRaw) : {};
 
-    // 3. Find the first day of activity
     const allActivityDates = [
       ...(streakData.completed || []),
       ...Object.keys(questHistory),
     ].sort();
 
     if (allActivityDates.length === 0) {
-      // No data to show yet, chart will be empty
       return;
     }
 
     const startDate = new Date(allActivityDates[0]);
     const today = new Date();
 
-    // Calculate the total number of days to display
     const diffTime = Math.abs(today - startDate);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-    // 4. Combine data for the entire period
     const labels = [];
     const engagement = [];
 
@@ -68,9 +62,7 @@ const ProgressChart = () => {
       labels.push(d.toLocaleDateString("en-US", { month: "short", day: "numeric" }));
 
       let engagementScore = 0;
-      // Add 1 point for checking in (streak)
       if (checkedInDays.has(dateString)) engagementScore += 1;
-      // Add 1 point for each completed quest
       if (questHistory[dateString]) engagementScore += questHistory[dateString].length;
       
       engagement.push(engagementScore);

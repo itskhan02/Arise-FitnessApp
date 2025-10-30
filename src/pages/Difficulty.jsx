@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { MoveLeft, MoveRight } from "lucide-react";
 
-const levels = [
+const difficulty = [
   { key: "beginner", name: "Beginner" },
   { key: "intermediate", name: "Intermediate" },
   { key: "advanced", name: "Advanced" },
@@ -15,51 +15,46 @@ const equipmentOptions = [
   { key: "At Home", name: "At Home" },
 ];
 
-const Level = () => {
+const Difficulty = () => {
   const navigate = useNavigate();
-  const [selectedLevel, setSelectedLevel] = useState("");
+  const [selectedDifficulty, setSelectedDifficulty] = useState("");
   const [goals, setGoals] = useState([]);
   const [selectedEquipment, setSelectedEquipment] = useState("");
-  const [focusAreas, setFocusAreas] = useState([]); // Add state for focus areas
+  const [focusAreas, setFocusAreas] = useState([]);
 
   useEffect(() => {
-    // Remember selected level from sessionStorage
-    const savedLevel = sessionStorage.getItem("userLevel");
-    if (savedLevel) {
-      setSelectedLevel(JSON.parse(savedLevel));
+    const savedDifficulty = sessionStorage.getItem("userDifficulty");
+    if (savedDifficulty) {
+      setSelectedDifficulty(JSON.parse(savedDifficulty));
     }
-    // Load selected goals from sessionStorage
+
     const savedGoals = sessionStorage.getItem("userGoal");
-    if (savedGoals) {
-      setGoals(JSON.parse(savedGoals));
-    }
-    // Load selected equipment from sessionStorage
+    if (savedGoals) setGoals(JSON.parse(savedGoals));
+
     const savedEquipment = sessionStorage.getItem("userEquipment");
-    if (savedEquipment) {
-      setSelectedEquipment(JSON.parse(savedEquipment));
-    }
-    // Load selected focus areas from sessionStorage
-    const savedFocusAreas = sessionStorage.getItem("userFocusArea"); // Retrieve focus areas
-    if (savedFocusAreas) {
-      setFocusAreas(JSON.parse(savedFocusAreas));
-    }
+    if (savedEquipment) setSelectedEquipment(JSON.parse(savedEquipment));
+
+    const savedFocusAreas = sessionStorage.getItem("userFocusArea");
+    if (savedFocusAreas) setFocusAreas(JSON.parse(savedFocusAreas));
   }, []);
 
-  const selectLevel = (key) => {
-    setSelectedLevel(key);
-    sessionStorage.setItem("userLevel", JSON.stringify(key));
+  const selectDifficulty = (key) => {
+    setSelectedDifficulty(key);
+    sessionStorage.setItem("userDifficulty", JSON.stringify(key));
   };
 
   const handleBack = () => navigate(-1);
 
   const handleNext = () => {
-    sessionStorage.setItem("userLevel", JSON.stringify(selectedLevel));
-    navigate("/workout-day");
+    if (selectedDifficulty) {
+      sessionStorage.setItem("userDifficulty", JSON.stringify(selectedDifficulty));
+      navigate("/workout-day");
+    }
   };
 
   return (
     <div
-      className="level-page"
+      className="difficulty-page"
       style={{
         minHeight: "100vh",
         display: "flex",
@@ -67,8 +62,8 @@ const Level = () => {
         alignItems: "center",
         gap: "1.5rem",
         justifyContent: "center",
-          background: "linear-gradient(180deg, #00002e, #0a0a5a)",
-          boxShadow: "0 0 20px 10px #3a1c71, 0 0 30px 10px #0e2483ff inset",
+        background: "linear-gradient(180deg, #00002e, #0a0a5a)",
+        boxShadow: "0 0 20px 10px #3a1c71, 0 0 30px 10px #0e2483ff inset",
         overflow: "hidden",
         position: "relative",
       }}
@@ -90,8 +85,8 @@ const Level = () => {
       >
         <MoveLeft size={34} />
       </button>
-      
-      <h2 className="heading" style={{ color: "#fff", }}>
+
+      <h2 className="heading" style={{ color: "#fff" }}>
         Select Your Training Level
       </h2>
 
@@ -112,7 +107,6 @@ const Level = () => {
               color: "#fff",
               marginBottom: "0.5rem",
               textAlign: "center",
-              width: "100%",
             }}
           >
             Selected Goals:
@@ -123,8 +117,6 @@ const Level = () => {
               flexWrap: "wrap",
               gap: "0.5rem",
               justifyContent: "center",
-              width: "100%",
-              maxWidth: "650px",
             }}
           >
             {goals.map((goal) => (
@@ -138,9 +130,6 @@ const Level = () => {
                   fontWeight: "500",
                   fontSize: "1rem",
                   boxShadow: "0 0 4px #8adca6ff",
-                  textAlign: "center",
-                  minWidth: "120px",
-                  display: "inline-block",
                 }}
               >
                 {goal.name}
@@ -167,7 +156,6 @@ const Level = () => {
               color: "#fff",
               marginBottom: "0.5rem",
               textAlign: "center",
-              width: "100%",
             }}
           >
             Selected Equipment:
@@ -176,8 +164,6 @@ const Level = () => {
             style={{
               display: "flex",
               justifyContent: "center",
-              width: "100%",
-              maxWidth: "650px",
             }}
           >
             <span
@@ -189,9 +175,6 @@ const Level = () => {
                 fontWeight: "500",
                 fontSize: "1rem",
                 boxShadow: "0 0 4px #8adca6ff",
-                textAlign: "center",
-                minWidth: "120px",
-                display: "inline-block",
               }}
             >
               {
@@ -221,7 +204,6 @@ const Level = () => {
               color: "#fff",
               marginBottom: "0.5rem",
               textAlign: "center",
-              width: "100%",
             }}
           >
             Selected Focus Areas:
@@ -232,8 +214,6 @@ const Level = () => {
               flexWrap: "wrap",
               gap: "0.5rem",
               justifyContent: "center",
-              width: "100%",
-              maxWidth: "650px",
             }}
           >
             {focusAreas.map((area) => (
@@ -247,9 +227,6 @@ const Level = () => {
                   fontWeight: "500",
                   fontSize: "1rem",
                   boxShadow: "0 0 4px #8adca6ff",
-                  textAlign: "center",
-                  minWidth: "120px",
-                  display: "inline-block",
                 }}
               >
                 {area}
@@ -260,7 +237,7 @@ const Level = () => {
       )}
 
       <div
-        className="level-list"
+        className="difficulty-list"
         style={{
           display: "flex",
           flexDirection: "column",
@@ -269,22 +246,20 @@ const Level = () => {
           justifyContent: "center",
         }}
       >
-        {levels.map((level) => (
+        {difficulty.map((tier) => (
           <div
-            key={level.key}
-            className={`level-card${
-              selectedLevel === level.key ? " selected" : ""
-            }`}
+            key={tier.key}
+            onClick={() => selectDifficulty(tier.key)}
             style={{
               cursor: "pointer",
               border:
-                selectedLevel === level.key
+                selectedDifficulty === tier.key
                   ? "1px solid #8adca6ff"
                   : "1px solid #0505de",
               borderRadius: "1rem",
               padding: "1.2rem 2rem",
               background:
-                selectedLevel === level.key ? "#16997681" : "#17188baf",
+                selectedDifficulty === tier.key ? "#16997681" : "#17188baf",
               color: "#fff",
               width: "320px",
               minHeight: "56px",
@@ -297,10 +272,9 @@ const Level = () => {
               fontWeight: "500",
               transition: "border 0.2s, background 0.2s",
             }}
-            onClick={() => selectLevel(level.key)}
           >
-            {level.name}
-            {selectedLevel === level.key && (
+            {tier.name}
+            {selectedDifficulty === tier.key && (
               <div
                 style={{
                   position: "absolute",
@@ -319,22 +293,22 @@ const Level = () => {
 
       <div style={{ display: "flex", gap: "1rem" }}>
         <button
-          className="btn btn-primary"
           style={{
             display: "flex",
             alignItems: "center",
             gap: "0.8rem",
             padding: "0.75rem 1.5rem",
             borderRadius: "0.5rem",
-            border: "1px solid #0bdcf8ff ",
+            border: "1px solid #0bdcf8ff",
             background: "#02013b",
             color: "#fff",
-            opacity: !selectedLevel ? 0.5 : 1,
-            cursor: !selectedLevel ? "not-allowed" : "pointer",
+            opacity: !selectedDifficulty ? 0.5 : 1,
+            cursor: !selectedDifficulty ? "not-allowed" : "pointer",
           }}
           onClick={handleNext}
-          disabled={!selectedLevel}
+          disabled={!selectedDifficulty}
           onMouseOver={(e) => {
+            if (!selectedDifficulty) return;
             e.currentTarget.style.background =
               "linear-gradient(90deg, #1e3a8a, #06b6d4)";
             e.currentTarget.style.boxShadow = "0 0 12px #06b6d4";
@@ -351,4 +325,4 @@ const Level = () => {
   );
 };
 
-export default Level;
+export default Difficulty;
