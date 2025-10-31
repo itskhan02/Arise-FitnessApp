@@ -114,9 +114,9 @@ const Motivation = () => {
           marginBottom: "0.8rem",
           fontSize: "1.4rem", 
           }}>
-          ✨ Today's Qoute ✨
+          Today's Qoute 
         </h4>
-        <p style={{ fontSize: "1.2rem", color: "#e0e7ff", lineHeight: "1.6" }}>
+        <p style={{ fontSize: "1.2rem", color: "#e0e7ff", lineHeight: "1.5" }}>
           “{quote}”
         </p>
       </div>
