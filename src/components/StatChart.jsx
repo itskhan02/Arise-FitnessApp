@@ -103,7 +103,7 @@ const StatChart = ({ stats }) => {
         width: "100%",
         maxWidth: "448px",
         mx: "auto",
-        height: "450px",
+        height: "430px",
         display: "flex",
         flexDirection: "column",
       }}
@@ -115,7 +115,7 @@ const StatChart = ({ stats }) => {
           fontWeight: 600,
           textAlign: "center",
           mb: 2,
-          color: "#a78bfa",
+          color: "#4178f0ff",
         }}
       >
         User Stats Chart

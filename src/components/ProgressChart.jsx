@@ -122,7 +122,7 @@ const ProgressChart = () => {
         border: "1px solid rgba(255,255,255,0.05)",
       }}
     >
-      <h3 style={{ color: "#a78bfa", fontWeight: 600, fontSize: "1.4rem", marginBottom: "1rem" }}>
+      <h3 style={{ color: "#4178f0ff", fontWeight: 600, fontSize: "1.4rem", marginBottom: "1rem" }}>
         Engagement (Last 30 Days)
       </h3>
       <Line data={chartData} options={options} />

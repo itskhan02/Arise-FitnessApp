@@ -6,6 +6,7 @@ import { CgGym } from 'react-icons/cg';
 import { useLocation, useNavigate } from "react-router-dom";
 import ProgressChart from '../components/ProgressChart';
 import StatChart from "../components/StatChart";
+import Stats from '../components/Stats';
 
 
 const USER_PROGRESS_KEY = "user_progress_history";
@@ -65,11 +66,10 @@ const Progress = () => {
     <>
     <div
       style={{
-        height: "100vh",
+        minHeight: "100vh",
         display: "flex",
-        justifyContent: "center",
+        justifyContent: "flex-start",
         alignItems: "center",
-        padding: "2rem",
         flexDirection: "column",
         gap: "2rem",
         background:
@@ -77,21 +77,28 @@ const Progress = () => {
         color: "#fff",
         fontSize: "1.5rem",
         position: "relative",
+        padding: "3rem 1rem 7rem 1rem",
       }}
     >
        {/* ------- SIGNED IN ------- */}
       <SignedIn>
 
         {/* Progress  */}
-        <div className="main-content-card"
+        <div className="progress-content-card"
         style={{
-          width: "100%",
+
         }}
         >
-        <div  className="sub-content" style={{ width: "100%" }}>
+          <h1 style={{ fontWeight: "600", fontSize: "1.6rem", color: "#fff", marginBottom: "1rem"}}>
+            User Stats and Progress
+          </h1>
+        <div  className="progress-sub-content" style={{ width: "100%" }}>
             
             <ProgressChart/>
             <StatChart stats={userStats} />
+
+            <Stats stats={userStats} />
+
 
 
 

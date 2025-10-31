@@ -24,7 +24,7 @@ const DailyQuest = () => {
       const exp = Math.floor(Math.random() * 21) + 10;
       const duration =
         ex === "Plank"
-          ? Math.floor(Math.random() * 76) + 45
+          ? Math.floor(Math.random() * 20) + 10
           : `${Math.floor(Math.random() * 20) + 10}`;
       return {
         name: ex,

@@ -720,7 +720,8 @@ h2 {
     .calorie-tracker { width: 75%; font-size: 1.5rem; }
     .exercise-card {  width: 450px; padding: 0.5rem 1rem; font-size: 1.2rem;}
     .user-level { max-width: 500px ;width: 100%;}
-
+    .progress-content-card { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2rem; }
+    .progress-sub-content { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 2rem; }
 }
 
 /* Desktop */
@@ -750,6 +751,8 @@ h2 {
     .calorie-tracker { width: 75%; font-size: 1.5rem; }
     .exercise-card {  width: 450px; padding: 0.5rem 1rem; font-size: 1.2rem;}
     .user-level { max-width: 500px ;width: 100%;}
+    .progress-content-card { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2rem; }
+    .progress-sub-content { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 2rem; }
 
 }
 
@@ -787,6 +790,8 @@ h2 {
     .exercise-card {  width: 330px; gap: 0.3rem; font-size: 1rem; }
     .user-level { max-width: 500px ;width: 100%;}
     .user-profile {margin-top: 4rem; }
+    .progress-content-card { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2rem; }
+    .progress-sub-content{ display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2rem; }
 }
 
 /* Very Small Mobile */
@@ -812,4 +817,5 @@ h2 {
   .calorie-tracker { width: 95%; font-size: 1.1rem;}
   .exercise-card {  width: 280px;   }
   .user-level { max-width: 600px ;width: 95%;}
+  .progress-sub-content{ display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 2rem; }
 }

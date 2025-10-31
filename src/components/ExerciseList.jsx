@@ -1,16 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { BiSearch } from 'react-icons/bi';
 import { FiChevronUp, FiChevronDown } from "react-icons/fi";
+import {useAuth} from '@clerk/clerk-react';
 
 const ExerciseList = () => {
   const [exercises, setExercises] = useState([]);
   const [expandedId, setExpandedId] = useState(null);
 
+  const {geToken} = useAuth();
+
   useEffect(() => {
     const getData = async () => {
       try {
+        const token = await geToken();
         const response = await fetch(
-          "https://wmddgktx-8000.inc1.devtunnels.ms/api/url/"
+          "https://wmddgktx-8000.inc1.devtunnels.ms/api/exercise/",
+          {
+            headers: {
+              "Authorization": `Bearer ${token}`,
+            },
+          }
         );
         const data = await response.json();
         console.log(data)
@@ -95,7 +104,8 @@ const ExerciseList = () => {
             style={{  display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center", }}
             >
               <h2 className="text-lg font-semibold">{exercise.title}</h2>
-              <p className="text-sm text-neutral-400 mt-1">reps</p>
+              <p className="text-sm text-neutral-400 mt-1">Reps: {exercise.reps_sets}</p>
+              
             </div>
               <button
                 onClick={() => toggleExpand(exercise.id)}
@@ -132,8 +142,8 @@ const ExerciseList = () => {
                   height="250"
                   src={exercise.url}
                   title={exercise.title}
-                  frameBorder="0"
-                  allow="accelerometer;  clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  
+                  allow="accelerometer;  clipboard-write; encrypted-media; gyroscope; picture-in-picture; "
                   allowFullScreen
                   className="rounded-xl"
                 ></iframe>
