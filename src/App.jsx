@@ -6,7 +6,7 @@ import './components/Css/Style.css';
 import Gender from './pages/Gender'; // <-- fix import path
 import Goal from './pages/Goal';
 import Equipment from './pages/Equipment';
-import Level from './pages/Level';
+import Difficulty from './pages/Difficulty';
 import Schedule from './pages/Schedule';
 import Bodystats from './pages/Bodystats';
 import Setup from './pages/Setup';
@@ -34,7 +34,7 @@ const App = () => {
           <Route path="/goal" element={<Goal/>} />
           <Route path="/focusarea" element={<Focusarea/>} />
           <Route path="/equipment" element={<Equipment/>}/>
-          <Route path='/level' element={<Level/>}/>
+          <Route path='/difficulty-level' element={<Difficulty/>}/>
           <Route path='/bodystats' element={<Bodystats/>}/>
           <Route path="/workout-day" element={<Schedule/>} />
           <Route path="/setup" element={<Setup/>} />

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { HiMiniFire } from 'react-icons/hi2';
 
 const Calories = ({ exercises, userWeight = 70 }) => {
   const [totalCalories, setTotalCalories] = useState(0);
@@ -35,11 +36,12 @@ const Calories = ({ exercises, userWeight = 70 }) => {
         boxShadow: "0 12px 35px rgba(0,0,0,0.4)",
         border: "1px solid rgba(255,255,255,0.05)",
         backdropFilter: "blur(12px)",
+        lineHeight: "2",
         }}>
-      <h5 style={{ display: "flex", justifyContent: "center", alignItems: "center",flexDirection: "column", gap: "1rem" }}>
-        Calories Burned🔥{" "}
-        <span style={{ color: "#ff6b81" }}>{totalCalories} kcal</span>
+      <h5 style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "0.5rem", color: "#4178f0ff", fontWeight: "600", fontSize: "1.4rem" }}>
+        Calories Burned <HiMiniFire size={26} color="rgb(220, 143, 65)"/>{" "}
       </h5>
+      <span style={{ display: "flex", justifyContent: "center", alignItems: "center", color: "#f56a37ff" }}>{totalCalories} kcal</span>
     </div>
   );
 };

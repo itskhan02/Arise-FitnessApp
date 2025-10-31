@@ -1,11 +1,14 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { SignedIn, useUser, SignedOut, SignInButton} from "@clerk/clerk-react";
 import { Home,  User2, } from "lucide-react";
 import { BsBarChart} from 'react-icons/bs';
 import { CgGym } from 'react-icons/cg';
 import { useLocation, useNavigate } from "react-router-dom";
 import ProgressChart from '../components/ProgressChart';
-import StatChart from '../components/StatChart';
+import StatChart from "../components/StatChart";
+
+
+const USER_PROGRESS_KEY = "user_progress_history";
 
 const navItems = [
   { icon: Home, label: "Home", path: "/home" },
@@ -19,6 +22,43 @@ const Progress = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useUser();
+  const [userStats, setUserStats] = useState({
+    strength: 0,
+    stamina: 0,
+    agility: 0,
+    endurance: 0,
+    mobility: 0,
+  });
+
+  useEffect(() => {
+    const loadLatestStats = () => {
+      const progressHistoryRaw = localStorage.getItem(USER_PROGRESS_KEY);
+      let latestStats = { strength: 0, stamina: 0, agility: 0, endurance: 0, mobility: 0 };
+      if (progressHistoryRaw) {
+        try {
+          const progressHistory = JSON.parse(progressHistoryRaw);
+          const allDates = Object.keys(progressHistory).sort();
+          if (allDates.length > 0) {
+            const latestDate = allDates[allDates.length - 1];
+            if (progressHistory[latestDate] && progressHistory[latestDate].stats) {
+              latestStats = progressHistory[latestDate].stats;
+            }
+          }
+        } catch (e) {
+          console.error("Failed to parse user progress history from localStorage", e);
+        }
+      }
+      setUserStats(latestStats);
+    };
+
+    loadLatestStats();
+
+    window.addEventListener("userProgressUpdated", loadLatestStats);
+
+    return () => {
+      window.removeEventListener("userProgressUpdated", loadLatestStats);
+    };
+  }, [user]);
 
 
   return (
@@ -50,8 +90,8 @@ const Progress = () => {
         >
         <div  className="sub-content" style={{ width: "100%" }}>
             
-            <ProgressChart />
-            <StatChart/>
+            <ProgressChart/>
+            <StatChart stats={userStats} />
 
 
 

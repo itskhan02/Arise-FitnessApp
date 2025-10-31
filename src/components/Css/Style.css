@@ -1,4 +1,22 @@
 
+
+/* @media (max-width: 640px) {
+  .streak-card { padding: 12px; }
+  .streak-grid { grid-template-columns: 1fr; }
+  .streak-history { grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  .streak-tile { min-height: 48px; font-size: 11px; }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .streak-card { padding: 14px; }
+  .streak-grid { grid-template-columns: 1fr 220px; align-items: center; }
+  .streak-history { grid-template-columns: repeat(7, 1fr); gap: 8px; }
+}
+
+@media (min-width: 1025px) {
+  .streak-card { padding: 18px; }
+  .streak-grid { grid-template-columns: 1fr 260px; }
+} */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&display=swap");
 @import url('https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Manrope:wght@200..800&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Noto+Sans+Gunjala+Gondi:wght@400..700&family=Roboto+Slab:wght@100..900&display=swap');
@@ -634,6 +652,14 @@ h2 {
   min-width: 70px !important;
 }
 
+.exercise-list::-webkit-scrollbar {
+  display: none;
+}
+.exercise-list {
+  -ms-overflow-style: none; 
+  scrollbar-width: none;  
+}
+
 .css-93wjf5-MuiButtonBase-root-MuiTab-root:hover {
   background: rgb(255, 255, 255) !important;
   padding: 0 !important;
@@ -711,6 +737,9 @@ h2 {
     .cal { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2rem; }
     .water-tracker { width: 75%; }
     .calorie-tracker { width: 75%; font-size: 1.5rem; }
+    .exercise-card {  width: 450px; padding: 0.5rem 1rem; font-size: 1.2rem;}
+    .user-level { max-width: 500px ;width: 100%;}
+
 }
 
 /* Desktop */
@@ -738,6 +767,9 @@ h2 {
     .cal { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2rem; }
     .water-tracker { width: 75%; }
     .calorie-tracker { width: 75%; font-size: 1.5rem; }
+    .exercise-card {  width: 450px; padding: 0.5rem 1rem; font-size: 1.2rem;}
+    .user-level { max-width: 500px ;width: 100%;}
+
 }
 
 /* Small Mobile */
@@ -768,9 +800,9 @@ h2 {
     .streak-tile { min-height: 48px; font-size: 11px; }
     .main-content-card { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2rem; }
     .sub-content { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2rem; }
-    .cal { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; }
-    .water-tracker { width: 100%; }
-    .calorie-tracker { width: 100%; font-size: 1.3rem; }
+    .cal { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 1rem; }
+    .water-tracker { width: 65%; }
+    .calorie-tracker { width: 95%; font-size: 1.2rem; }
 }
 
 /* Very Small Mobile */
@@ -793,6 +825,5 @@ h2 {
   .sub-content { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 2rem; }
   .cal { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2rem; }
   .water-tracker { width: 65%; }
-  .calorie-tracker { width: 100%; font-size: 1.1rem;}
+  .calorie-tracker { width: 95%; font-size: 1.1rem;}
 }
-

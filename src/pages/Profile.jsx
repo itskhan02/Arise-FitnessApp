@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useUser, SignedIn, SignedOut, SignInButton } from "@clerk/clerk-react";
+import { SignedIn, SignedOut, SignInButton, useUser } from "@clerk/clerk-react";
 import { Home, User2 } from "lucide-react";
 import { BsBarChart } from "react-icons/bs";
 import { CgGym } from "react-icons/cg";
 import { useLocation, useNavigate } from "react-router-dom";
 import UserLevel from "../components/UserLevel";
+import UserData from "../components/UserData";
 
 const navItems = [
   { icon: Home, label: "Home", path: "/home" },
@@ -20,7 +21,7 @@ const Profile = () => {
 
   const [details, setDetails] = useState({
     fullName: "",
-    dob: "2000-01-01", 
+    dob: "2000-01-01",
     age: 0,
     height: 170,
     weight: 65,
@@ -32,7 +33,6 @@ const Profile = () => {
   const [isEditingName, setIsEditingName] = useState(false);
   const [tempName, setTempName] = useState("");
 
-  // Compute age from DOB
   const calculateAge = (dob) => {
     const birthDate = new Date(dob);
     const today = new Date();
@@ -44,28 +44,31 @@ const Profile = () => {
 
   // Load data from Clerk or sessionStorage
   useEffect(() => {
-    const savedDetails = {
-      fullName: user?.fullName || "",
-      dob: sessionStorage.getItem("userDOB") || "2000-01-01",
-      age: parseInt(sessionStorage.getItem("userAge")) || 0,
-      height: Math.round(parseFloat(sessionStorage.getItem("originalHeight"))) || 170,
-      weight: parseFloat(sessionStorage.getItem("userWeight")) || 65,
-      level: JSON.parse(sessionStorage.getItem("userLevel")) || "Beginner",
-      customImage:
-        JSON.parse(sessionStorage.getItem("userDetails"))?.customImage || "",
-      gender: sessionStorage.getItem("userGender") || "",
-    };
-    savedDetails.age = calculateAge(savedDetails.dob); 
-    setDetails(savedDetails);
-    setTempName(savedDetails.fullName);
+    if (user) {
+      const savedDetails = JSON.parse(sessionStorage.getItem("userDetails")) || {};
+      const initialDetails = {
+        fullName: user.fullName || "",
+        dob: savedDetails.dob || sessionStorage.getItem("userDOB") || "2000-01-01",
+        age: calculateAge(savedDetails.dob || sessionStorage.getItem("userDOB") || "2000-01-01"),
+        height: Math.round(parseFloat(sessionStorage.getItem("originalHeight"))) || 170,
+        weight: parseFloat(sessionStorage.getItem("userWeight")) || 65,
+        level: JSON.parse(sessionStorage.getItem("userLevel")) || "Beginner",
+        customImage: savedDetails.customImage || "",
+        gender: sessionStorage.getItem("userGender") || "",
+      };
+      setDetails(initialDetails);
+      setTempName(initialDetails.fullName);
+    }
   }, [user]);
-
 
   const handleFieldChange = (field, value) => {
     const updated = { ...details, [field]: value };
     if (field === "dob") updated.age = calculateAge(value);
     setDetails(updated);
     sessionStorage.setItem("userDetails", JSON.stringify(updated));
+    if (field === "dob") {
+      sessionStorage.setItem("userDOB", value);
+    }
   };
 
   const handleNameSave = async () => {
@@ -101,7 +104,6 @@ const Profile = () => {
   return (
     <div
       style={{
-        height: "100vh",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -109,17 +111,17 @@ const Profile = () => {
           "linear-gradient(90deg, #050a29ff 0%, #08113eff 40%, #1c0d37ff 150%)",
         color: "#fff",
         fontSize: "1.2rem",
+        padding: "2rem",
         position: "relative",
         overflowY: "auto",
         overflowX: "hidden",
-        padding: "2rem",
+
       }}
     >
       <SignedIn>
-        <div
+        <div className="user-profile"
           style={{
             textAlign: "center",
-            marginTop: "4rem",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -294,85 +296,7 @@ const Profile = () => {
       <UserLevel />
 
         {/* PERSONAL DETAILS CARD */}
-        <div
-          style={{
-            marginTop: "2rem",
-            width: "85%",
-            maxWidth: "400px",
-            background: "rgba(255, 255, 255, 0.08)",
-            borderRadius: "1rem",
-            padding: "1.5rem",
-            boxShadow: "0 0 15px rgba(11, 220, 248, 0.3)",
-          }}
-        >
-          <h3
-            style={{
-              fontSize: "1.3rem",
-              fontWeight: "600",
-              marginBottom: "1rem",
-              textAlign: "center",
-            }}
-          >
-            Personal Details
-          </h3>
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "0.8rem" }}
-          >
-            <div>
-              <label>DOB</label>
-              <input
-                type="date"
-                value={details.dob}
-                onChange={(e) => handleFieldChange("dob", e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "0.6rem",
-                  boxSizing: "border-box",
-                  borderRadius: "8px",
-                  border: "1px solid rgba(255,255,255,0.2)",
-                  background: "rgba(255,255,255,0.1)",
-                  color: "#fff",
-                  outline: "none",
-                  fontSize: "0.95rem",
-                }}
-              />
-            </div>
-            {["age", "height", "weight", "level"].map((field) => (
-              <div key={field}>
-                <label>{field}</label>
-                <input
-                  type={(field === "age" || field === "level") ? "text" : "number"}
-                  value={details[field]}
-                  onChange={(e) => handleFieldChange(field, e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "0.6rem",
-                    borderRadius: "8px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    background: "rgba(243, 238, 238, 0.1)",
-                    color: "#fff",
-                    outline: "none",
-                    fontSize: "0.95rem",
-                  }}
-                  disabled={field === "age" || field === "height" || field === "level"}
-                />
-              </div>
-            ))}
-          </div>
-          <style>{`
-            input[type="date"]::-webkit-calendar-picker-indicator {
-              filter: invert(1);              
-              font-size: 1.2rem;
-              cursor: pointer;
-            }
-            input[type=number]::-webkit-inner-spin-button,
-            input[type=number]::-webkit-outer-spin-button {
-              -webkit-appearance: none;
-              margin: 0;
-            }
-            input[type=number] { -moz-appearance: textfield; }
-          `}</style>
-        </div>
+        <UserData/>
 
         {/* NAVIGATION */}
         <div

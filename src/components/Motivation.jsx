@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 
+
 const Motivation = () => {
   const motivationalQuotes = [
     "Push yourself because no one else is going to do it for you.",
@@ -97,7 +98,7 @@ const Motivation = () => {
           fontSize: "1.4rem",
         }}
       >
-        ✨ Daily Motivation ✨
+       Daily Motivation
       </h2> */}
 
       <div
@@ -109,7 +110,7 @@ const Motivation = () => {
         // }}
       >
         <h4 style={{ 
-          color: "#775acdff",
+          color: "#4178f0ff",
           fontWeight: "600",
           marginBottom: "0.8rem",
           fontSize: "1.4rem", 
@@ -133,7 +134,7 @@ const Motivation = () => {
           fontWeight: "600",
           marginBottom: "0.8rem",
           fontSize: "1.4rem", }}>
-          🥗 Health Tip
+           Health Tip
         </h4>
         <p style={{ fontSize: "1rem", color: "#e0e7ff", lineHeight: "1.6" }}>
           {tip}
