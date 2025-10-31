@@ -806,14 +806,6 @@ h2 {
     .cal { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 1rem; }
     .water-tracker { width: 65%; }
     .calorie-tracker { width: 95%; font-size: 1.2rem; }
-<<<<<<< HEAD
-    .exercise-card {  width: 330px; gap: 0.3rem; font-size: 1rem; }
-    .user-level { max-width: 500px ;width: 100%;}
-    .user-profile {margin-top: 4rem; }
-    .progress-content-card { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2rem; }
-    .progress-sub-content{ display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2rem; }
-=======
->>>>>>> 3b6da0a7fdc9547caf2a772d5b42f52ca110d7f1
 }
 
 /* Very Small Mobile */
@@ -837,10 +829,4 @@ h2 {
   .cal { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2rem; }
   .water-tracker { width: 65%; }
   .calorie-tracker { width: 95%; font-size: 1.1rem;}
-<<<<<<< HEAD
-  .exercise-card {  width: 280px;   }
-  .user-level { max-width: 600px ;width: 95%;}
-  .progress-sub-content{ display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 2rem; }
-=======
->>>>>>> 3b6da0a7fdc9547caf2a772d5b42f52ca110d7f1
 }
