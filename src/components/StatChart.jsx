@@ -24,15 +24,13 @@ const StatChart = ({ stats }) => {
   const [chartData, setChartData] = useState({ labels: [], datasets: [] });
 
   useEffect(() => {
-    // `stats` prop will be an object like { strength: 5, stamina: 6, ... }
     const defaultStats = {
-      strength: 0, // Default to 0 if no stats are available
+      strength: 0, 
       stamina: 0,
       agility: 0,
       endurance: 0,
       mobility: 0,
     };
-    // Use provided stats or default if none are available or empty
     const currentStats = stats && Object.keys(stats).length > 0 ? stats : defaultStats;
 
     const formattedStats = Object.keys(currentStats).map(key => ({
@@ -103,7 +101,7 @@ const StatChart = ({ stats }) => {
         width: "100%",
         maxWidth: "448px",
         mx: "auto",
-        height: "430px",
+        height: "400px",
         display: "flex",
         flexDirection: "column",
       }}
@@ -114,13 +112,13 @@ const StatChart = ({ stats }) => {
         sx={{
           fontWeight: 600,
           textAlign: "center",
-          mb: 2,
+          mb: 0,
           color: "#4178f0ff",
         }}
       >
         User Stats Chart
       </Typography>
-      <Box sx={{ flexGrow: 1, position: "relative" }}>
+      <Box sx={{ flexGrow: 1, position: "relative", }}>
         <RadarJS data={chartData} options={options} />
       </Box>
     </Box>

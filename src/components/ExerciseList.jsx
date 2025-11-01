@@ -1,25 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { BiSearch } from 'react-icons/bi';
 import { FiChevronUp, FiChevronDown } from "react-icons/fi";
-import {useAuth} from '@clerk/clerk-react';
+import  ReactPlayer from 'react-player';
+// import {useAuth} from '@clerk/clerk-react';
 
 const ExerciseList = () => {
   const [exercises, setExercises] = useState([]);
   const [expandedId, setExpandedId] = useState(null);
 
-  const {geToken} = useAuth();
+  // const {geToken} = useAuth();
 
   useEffect(() => {
     const getData = async () => {
       try {
-        const token = await geToken();
+        // const token = await geToken();
         const response = await fetch(
           "https://wmddgktx-8000.inc1.devtunnels.ms/api/exercise/",
-          {
-            headers: {
-              "Authorization": `Bearer ${token}`,
-            },
-          }
+          // {
+          //   headers: {
+          //     "Authorization": `Bearer ${token}`,
+          //   },
+          // }
         );
         const data = await response.json();
         console.log(data)
@@ -137,7 +138,15 @@ const ExerciseList = () => {
 
             {expandedId === exercise.id && (
               <div className="mt-4 flex justify-center">
-                <iframe
+                <ReactPlayer
+                  url={exercise.url}
+                  title={exercise.title}
+                  controls
+                  width="100%"
+                  height="250px"
+
+                />
+                {/* <iframe
                   width="100%"
                   height="250"
                   src={exercise.url}
@@ -146,7 +155,7 @@ const ExerciseList = () => {
                   allow="accelerometer;  clipboard-write; encrypted-media; gyroscope; picture-in-picture; "
                   allowFullScreen
                   className="rounded-xl"
-                ></iframe>
+                ></iframe> */}
               </div>
             )}
           </div>
