@@ -8,12 +8,15 @@ const ExerciseList = () => {
   const [exercises, setExercises] = useState([]);
   const [expandedId, setExpandedId] = useState(null);
 
+
   // const {geToken} = useAuth();
+
+  const {getToken} = useAuth();
 
   useEffect(() => {
     const getData = async () => {
       try {
-        // const token = await geToken();
+        const token = await getToken();
         const response = await fetch(
           "https://wmddgktx-8000.inc1.devtunnels.ms/api/exercise/",
           // {

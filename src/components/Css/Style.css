@@ -792,6 +792,7 @@ h2 {
     .user-profile {margin-top: 4rem; }
     .progress-content-card { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2rem; }
     .progress-sub-content{ display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2rem; }
+
 }
 
 /* Very Small Mobile */
