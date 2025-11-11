@@ -34,21 +34,22 @@ const Stats = ({ stats }) => {
     <div
       className="stats-card"
       style={{
+        height: 350,
         background:
           "linear-gradient(145deg, rgba(15,23,42,0.95), rgba(3,7,18,0.95))",
         borderRadius: 20,
         padding: "1rem 1.5rem",
         color: "#fff",
-        marginTop: "1.5rem",
         boxShadow: "0 12px 35px rgba(0,0,0,0.4)",
         border: "1px solid rgba(255,255,255,0.05)",
         backdropFilter: "blur(12px)",
         display: "flex",
         flexDirection: "column",
-        gap: "0.8rem",
+        justifyContent: "flex-start",
+        gap: "2.5rem",
       }}
     >
-      <h2 style={{color: "#4178f0ff", fontWeight: "600", fontSize: "1.4rem"}}>Stats</h2>
+      <h2 style={{color: "#4178f0ff", fontWeight: "600", fontSize: "1.5rem"}}>Stats</h2>
       <div className="stats-list"
       style={{
         display: "flex",

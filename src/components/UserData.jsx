@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
+import { X } from "lucide-react";
 
 const UserData = () => {
   const location = useLocation();
@@ -9,13 +10,15 @@ const UserData = () => {
   const [details, setDetails] = useState({
     fullName: "",
     dob: "2000-01-01",
-    age: 0,
-    height: 170,
-    weight: 65,
+    age: "",
+    height: "",
+    weight:"",
     tier: "Beginner",
     customImage: "",
     gender: "",
   });
+
+  const [isWeightPopupOpen, setIsWeightPopupOpen] = useState(false);
 
   const calculateAge = (dob) => {
     const birthDate = new Date(dob);
@@ -50,6 +53,15 @@ const UserData = () => {
       });
     }
   }, [user]);
+
+  const handleWeightChange = (e) => {
+    const newWeight = e.target.value;
+    setDetails(prev => ({ ...prev, weight: newWeight }));
+    sessionStorage.setItem("userWeight", newWeight);
+    // Also update the consolidated details object if it exists
+    const userDetails = JSON.parse(sessionStorage.getItem("userDetails")) || {};
+    sessionStorage.setItem("userDetails", JSON.stringify({ ...userDetails, weight: newWeight }));
+  };
 
   return (
     <div
@@ -106,7 +118,7 @@ const UserData = () => {
             }}
           />
         </div>
-        {["Age", "Height", "Weight", "Tier"].map((field) => (
+        {["Age", "Height", "Tier"].map((field) => (
           <div
             key={field}
             style={{
@@ -123,8 +135,6 @@ const UserData = () => {
                   ? details.age
                   : field === "Height"
                   ? details.height
-                  : field === "Weight"
-                  ? details.weight
                   : details.tier
               }
               disabled
@@ -141,7 +151,80 @@ const UserData = () => {
             />
           </div>
         ))}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <label>Weight</label>
+          <button
+            onClick={() => setIsWeightPopupOpen(true)}
+            style={{
+              width: "50%",
+              padding: "0.6rem",
+              borderRadius: "8px",
+              border: "1px solid rgba(255,255,255,0.2)",
+              color: "#fff",
+              outline: "none",
+              fontSize: "0.95rem",
+              background: "transparent",
+              cursor: "pointer",
+              textAlign: "start",
+            }}
+          >
+            {details.weight} kg
+          </button>
+        </div>
       </div>
+
+      {/* Weight Slider Popup */}
+      {isWeightPopupOpen && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0, 0, 0, 0.7)",
+            backdropFilter: "blur(8px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+          }}
+          onClick={() => setIsWeightPopupOpen(false)}
+        >
+          <div
+            style={{
+              background: "linear-gradient(145deg, #0f172a, #030712)",
+              padding: "1.5rem",
+              borderRadius: 20,
+              width: "90%",
+              maxWidth: "350px",
+              border: "1px solid rgba(255,255,255,0.1)",
+              boxShadow: "0 15px 40px rgba(0,0,0,0.5)",
+              position: "relative",
+              textAlign: "center",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{ marginTop: 0, marginBottom: "1rem", color: "#94a3b8" }}>
+              Select Weight: {details.weight} kg
+            </h3>
+            <input
+              type="range"
+              min="30"
+              max="200"
+              step="0.5"
+              value={details.weight}
+              onChange={handleWeightChange}
+              style={{ width: "100%", cursor: "pointer" }}
+            />
+            <button onClick={() => setIsWeightPopupOpen(false)} style={{marginTop: "1rem", padding: "0.5rem 1rem", borderRadius: "8px", border: "1px solid #0bdcf8ff", background: "#02013b", color: "#fff", cursor: "pointer"}}>Done</button>
+          </div>
+        </div>
+      )}
+
       <style>{`
         input[type="date"]::-webkit-calendar-picker-indicator {
           filter: invert(1);              

@@ -16,6 +16,8 @@ import Calories from "./Calories";
 import WaterIntake from "./Waterintake";
 import Motivation from "./Motivation";
 import Quest from "./Quest";
+import FitBot from "./FitBot";
+
 
 const navItems = [
   { icon: Home, label: "Home", path: "/home" },
@@ -32,6 +34,9 @@ const Dashboard = () => {
   const { user } = useUser();
 
   const [checkedDays, setCheckedDays] = useState([]);
+  const [completedExercises, setCompletedExercises] = useState([]);
+  const [userWeight, setUserWeight] = useState(70);
+  const COMPLETED_EXERCISES_KEY = "completedExercises";
 
   // Load checked days from localStorage
   useEffect(() => {
@@ -46,7 +51,36 @@ const Dashboard = () => {
     } catch (e) {
       console.warn("Failed to parse streak checked days from localStorage", e);
     }
+
+    // Load user weight
+    setUserWeight(parseFloat(sessionStorage.getItem("userWeight")) || 70);
+
+    // Load completed exercises for today
+    const savedExercisesRaw = sessionStorage.getItem(COMPLETED_EXERCISES_KEY);
+    if (savedExercisesRaw) {
+      const savedExercises = JSON.parse(savedExercisesRaw);
+      const todayStr = new Date().toDateString();
+      const todayExercises = savedExercises.filter(ex => new Date(ex.timestamp).toDateString() === todayStr);
+      setCompletedExercises(todayExercises);
+    }
+
+    // Listen for completed exercises to update calories
+    const handleCaloriesUpdate = (event) => {
+      const newExercise = { ...event.detail, timestamp: new Date().toISOString() };
+      setCompletedExercises(prev => [...prev, newExercise]);
+    };
+
+    window.addEventListener("caloriesUpdated", handleCaloriesUpdate);
+
+    return () => {
+      window.removeEventListener("caloriesUpdated", handleCaloriesUpdate);
+    };
   }, []);
+
+  // Save completed exercises to session storage
+  useEffect(() => {
+    sessionStorage.setItem(COMPLETED_EXERCISES_KEY, JSON.stringify(completedExercises));
+  }, [completedExercises]);
 
   // Update checked days in state and localStorage
   const handleCheckedDaysChange = (newCheckedDays) => {
@@ -90,6 +124,7 @@ const Dashboard = () => {
         </div>
 
       {/* Dashboard */}
+      <FitBot userImage={user?.imageUrl} />
       <div className="main-content-card"
         style={{
           width: "100%",
@@ -112,8 +147,8 @@ const Dashboard = () => {
 
             }}
           >
-            <WaterIntake />
-            <Calories />
+            <WaterIntake /> 
+            <Calories exercises={completedExercises} userWeight={userWeight} />
           </div>
         </div>
 
@@ -132,7 +167,6 @@ const Dashboard = () => {
           </div>
           <Quest />
         </div>
-        
       </div>
 
         {/* NAVIGATION */}
@@ -148,6 +182,7 @@ const Dashboard = () => {
             borderRadius: "9999px",
             padding: "0.6rem 1rem",
             width: "18rem",
+            height: "3.5rem",
           }}
         >
           {navItems.map((item) => {
@@ -162,8 +197,8 @@ const Dashboard = () => {
                   cursor: "pointer",
                   padding: "0.5rem",
                   borderRadius: isActive ? "3rem" : "50%",
-                  height: "3rem",
-                  width: "3rem",
+                  height: "2.5rem",
+                  width: isActive ? "2.5rem" : "2.5rem",
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",

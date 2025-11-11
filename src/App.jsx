@@ -21,6 +21,7 @@ import Height from './pages/Height';
 import Exercises from './pages/Exercises';
 import Progress from './pages/Progress';
 import Profile from './pages/Profile';
+import ExerciseVideo from './pages/ExerciseVideo';
 
 const App = () => {
   const { isSignedIn } = useAuth(); 
@@ -48,6 +49,7 @@ const App = () => {
           <Route path="/exercises" element={<Exercises/>} />
           <Route path='/progress' element={<Progress/>}/>
           <Route path='/profile' element={<Profile/>}/>
+          <Route path="/exercise/:id" element={<ExerciseVideo />} />
           <Route path="*" element={<h1>404 Not Found</h1>} />
         </Routes>
       </Router>

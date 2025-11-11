@@ -80,7 +80,7 @@ const StatChart = ({ stats }) => {
           backdropColor: "transparent",
           color: "rgba(255,255,255,0.6)",
           stepSize: 20,
-          font: { size: 12, weight: "600" },
+          font: { size: 0, weight: "600" },
         },
         min: 0,
         max: 100,
@@ -99,11 +99,13 @@ const StatChart = ({ stats }) => {
         boxShadow: "0 12px 35px rgba(0,0,0,0.4)",
         border: "1px solid rgba(255,255,255,0.05)",
         width: "100%",
-        maxWidth: "448px",
+        maxWidth: "500px",
         mx: "auto",
-        height: "400px",
+        height: "350px",
         display: "flex",
         flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
       }}
     >
       <Typography

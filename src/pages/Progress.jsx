@@ -54,10 +54,10 @@ const Progress = () => {
 
     loadLatestStats();
 
-    window.addEventListener("userProgressUpdated", loadLatestStats);
+    window.addEventListener("userExpUpdated", loadLatestStats);
 
     return () => {
-      window.removeEventListener("userProgressUpdated", loadLatestStats);
+      window.removeEventListener("userExpUpdated", loadLatestStats);
     };
   }, [user]);
 
@@ -130,6 +130,7 @@ const Progress = () => {
             borderRadius: "9999px",
             padding: "0.6rem 1rem",
             width: "18rem",
+            height: "3.5rem",
           }}
         >
           {navItems.map((item) => {
@@ -144,8 +145,8 @@ const Progress = () => {
                   cursor: "pointer",
                   padding: "0.5rem",
                   borderRadius: isActive ? "3rem" : "50%",
-                  height: "3rem",
-                  width: isActive ? "3rem" : "3rem",
+                  height: "2.5rem",
+                  width: isActive ? "2.5rem" : "2.5rem",
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
