@@ -1,4 +1,4 @@
-// Suppose service: chatApi.js
+
 export async function sendMessageApi(userMessage, history) {
   const res = await fetch(`${VITE_API_URL}/api/chat`, {
     method: 'POST',

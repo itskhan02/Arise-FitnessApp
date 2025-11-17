@@ -11,6 +11,9 @@ import { CgGym } from "react-icons/cg";
 import { useLocation, useNavigate } from "react-router-dom";
 import UserLevel from "../components/UserLevel";
 import UserData from "../components/UserData";
+import Beginner from "/public/beginner.png";
+import Intermediate from "/public/intermediate.png";
+import Expert from "/public/expert.png";
 
 const navItems = [
   { icon: Home, label: "Home", path: "/home" },
@@ -44,7 +47,6 @@ const Profile = () => {
     return age;
   };
 
-  // load initial details (and also allow session storage values)
   useEffect(() => {
     if (isLoaded && user) {
       const savedDetails = JSON.parse(sessionStorage.getItem("userDetails")) || {};
@@ -65,12 +67,10 @@ const Profile = () => {
       };
 
       setDetails(initialDetails);
-      // persist what we loaded
       sessionStorage.setItem("userDetails", JSON.stringify(initialDetails));
     }
   }, [user, isLoaded]);
 
-  // keep local details in sync when Clerk user changes elsewhere (two-way sync)
   useEffect(() => {
     if (isLoaded && user) {
       const clerkFullName = user.fullName || `${user.firstName || ""} ${user.lastName || ""}`.trim();
@@ -80,7 +80,6 @@ const Profile = () => {
         sessionStorage.setItem("userDetails", JSON.stringify(updated));
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.fullName, user?.firstName, user?.lastName, isLoaded]);
 
   const handleFieldChange = (field, value) => {
@@ -93,14 +92,12 @@ const Profile = () => {
     }
   };
 
-  // Image upload: keep original style/behavior but use Clerk's file object update where possible
   const handleImageChange = async (e) => {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
 
     reader.onload = async () => {
-      // store base64 for immediate preview and persistence
       handleFieldChange("customImage", reader.result);
       try {
 
@@ -113,11 +110,23 @@ const Profile = () => {
     reader.readAsDataURL(file);
   };
 
+  const getTierImage = () => {
+    const tier = (details.level || "Beginner").toLowerCase();
+    if (tier === "intermediate") {
+      return Intermediate;
+    }
+    if (tier === "expert" || tier === "advanced") {
+      return Expert;
+    }
+    return Beginner;
+  };
+
   const profileImage = details.customImage || user?.imageUrl;
 
   return (
     <div
       style={{
+        height: "100vh",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -186,10 +195,8 @@ const Profile = () => {
             />
           </div>
 
-          {/* Editable Full Name */}
-          <div
-          >
-            <h2 style={{ fontWeight: "600", fontSize: "1.5rem", margin: 1 }}>
+          <div>
+            <h2 style={{ fontWeight: "600", fontSize: "1.5rem", margin: 1, }}>
               {details.fullName || "User"}
             </h2>
           </div>

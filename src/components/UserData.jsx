@@ -100,23 +100,6 @@ const UserData = () => {
             alignItems: "center",
           }}
         >
-          <label>DOB</label>
-          <input
-            type="date"
-            value={details.dob}
-            onChange={() => {}}
-            style={{
-              width: "50%",
-              padding: "0.5rem",
-              boxSizing: "border-box",
-              borderRadius: "8px",
-              border: "1px solid rgba(255,255,255,0.2)",
-              color: "#fff",
-              outline: "none",
-              fontSize: "0.95rem",
-              background: "transparent",
-            }}
-          />
         </div>
         {["Age", "Height", "Tier"].map((field) => (
           <div

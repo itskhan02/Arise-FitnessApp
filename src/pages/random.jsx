@@ -1249,3 +1249,733 @@ export default DailyQuestSession;
 // };
 
 // export default FitBot;
+
+
+// VITE_CLERK_PUBLISHABLE_KEY="pk_test_c3VwZXJiLWxlb3BhcmQtNy5jbGVyay5hY2NvdW50cy5kZXYk"
+
+// VITE_API_URL= https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=AIzaSyAAcPpUhOOyzgWnEdDk4a1Q3y8P3sdFsbs 
+
+// # VITE_API_URL=http://localhost:5000
+
+
+// # VITE_GEMINI_API_KEY=AIzaSyAAcPpUhOOyzgWnEdDk4a1Q3y8P3sdFsbs
+
+
+
+// # VITE_CLERK_PUBLISHABLE_KEY='pk_test_c3VwZXJiLWxlb3BhcmQtNy5jbGVyay5hY2NvdW50cy5kZXYk'
+
+// VITE_GEMINI_API_KEY=AIzaSyAAcPpUhOOyzgWnEdDk4a1Q3y8P3sdFsbs
+// VITE_GEMINI_MODEL_URL=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+
+
+// # VITE_API_URL=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent" \
+// #   -H "x-goog-api-key: $GEMINI_API_KEY
+
+
+
+
+
+
+// import React, { useEffect, useState, useRef } from "react";
+// import { motion } from "framer-motion";
+// import { GiTreasureMap, GiChest } from "react-icons/gi";
+// import { FaClock, FaExclamationTriangle, FaTimes, FaCheck } from "react-icons/fa";
+// import { useUser } from "@clerk/clerk-react";
+// import { updateUserData, getUserData } from "../api/userApi";
+
+// const exercises = [
+//   "Push-ups",
+//   "Pull-ups",
+//   "Crunches",
+//   "Burpees",
+//   "Plank",
+//   "Sit-ups",
+//   "Jumping Jacks",
+//   "Lunges",
+// ];
+
+// const getRandomQuests = () => {
+//   const shuffled = [...exercises].sort(() => 0.5 - Math.random());
+//   return shuffled.slice(0, 3).map((ex) => {
+//     const exp = Math.floor(Math.random() * 21) + 10;
+//     const duration =
+//       ex === "Plank"
+//         ? Math.floor(Math.random() * 20) + 10
+//         : `${Math.floor(Math.random() * 20) + 10}`;
+//     return {
+//       name: ex,
+//       exp,
+//       duration,
+//       completed: false,
+//       started: false,
+//       failed: false,
+//     };
+//   });
+// };
+
+// const getExpForLevel = (lvl) => Math.floor(1000 * Math.pow(1.1, lvl - 1));
+
+// const DailyQuest = () => {
+//   const { user, isSignedIn } = useUser();
+
+//   const [isLoading, setIsLoading] = useState(true);
+//   const [quests, setQuests] = useState([]);
+//   const [chestOpened, setChestOpened] = useState(false);
+
+//   const [xp, setXp] = useState(0);
+//   const [level, setLevel] = useState(1);
+//   const [stats, setStats] = useState({
+//     strength: 0,
+//     stamina: 0,
+//     agility: 0,
+//     endurance: 0,
+//     mobility: 0,
+//   });
+
+
+//   const [timer, setTimer] = useState(null);
+//   const [activeQuest, setActiveQuest] = useState(null);
+//   const [activeStartDuration, setActiveStartDuration] = useState(null);
+//   const [isPlankReady, setIsPlankReady] = useState(false);
+
+//   const [popup, setPopup] = useState(null);
+//   const [toast, setToast] = useState(null);
+//   const toastRef = useRef(null);
+
+//   const pushToast = (txt) => {
+//     setToast(txt);
+//     if (toastRef.current) clearTimeout(toastRef.current);
+//     toastRef.current = setTimeout(() => setToast(null), 3000);
+//   };
+
+//   // Effect to load user data from the database
+//   useEffect(() => {
+//     const fetchUserData = async () => {
+//       if (user?.id) {
+//         setIsLoading(true);
+//         try {
+//           const data = await getUserData(user.id);
+//           setLevel(data.level || 1);
+//           setXp(data.xp || 0);
+//           setStats(
+//             data.stats || {
+//               strength: 0,
+//               stamina: 0,
+//               agility: 0,
+//               endurance: 0,
+//               mobility: 0,
+//             }
+//           );
+
+//           const today = new Date().toISOString().slice(0, 10);
+//           if (data.quests && data.quests.date === today) {
+//             setQuests(data.quests.quests);
+//             setChestOpened(data.quests.chestOpened);
+//           } else {
+//             // Generate new quests if no data for today or date mismatch
+//             setQuests(getRandomQuests());
+//             setChestOpened(false);
+//           }
+//         } catch (err) {
+//           console.error("Failed to fetch user data:", err);
+//           // Fallback to generating new quests if fetching fails
+//           setQuests(getRandomQuests());
+//           setChestOpened(false);
+//         } finally {
+//           setIsLoading(false);
+//         }
+//       }
+//     };
+//     fetchUserData();
+//   }, [user]); // Re-run when user object changes (e.g., after sign-in)
+
+
+//   useEffect(() => {
+//     if (timer === 0 && activeQuest !== null) {
+//       setIsPlankReady(true);
+//       pushToast("Plank time reached — tap Finish to claim rewards.");
+//       return;
+//     }
+//     if (timer > 0) {
+//       const id = setInterval(
+//         () => setTimer((t) => (t == null ? null : t - 1)),
+//         1000,
+//       );
+//       return () => clearInterval(id);
+//     }
+//   }, [timer, activeQuest]);
+
+//   const startQuest = (index) => {
+//     if (activeQuest !== null) {
+//       pushToast("Finish current quest before starting another.");
+//       return;
+//     }
+//     const q = quests[index];
+//     if (!q) return;
+
+//     if (q.name === "Plank") {
+//       setQuests((prev) => {
+//         const copy = [...prev];
+//         copy[index] = { ...copy[index], started: true, failed: false };
+//         return copy;
+//       });
+//       setActiveQuest(index);
+//       setActiveStartDuration(Number(q.duration));
+//       setTimer(Number(q.duration));
+//       setIsPlankReady(false);
+//       pushToast("Plank started — hold steady!");
+//     } else {
+//       setQuests((prev) => {
+//         const copy = [...prev];
+//         copy[index] = { ...copy[index], completed: true };
+//         return copy;
+//       });
+//     }
+//   };
+
+
+//   const finishPlank = () => {
+//     if (activeQuest === null) return;
+//     setQuests((prev) => {
+//       const copy = [...prev];
+//       copy[activeQuest] = {
+//         ...copy[activeQuest],
+//         completed: true,
+//         started: false,
+//         failed: false,
+//       };
+//       return copy;
+//     });
+//     setActiveQuest(null);
+//     setActiveStartDuration(null);
+//     setTimer(null);
+//     setIsPlankReady(false);
+//     pushToast("Plank completed!");
+//   };
+
+
+//   const cancelPlank = () => {
+//     if (activeQuest === null) return;
+//     if (isPlankReady) {
+//       setActiveQuest(null);
+//       setTimer(null);
+//       setIsPlankReady(false);
+//       pushToast("Closed");
+//       return;
+//     }
+//     setQuests((prev) => {
+//       const copy = [...prev];
+//       copy[activeQuest] = {
+//         ...copy[activeQuest],
+//         started: false,
+//         failed: true,
+//         completed: false,
+//       };
+//       return copy;
+//     });
+//     setActiveQuest(null);
+//     setActiveStartDuration(null);
+//     setTimer(null);
+//     pushToast("Plank canceled — marked failed.");
+//   };
+  
+
+//   const openChest = async () => {
+//     if (!user || !user.id) {
+//       pushToast("User not loaded yet.");
+//       return;
+//     }
+
+//     if (chestOpened) {
+//       setPopup("warning");
+//       pushToast("Chest already opened today!");
+//       return;
+//     }
+
+//     const allCompleted =
+//       quests.length > 0 && quests.every((q) => q.completed && !q.failed);
+
+//     if (!allCompleted) {
+//       setPopup("warning");
+//       pushToast("Complete all quests first!");
+//       return;
+//     }
+
+//     const totalExp = quests.reduce((s, q) => s + (q.exp || 0), 0);
+//     const newExp = (xp || 0) + totalExp;
+
+//     // Random stat
+//     const statKeys = Object.keys(stats);
+//     const randomStatKey =
+//       statKeys[Math.floor(Math.random() * statKeys.length)];
+
+//     const newStats = {
+//       ...stats,
+//       [randomStatKey]: (stats[randomStatKey] || 0) + 1,
+//     };
+
+//     // Leveling system
+//     let newLevel = level || 1;
+//     let remainingExp = newExp;
+//     let expToNext = getExpForLevel(newLevel);
+
+//     while (remainingExp >= expToNext) {
+//       remainingExp -= expToNext;
+//       newLevel++;
+//       expToNext = getExpForLevel(newLevel);
+//     }
+
+//     setStats(newStats);
+//     setLevel(newLevel);
+//     setXp(remainingExp);
+//     setChestOpened(true);
+//     setPopup("reward");
+
+//     try {
+//       const today = new Date().toISOString().slice(0, 10);
+//       await updateUserData(user.id, {
+//         xp: remainingExp,
+//         level: newLevel,
+//         stats: newStats,
+//         quests: { // Save the daily quest state
+//           date: today,
+//           quests: quests.map(q => ({ ...q, completed: true })), 
+//           chestOpened: true,
+//         },
+//         "streak.lastActivity": new Date(), 
+//       });
+
+//       window.dispatchEvent(new CustomEvent("userProgressUpdated"));
+//       window.dispatchEvent(
+//         new CustomEvent("statsUpdated", { detail: newStats })
+//       );
+
+//       console.log("✅ XP, stats, and daily quests saved to DB");
+//     } catch (err) {
+//       console.error("Failed to save chest rewards:", err);
+//     }
+//   };
+
+//   return (
+//     <div
+//       style={{
+//         maxWidth: 600,
+//         width: "100%",
+//         margin: "0",
+//         minHeight: 400,
+//         background:
+//           "linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(3, 7, 18, 0.95))",
+//         borderRadius: 20,
+//         padding: "1rem 1.3rem",
+//         color: "#fff",
+//         boxShadow: "0 12px 35px rgba(0,0,0,0.4)",
+//         border: "1px solid rgba(255,255,255,0.05)",
+//         backdropFilter: "blur(12px)",
+//         display: "flex",
+//         flexDirection: "column",
+//         gap: "1.5rem",
+//         alignItems: "center",
+//       }}
+//     >
+//       {isLoading && (
+//         <div style={{ color: "#fff", fontSize: "1.5rem" }}>Loading Quests...</div>
+//       )}
+
+//       {/* Header */}
+//       <motion.div
+//         style={{
+//           width: "100%",
+//           maxWidth: 530,
+//           display: "flex",
+//           flexDirection: "column",
+//           gap: 16,
+//         }}
+//         initial={{ opacity: 0, y: 30 }}
+//         animate={{ opacity: isLoading ? 0 : 1, y: isLoading ? 30 : 0 }}
+//         transition={{ duration: 0.6, delay: isLoading ? 0 : 0.2 }}
+//       >
+//         <div
+//           style={{
+//             display: "flex",
+//             justifyContent: "space-between",
+//             alignItems: "center",
+//           }}
+//         >
+//           <div
+//             style={{
+//               display: "flex",
+//               alignItems: "center",
+//               gap: 8,
+//               fontWeight: 800,
+//               color: "#4178f0ff",
+//               fontSize: 22,
+//             }}
+//           >
+//             <GiTreasureMap /> Daily Quests
+//           </div>
+//         </div>
+
+//         {/* Quest List - Only render if not loading */}
+//         {!isLoading && (
+//         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+//           {quests.map((q, i) => (
+//             <motion.div
+//               whileHover={{ scale: 1.02 }}
+//               style={{
+//                 display: "flex",
+//                 justifyContent: "space-between",
+//                 alignItems: "center",
+//                 padding: "8px 10px",
+//                 borderRadius: 12,
+//                 height: 60,
+//                 border: q.completed
+//                   ? "1px solid rgba(34,197,94,0.7)"
+//                   : q.failed
+//                   ? "1px solid rgba(239,68,68,0.7)"
+//                   : "1px solid rgba(148,163,184,0.06)",
+//                 background: q.completed
+//                   ? "linear-gradient(90deg,#052e21,#083d2a)"
+//                   : q.failed
+//                   ? "linear-gradient(90deg,#3b0a0a,#2b0a0a)"
+//                   : "rgba(255,255,255,0.02)",
+//                 color: q.completed
+//                   ? "#dcfce7"
+//                   : q.failed
+//                   ? "#ffd7d7"
+//                   : "#e6eefb",
+//               }}
+//             >
+//               <div>
+//                 <div style={{ fontSize: "1.3rem", fontWeight: 500 }}>
+//                   {q.name}
+//                 </div>
+//                 <div style={{ fontSize: "0.9rem", color: "#94a3b8" }}>
+//                   {q.name === "Plank" ? `${q.duration}s` : `${q.duration} reps`}
+//                 </div>
+//               </div>
+//               <div>
+//                 {q.completed ? (
+//                   <button
+//                     disabled
+//                     style={{
+//                       background: "rgba(148,163,184,0.12)",
+//                       color: "#93a3b8",
+//                       padding: "6px 8px",
+//                       borderRadius: 10,
+//                       border: "none",
+//                       fontSize: "1.2rem",
+//                       fontWeight: 600,
+//                       display: "flex",
+//                       alignItems: "center",
+//                       gap: 6,
+//                       cursor: "not-allowed",
+//                     }}
+//                   >
+//                     <FaCheck /> Done
+//                   </button>
+//                 ) : (
+//                   <button
+//                     onClick={() => startQuest(i)}
+//                     disabled={!!activeQuest}
+//                     style={{
+//                       color: !!activeQuest ? "#93a3b8" : "#ffffffff",
+//                       padding: "0.4rem 1rem",
+//                       border: "1px solid #0bdcf8ff ",
+//                       borderRadius: 10,
+//                       fontSize: "1.3rem",
+//                       fontWeight: 600,
+//                       cursor: !!activeQuest ? "not-allowed" : "pointer",
+//                     }}
+//                     onMouseOver={(e) => {
+//                       e.currentTarget.style.background =
+//                         "linear-gradient(90deg, #1e3a8a, #06b6d4)";
+//                       e.currentTarget.style.boxShadow = "0 0 12px #06b6d4";
+//                     }}
+//                     onMouseOut={(e) => {
+//                       e.currentTarget.style.background = "#02013b";
+//                       e.currentTarget.style.boxShadow = "none";
+//                     }}
+//                   >
+//                     {q.name === "Plank" && q.started
+//                       ? "In Progress"
+//                       : q.failed
+//                       ? "Retry"
+//                       : "Start"}
+//                   </button>
+//                 )}
+//               </div>
+//             </motion.div>
+//           ))}
+//         </div>
+//         )}
+
+//         {/* Open Chest Button */}
+//         <button
+//           onClick={openChest}
+//           style={{
+//             width: "100%",
+//             padding: "0.5rem 1rem",
+//             borderRadius: 12,
+//             fontWeight: 700,
+//             fontSize: "1.5rem",
+//             background: chestOpened
+//               ? "#374151"
+//               : "linear-gradient(90deg, #93a8e2ff, #06b6d4)",
+//             color: chestOpened ? "#9ca3af" : "#001f14",
+//             border: "none",
+//             cursor: "pointer",
+//             display: "flex",
+//             alignItems: "center",
+//             justifyContent: "center",
+//             gap: 10,
+//           }}
+//           disabled={isLoading} // Disable button while loading
+//         >
+//           <GiChest size={26} /> {chestOpened ? "Chest Opened!" : "Open Chest"}
+//         </button>
+//       </motion.div>
+
+//       {/* Plank Modal */}
+//       {activeQuest !== null && (
+//         <div
+//           style={{
+//             position: "fixed",
+//             inset: 0,
+//             display: "flex",
+//             alignItems: "center",
+//             justifyContent: "center",
+//             background: "rgba(2,6,23,0.7)",
+//             zIndex: 99,
+//             padding: 16,
+//           }}
+//         >
+//           <motion.div
+//             style={{
+//               width: "100%",
+//               maxWidth: 420,
+//               background: "#071022",
+//               borderRadius: 14,
+//               padding: 18,
+//               textAlign: "center",
+//               border: "1px solid rgba(245,158,11,0.12)",
+//               boxShadow: "0 12px 38px rgba(2,6,23,0.6)",
+//               color: "#e6eefb",
+//               position: "relative",
+//             }}
+//             initial={{ scale: 0.95, opacity: 0, y: 20 }}
+//             animate={{ scale: 1, opacity: 1, y: 0 }}
+//           >
+//             <button
+//               onClick={cancelPlank}
+//               style={{
+//                 position: "absolute",
+//                 top: 10,
+//                 right: 10,
+//                 border: "none",
+//                 background: "transparent",
+//                 color: "#94a3b8",
+//                 cursor: "pointer",
+//               }}
+//             >
+//               <FaTimes />
+//             </button>
+//             <FaClock size={44} style={{ color: "#fbbf24", marginBottom: 8 }} />
+//             <div style={{ fontWeight: 900, marginBottom: 6 }}>
+//               Plank Challenge
+//             </div>
+//             <div
+//               style={{
+//                 fontSize: 44,
+//                 fontWeight: 900,
+//                 color: "#e6eefb",
+//                 marginBottom: 4,
+//               }}
+//             >
+//               {timer ?? "—"}
+//             </div>
+//             <div style={{ fontSize: 12, color: "#94a3b8", marginBottom: 12 }}>
+//               seconds
+//             </div>
+//             <div
+//               style={{
+//                 width: "100%",
+//                 height: 10,
+//                 background: "#091226",
+//                 borderRadius: 999,
+//                 overflow: "hidden",
+//                 marginBottom: 12,
+//               }}
+//             >
+//               <div
+//                 style={{
+//                   height: "100%",
+//                   background: "#10b981",
+//                   width: `${
+//                     timer !== null && quests[activeQuest]
+//                       ? Math.max(
+//                           0,
+//                           ((quests[activeQuest].duration - timer) /
+//                             quests[activeQuest].duration) *
+//                             100,
+//                         )
+//                       : 0
+//                   }%`,
+//                   transition: "width 0.2s linear",
+//                 }}
+//               />
+//             </div>
+//             <div style={{ fontSize: 13, color: "#9ca3af", marginBottom: 8 }}>
+//               {isPlankReady
+//                 ? "Plank time complete — tap Finish to claim rewards."
+//                 : "Hold steady until the timer ends."}
+//             </div>
+//             <div style={{ display: "flex", gap: 10 }}>
+//               {!isPlankReady ? (
+//                 <button
+//                   onClick={cancelPlank}
+//                   style={{
+//                     flex: 1,
+//                     padding: 10,
+//                     borderRadius: 10,
+//                     background: "#ef4444",
+//                     border: "none",
+//                     color: "#fff",
+//                     fontWeight: 800,
+//                     cursor: "pointer",
+//                   }}
+//                 >
+//                   Cancel
+//                 </button>
+//               ) : (
+//                 <button
+//                   onClick={finishPlank}
+//                   style={{
+//                     flex: 1,
+//                     padding: 10,
+//                     borderRadius: 10,
+//                     background: "#10b981",
+//                     border: "none",
+//                     color: "#062e25",
+//                     fontWeight: 800,
+//                     cursor: "pointer",
+//                   }}
+//                 >
+//                   Finish
+//                 </button>
+//               )}
+//             </div>
+//           </motion.div>
+//         </div>
+//       )}
+
+//       {/* Popup */}
+//       {popup && (
+//         <div
+//           style={{
+//             position: "fixed",
+//             inset: 0,
+//             display: "flex",
+//             alignItems: "center",
+//             justifyContent: "center",
+//             background: "rgba(2,6,23,0.7)",
+//             zIndex: 99,
+//             padding: 16,
+//           }}
+//         >
+//           <motion.div
+//             style={{
+//               gap: "2rem",
+//               background: "#00002e7b",
+//               backdropFilter: "blur(2px)",
+//               padding: "1rem",
+//               border: "1px solid #0bdcf8ff",
+//               borderRadius: "1rem",
+//               maxWidth: "350px",
+//               width: "90%",
+//               height: "16rem",
+//               textAlign: "center",
+//               color: "#fff",
+//               boxShadow: "0px 4px 20px rgba(0,0,0,0.2)",
+//             }}
+//             initial={{ scale: 0.9, opacity: 0, y: 20 }}
+//             animate={{ scale: 1, opacity: 1, y: 0 }}
+//           >
+//             {popup === "reward" ? (
+//               <>
+//                 <GiChest
+//                   size={36}
+//                   style={{ color: "#fbbf24", marginBottom: 8 }}
+//                 />
+//                 <div style={{ fontWeight: 900, marginBottom: 6 }}>
+//                   Chest Opened!
+//                 </div>
+//                 <div
+//                   style={{ color: "#fbbf24", fontWeight: 800, marginBottom: 8 }}
+//                 >
+//                   Rewards Gained 🎁
+//                 </div>
+//                 <div style={{ marginBottom: 4 }}>{`+${quests.reduce(
+//                   (s, q) => s + q.exp,
+//                   0,
+//                 )} EXP`}</div>
+//                 <div>+1 Random Stat</div>
+//               </>
+//             ) : (
+//               <>
+//                 <FaExclamationTriangle
+//                   size={36}
+//                   style={{ color: "#ef4444", marginBottom: 8 }}
+//                 />
+//                 <div style={{ fontWeight: 900, marginBottom: 6 }}>Warning</div>
+//                 <div style={{ color: "#94a3b8" }}>
+//                   {chestOpened
+//                     ? "Reward already claimed!"
+//                     : "Complete all quests first!"}
+//                 </div>
+//               </>
+//             )}
+//             <div style={{ marginTop: 12 }}>
+//               <button
+//                 onClick={() => setPopup(null)}
+//                 style={{
+//                   padding: "8px 12px",
+//                   borderRadius: 8,
+//                   background: "#f59e0b",
+//                   border: "none",
+//                   fontWeight: 800,
+//                   cursor: "pointer",
+//                 }}
+//               >
+//                 Close
+//               </button>
+//             </div>
+//           </motion.div>
+//         </div>
+//       )}
+
+//       {/* Toast */}
+//       {toast && (
+//         <motion.div
+//           initial={{ opacity: 0, y: -8 }}
+//           animate={{ opacity: 1, y: 0 }}
+//           style={{
+//             position: "fixed",
+//             top: 17,
+//             left: "50%",
+//             transform: "translateX(-50%)",
+//             background: "#05202a",
+//             color: "#dbeafe",
+//             padding: "8px 14px",
+//             borderRadius: 10,
+//             boxShadow: "0 8px 24px rgba(2,6,23,0.6)",
+//             zIndex: 120,
+//           }}
+//         >
+//           {toast}
+//         </motion.div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default DailyQuest;

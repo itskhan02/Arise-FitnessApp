@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FaComments, FaTimes } from "react-icons/fa";
 import { BiSend } from "react-icons/bi";
-import IMG1 from "/public/Bot.png";
-import IMG2 from "/public/bot1.png";
-import BG from "/public/Botbg.png";
+import IMG1 from "/Bot.png";
+import IMG2 from "/bot1.png";
+import BG from "/Botbg.png";
 
 
 const FitBot = ({ userImage }) => {
@@ -28,10 +28,10 @@ const FitBot = ({ userImage }) => {
           {
             id: "welcome",
             sender: "bot",
-            text: "👋 Hi! I’m FitBot — your diet & health assistant. Ask me anything about diet, workouts, or fitness!",
+            text: "👋Hi! I’m FitBot - your diet & health assistant. Ask me anything about diet, workouts, or fitness!",
           },
         ]);
-      }, 200);
+      }, 500);
     }
   };
 
@@ -47,37 +47,53 @@ const FitBot = ({ userImage }) => {
     const botMsgId = Date.now() + 1;
     setChat((prev) => [...prev, { id: botMsgId, sender: "bot", text: "Typing..." }]);
 
+    // Prepare chat history for the API
+    const history = chat
+      .filter(msg => msg.id !== 'welcome') // Exclude the initial welcome message
+      .map(msg => ({
+        role: msg.sender === 'bot' ? 'model' : 'user',
+        parts: [{ text: msg.text }],
+      }));
+
     try {
       const response = await fetch(`${API_URL}?key=${API_KEY}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           contents: [
-            {
-              role: "user",
-              parts: [{ text: userInput }],
-            },
+            ...history, // Send previous messages
+            { role: "user", parts: [{ text: userInput }] }, // Send the new message
           ],
         }),
       });
 
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error?.message || "API request failed");
+      }
+
       const data = await response.json();
 
-      let botReply =
-        data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-        "⚠️ Sorry, I couldn’t process that. Please try again.";
+      let botReply;
+      if (data.candidates && data.candidates.length > 0) {
+        botReply = data.candidates[0].content.parts[0].text;
+      } else if (data.promptFeedback?.blockReason) {
+        botReply = `⚠️ My apologies, I cannot respond to that. Reason: ${data.promptFeedback.blockReason}.`;
+      } else {
+        botReply = "⚠️ Sorry, I couldn’t process that. Please try again.";
+      }
 
       setChat((prev) =>
         prev.map((msg) =>
           msg.id === botMsgId ? { ...msg, text: botReply } : msg
         )
       );
-    } catch (error) {
-      console.error("Error:", error);
+    } catch (err) {
+      console.error("Error calling Gemini API:", err);
       setChat((prev) =>
         prev.map((msg) =>
           msg.id === botMsgId
-            ? { ...msg, text: "⚠️ Something went wrong. Please try again." }
+            ? { ...msg, text: `⚠️ Something went wrong. ${err.message}` }
             : msg
         )
       );
@@ -101,9 +117,7 @@ const FitBot = ({ userImage }) => {
         onClick={toggleChat}
         style={{
           position: "fixed",
-          // bottom: "3rem",
-          // right: "2rem",
-          background: "#2563eb",
+          background: "#3b82f6",
           color: "white",
           borderRadius: "50%",
           width: "60px",
@@ -111,7 +125,7 @@ const FitBot = ({ userImage }) => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
+          boxShadow: "0 4px 10px rgba(0,0,0,0.5)",
           cursor: "pointer",
           zIndex: 1000,
         }}
@@ -124,20 +138,18 @@ const FitBot = ({ userImage }) => {
         <div 
           className="chat-window"
           style={{
-            position: "fixed",
-            // bottom: "6rem",
-            // right: "5rem",
-            // width: "350px",
-            // height: "480px",
-            background: "#f9fafb",
-            backgroundImage: `url(${BG})`,
-            backgroundSize: "cover",
+            position: "fixed", 
+            backgroundColor: "rgba(52, 53, 65, 0.8)",
+            // backgroundImage: `url(${BG})`,
+            // backgroundSize: "200px",
+            // backgroundRepeat: "no-repeat",
+            // backgroundPosition: "center",
             border: "1px solid #ddd",
             borderRadius: "20px",
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
-            boxShadow: "0 6px 20px rgba(0,0,0,0.2)",
+            boxShadow: "1px 2px 19px rgba(137, 140, 142, 1) inset",
             overflow: "hidden",
             zIndex: 1000,
           }}
@@ -145,7 +157,7 @@ const FitBot = ({ userImage }) => {
           {/* Header */}
           <div
             style={{
-              background: "#2563eb",
+              background: "rgba(52, 53, 65, 0.8) i",
               color: "white",
               textAlign: "center",
               padding: "6px",
@@ -155,12 +167,14 @@ const FitBot = ({ userImage }) => {
               alignItems: "center",
               justifyContent: "flex-start",
               borderBottom: "1px solid #ddd",
+              boxShadow: "1px 2px 19px rgba(137, 140, 142, 1) inset",
+
             }}
           >
             <img
               src={IMG1}
               alt="FitBot Avatar"
-              style={{ width: "2.7rem", height: "2.7rem", marginRight: "8px" }}
+              style={{ width: "2.7rem", height: "2.7rem", }}
             />
             FitBot
           </div>
@@ -169,15 +183,16 @@ const FitBot = ({ userImage }) => {
           <div
             style={{
               flex: 1,
-              padding: "0.4rem",
+              paddingTop: "0.8rem",
+              paddingLeft: "0.8rem",
+              paddingRight: "0.8rem",
               overflowY: "auto",
               fontSize: "0.9rem",
               fontFamily: "Nunito",
               display: "flex",
               flexDirection: "column",
               justifyContent: "flex-start",
-              alignItems: "flex-start",
-              gap: "0.9rem",
+              gap: "1rem",
             }}
           >
             {chat.map((msg) => (
@@ -196,16 +211,16 @@ const FitBot = ({ userImage }) => {
                   <img
                     src={IMG2}
                     alt="FitBot Avatar"
-                    style={{ width: "2.5rem", height: "2.5rem" }}
+                    style={{ width: "3rem", height: "3rem" }}
                   />
                 )}
                 <span
                   style={{
-                    background:
-                      msg.sender === "user" ? "#2563eb" : "#e5e7eb",
-                    color: msg.sender === "user" ? "white" : "black",
+                    background: msg.sender === "user" ? "#3b82f6" : "#444654", 
+                    color: "white",
                     padding: "8px 10px",
-                    borderRadius: "15px",
+                    borderRadius: msg.sender === "user" ? "18px 18px 0 18px" : "18px 18px 18px 0", 
+                    fontWeight: "500",
                     maxWidth: "80%",
                     textAlign: "justify",
                     wordBreak: "break-word",
@@ -233,16 +248,18 @@ const FitBot = ({ userImage }) => {
           <div
             style={{
               display: "flex",
-              border: "1px solid #2b2a2a",
+              border: "1px solid #766f6fff",
               padding: "6px",
-              margin: "0.6rem",
+              margin: "0.8rem",
               borderRadius: "1.5rem",
-              background: "white",
+              background: "#40414f",
+              boxShadow: "1px 2px 10px rgba(118, 111, 111, 1) inset",
             }}
           >
             <input
               type="text"
               placeholder="Ask FitBot..."
+              placeholderTextColor="#f7f7f7ff"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyPress}
@@ -251,17 +268,23 @@ const FitBot = ({ userImage }) => {
                 flex: 1,
                 border: "none",
                 outline: "none",
-                color: "black",
-                fontSize: "0.8rem",
+                background: "transparent",
+                color: "#f7f7f8ff",
+                fontFamily: "Nunito",
+                fontWeight: "500",
+                marginLeft: "0.5rem",
+                fontSize: "0.9rem",
+                
               }}
+              
             />
             <button
               onClick={handleSendMessage}
               disabled={isLoading}
               style={{
-                color: "#2563eb",
+                color: "#cad9f8ff",
                 border: "none",
-                padding: "6px 12px",
+                background: "transparent",
                 borderRadius: "10px",
                 cursor: "pointer",
               }}

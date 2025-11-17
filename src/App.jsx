@@ -12,7 +12,7 @@ import Bodystats from './pages/Bodystats';
 import Setup from './pages/Setup';
 import Login from './components/Login';
 import Register from './components/Register';
-import Dashboard from './components/Dashboard';
+import Home from './components/Home';
 import Focusarea from './pages/FocusArea';
 import Weight from './pages/Weight';
 import GoalWeight from './pages/GoalWeight';
@@ -41,7 +41,7 @@ const App = () => {
           <Route path="/setup" element={<Setup/>} />
           <Route path="/login" element={<Login/>} />
           <Route path="/register" element={<Register/>} />
-          <Route path="/home" element={<Dashboard/>} />
+          <Route path="/home" element={<Home/>} />
           <Route path="/height" element={<Height/>} />
           <Route path="/weight" element={<Weight/>} />
           <Route path="/goal-weight" element={<GoalWeight/>} />
