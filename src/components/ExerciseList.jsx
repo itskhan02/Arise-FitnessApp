@@ -14,7 +14,7 @@ const ExerciseList = () => {
       try {
         const token = await getToken();
         const response = await fetch(
-          "https://wmddgktx-8000.inc1.devtunnels.ms/api/exercise/",
+          "https://testing-backend-4cpr.onrender.com/api/exercise/",
           {
             headers: {
               "Authorization": `Bearer ${token}`,
