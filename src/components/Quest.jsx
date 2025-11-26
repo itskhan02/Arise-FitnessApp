@@ -2,9 +2,13 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { GiTreasureMap, GiChest } from "react-icons/gi";
 import { FaClock, FaExclamationTriangle, FaTimes, FaCheck } from "react-icons/fa";
+import { openChestApi } from "../api/userApi";
+
+
 
 const QUEST_HISTORY_KEY = "quest_history";
 const USER_PROGRESS_KEY = "user_progress_history";
+const DAILY_QUEST_DATA_KEY = "daily_quest_data";
 
 const DailyQuest = () => {
   const exercises = [
@@ -70,6 +74,29 @@ const DailyQuest = () => {
     localStorage.setItem(QUEST_HISTORY_KEY, JSON.stringify(history));
   };
 
+  const saveDailyQuestData = (questsToSave, chestStatus) => {
+    const today = new Date().toISOString().slice(0, 10);
+    const data = {
+      date: today,
+      quests: questsToSave,
+      chestOpened: chestStatus,
+    };
+    localStorage.setItem(DAILY_QUEST_DATA_KEY, JSON.stringify(data));
+  };
+
+  useEffect(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    const dailyDataRaw = localStorage.getItem(DAILY_QUEST_DATA_KEY);
+    if (dailyDataRaw) {
+      const dailyData = JSON.parse(dailyDataRaw);
+      if (dailyData.date === today) {
+        setQuests(dailyData.quests);
+        setChestOpened(dailyData.chestOpened);
+        return;
+      }
+    }
+  }, []);
+
   useEffect(() => {
     const progressHistoryRaw = localStorage.getItem(USER_PROGRESS_KEY);
     if (progressHistoryRaw) {
@@ -93,7 +120,12 @@ const DailyQuest = () => {
         }
       }
     }
-    setQuests(getRandomQuests());
+    setQuests((prevQuests) => {
+      if (prevQuests.length === 0) {
+        return getRandomQuests();
+      }
+      return prevQuests;
+    });
   }, []);
 
   useEffect(() => {
@@ -111,6 +143,13 @@ const DailyQuest = () => {
       return () => clearInterval(id);
     }
   }, [timer, activeQuest]);
+
+  // Persist quest state whenever it changes
+  useEffect(() => {
+    if (quests.length > 0) {
+      saveDailyQuestData(quests, chestOpened);
+    }
+  }, [quests, chestOpened]);
 
   const saveProgress = (newLevel, newExp, newStats) => {
     const today = new Date().toISOString().slice(0, 10);
@@ -157,82 +196,54 @@ const DailyQuest = () => {
     }
   };
 
-  const openChest = () => {
-    if (chestOpened) {
-      setPopup("warning");
-      pushToast("Chest already opened today!");
-      return;
-    }
+ const openChest = async () => {
+  if (!user || !user.id) {
+    pushToast("User not logged in");
+    return;
+  }
 
-    const allCompleted =
-      quests.length > 0 && quests.every((q) => q.completed && !q.failed);
-    if (!allCompleted) {
-      setPopup("warning");
-      pushToast("Complete all quests first!");
-      return;
-    }
+  if (chestOpened) {
+    setPopup("warning");
+    pushToast("Chest already opened today!");
+    return;
+  }
 
-    const totalExp = quests.reduce((s, q) => s + q.exp, 0);
-    const newExp = exp + totalExp;
+  const allCompleted =
+    quests.length > 0 && quests.every((q) => q.completed && !q.failed);
 
-    const statKeys = Object.keys(stats);
-    const randomStatKey = statKeys[Math.floor(Math.random() * statKeys.length)];
-    const newStats = { ...stats, [randomStatKey]: stats[randomStatKey] + 1 };
+  if (!allCompleted) {
+    setPopup("warning");
+    pushToast("Complete all quests first!");
+    return;
+  }
 
-    const getExpForLevel = (level) =>
-      Math.floor(1000 * Math.pow(1.1, level - 1));
-    let newLevel = level;
-    let remainingExp = newExp;
-    let expToNext = getExpForLevel(newLevel);
+  try {
+    const updated = await openChestApi(user.id);
 
-    while (remainingExp >= expToNext) {
-      remainingExp -= expToNext;
-      newLevel++;
-      expToNext = getExpForLevel(newLevel);
-    }
-
-    setStats(newStats);
-    setLevel(newLevel);
-    setExp(remainingExp);
+    setXp(updated.xp);
+    setLevel(updated.level);
+    setStats(updated.stats);
     setChestOpened(true);
-    setPopup("reward");
-    pushToast("Chest opened — XP & stat gained!");
-    saveProgress(newLevel, remainingExp, newStats);
-  };
 
-  const cancelPlank = () => {
-    if (activeQuest === null) return;
-    if (isPlankReady) {
-      setActiveQuest(null);
-      setActiveStartDuration(null);
-      setTimer(null);
-      setIsPlankReady(false);
-      pushToast("Closed");
-      return;
-    }
-    const startedDur =
-      activeStartDuration ?? quests[activeQuest]?.duration ?? 0;
-    const elapsed = startedDur - (timer ?? 0);
-    setQuests((prev) => {
-      const copy = [...prev];
-      copy[activeQuest] = {
-        ...copy[activeQuest],
-        started: false,
-        failed: true,
-        completed: false,
-      };
-      return copy;
-    });
-    setActiveQuest(null);
-    setActiveStartDuration(null);
-    setTimer(null);
-    pushToast(
-      `Plank canceled — marked failed after ${Math.max(
-        0,
-        Math.round(elapsed)
-      )}s`
-    );
-  };
+    window.dispatchEvent(new CustomEvent("userProgressUpdated"));
+    window.dispatchEvent(new CustomEvent("statsUpdated", { detail: updated.stats }));
+
+    setPopup("reward");
+    pushToast("Chest opened! Saved to DB.");
+  } catch (err) {
+    console.error("❌ Chest save error:", err.response?.data || err);
+
+    // 🟩 FIXED TOAST
+    const msg =
+      err.response?.data?.error ||
+      err.response?.data?.message ||
+      err.message ||
+      "Failed to save chest";
+
+    pushToast(msg);
+  }
+};
+
 
   const finishPlank = () => {
     if (activeQuest === null) return;
@@ -680,18 +691,16 @@ export default DailyQuest;
 
 
 
+/*---------------test version-----------------*/
 
-// import React, { useState, useEffect, useRef, useMemo } from "react";
+
+// import React, { useState, useEffect, useRef } from "react";
 // import { motion } from "framer-motion";
 // import { GiTreasureMap, GiChest } from "react-icons/gi";
-// import {
-//   FaClock,
-//   FaExclamationTriangle,
-//   FaTimes,
-//   FaCheck,
-// } from "react-icons/fa";
+// import { FaClock, FaExclamationTriangle, FaTimes, FaCheck } from "react-icons/fa";
 
-// const STORAGE_CHEST = "daily_quest_chest_claim_v1";
+// const QUEST_HISTORY_KEY = "quest_history";
+// const USER_PROGRESS_KEY = "user_progress_history";
 
 // const DailyQuest = () => {
 //   const exercises = [
@@ -710,26 +719,38 @@ export default DailyQuest;
 //     return shuffled.slice(0, 3).map((ex) => {
 //       const exp = Math.floor(Math.random() * 21) + 10;
 //       const duration =
-//         ex === "Plank" ? 45 : `${Math.floor(Math.random() * 20) + 10}`;
-//       return { name: ex, exp, duration, completed: false, started: false, failed: false };
+//         ex === "Plank"
+//           ? Math.floor(Math.random() * 20) + 10
+//           : `${Math.floor(Math.random() * 20) + 10}`;
+//       return {
+//         name: ex,
+//         exp,
+//         duration,
+//         completed: false,
+//         started: false,
+//         failed: false,
+//       };
 //     });
 //   };
 
 //   const [quests, setQuests] = useState([]);
 //   const [exp, setExp] = useState(0);
 //   const [level, setLevel] = useState(1);
-//   const [stats, setStats] = useState({ strength: 0, stamina: 0, agility: 0 });
+//   const [stats, setStats] = useState({
+//     strength: 0,
+//     stamina: 0,
+//     agility: 0,
+//     endurance: 0,
+//     mobility: 0,
+//   });
 //   const [chestOpened, setChestOpened] = useState(false);
-//   const [chestClaimedDate, setChestClaimedDate] = useState(null);
 //   const [timer, setTimer] = useState(null);
 //   const [activeQuest, setActiveQuest] = useState(null);
-//   const [activeStartDuration, setActiveStartDuration] = useState(null); // store starting duration for the active plank
-//   const [isPlankReady, setIsPlankReady] = useState(false); // true when timer reached 0 and user must "Finish"
+//   const [activeStartDuration, setActiveStartDuration] = useState(null);
+//   const [isPlankReady, setIsPlankReady] = useState(false);
 //   const [popup, setPopup] = useState(null);
 //   const [toast, setToast] = useState(null);
 //   const toastRef = useRef(null);
-
-//   const todayKey = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
 //   const pushToast = (txt) => {
 //     setToast(txt);
@@ -737,26 +758,70 @@ export default DailyQuest;
 //     toastRef.current = setTimeout(() => setToast(null), 3500);
 //   };
 
-//   useEffect(() => {
-//     const savedDate = localStorage.getItem(STORAGE_CHEST);
-//     setChestClaimedDate(savedDate || null);
-//     setChestOpened(savedDate === todayKey);
-//     setQuests(getRandomQuests());
-//   }, [todayKey]);
+//   const addQuestToHistory = (questName) => {
+//     const today = new Date().toISOString().slice(0, 10);
+//     const history = JSON.parse(localStorage.getItem(QUEST_HISTORY_KEY)) || {};
+//     if (!history[today]) history[today] = [];
+//     if (!history[today].includes(questName)) history[today].push(questName);
+//     localStorage.setItem(QUEST_HISTORY_KEY, JSON.stringify(history));
+//   };
 
 //   useEffect(() => {
-//     // When timer reaches 0, mark the plank "ready" for the user to finish (do not auto-complete)
+//     const progressHistoryRaw = localStorage.getItem(USER_PROGRESS_KEY);
+//     if (progressHistoryRaw) {
+//       const progressHistory = JSON.parse(progressHistoryRaw);
+//       const allDates = Object.keys(progressHistory).sort();
+//       if (allDates.length > 0) {
+//         const latestDate = allDates[allDates.length - 1];
+//         const latestProgress = progressHistory[latestDate];
+//         if (latestProgress) {
+//           setLevel(latestProgress.level || 1);
+//           setExp(latestProgress.exp || 0);
+//           setStats(
+//             latestProgress.stats || {
+//               strength: 0,
+//               stamina: 0,
+//               agility: 0,
+//               endurance: 0,
+//               mobility: 0,
+//             }
+//           );
+//         }
+//       }
+//     }
+//     setQuests(getRandomQuests());
+//   }, []);
+
+//   useEffect(() => {
 //     if (timer === 0 && activeQuest !== null) {
 //       setIsPlankReady(true);
-//       setTimer(0); 
+//       setTimer(0);
 //       pushToast("Plank time reached — tap Finish to claim rewards.");
 //       return;
 //     }
 //     if (timer > 0) {
-//       const id = setInterval(() => setTimer((t) => (t == null ? null : t - 1)), 1000);
+//       const id = setInterval(
+//         () => setTimer((t) => (t == null ? null : t - 1)),
+//         1000
+//       );
 //       return () => clearInterval(id);
 //     }
 //   }, [timer, activeQuest]);
+
+//   const saveProgress = (newLevel, newExp, newStats) => {
+//     const today = new Date().toISOString().slice(0, 10);
+//     const progressHistory =
+//       JSON.parse(localStorage.getItem(USER_PROGRESS_KEY)) || {};
+
+//     progressHistory[today] = {
+//       level: newLevel,
+//       exp: newExp,
+//       stats: newStats,
+//     };
+
+//     localStorage.setItem(USER_PROGRESS_KEY, JSON.stringify(progressHistory));
+//     window.dispatchEvent(new CustomEvent("userProgressUpdated"));
+//   };
 
 //   const startQuest = (index) => {
 //     if (activeQuest !== null) {
@@ -765,6 +830,7 @@ export default DailyQuest;
 //     }
 //     const q = quests[index];
 //     if (!q) return;
+
 //     if (q.name === "Plank") {
 //       setQuests((prev) => {
 //         const copy = [...prev];
@@ -772,10 +838,8 @@ export default DailyQuest;
 //         return copy;
 //       });
 //       setActiveQuest(index);
-//       // store start-duration so we can compute elapsed later
-//       const dur = Number(q.duration);
-//       setActiveStartDuration(dur);
-//       setTimer(dur);
+//       setActiveStartDuration(Number(q.duration));
+//       setTimer(Number(q.duration));
 //       setIsPlankReady(false);
 //       pushToast("Plank started — hold steady!");
 //     } else {
@@ -784,39 +848,76 @@ export default DailyQuest;
 //         copy[index] = { ...copy[index], completed: true };
 //         return copy;
 //       });
+//       addQuestToHistory(q.name);
 //       pushToast(`${q.name} completed!`);
 //     }
 //   };
 
-//   const openChest = () => {
-//     // require all quests completed and none failed
-//     const allCompleted = quests.length > 0 && quests.every((q) => q.completed && !q.failed);
-//     if (!allCompleted || chestClaimedDate === todayKey) {
+//   const openChest = async () => {
+//     if (chestOpened) {
 //       setPopup("warning");
+//       pushToast("Chest already opened today!");
 //       return;
 //     }
 
+//     const allCompleted =
+//       quests.length > 0 && quests.every((q) => q.completed && !q.failed);
+//     if (!allCompleted) {
+//       setPopup("warning");
+//       pushToast("Complete all quests first!");
+//       return;
+//     }
+    
+//     const today = new Date().toISOString().slice(0,10);
 //     const totalExp = quests.reduce((s, q) => s + q.exp, 0);
+    
 //     const newExp = exp + totalExp;
+
 //     const statKeys = Object.keys(stats);
-//     const randomStat = statKeys[Math.floor(Math.random() * statKeys.length)];
-//     setStats((s) => ({ ...s, [randomStat]: s[randomStat] + 1 }));
+//     const randomStatKey = statKeys[Math.floor(Math.random() * statKeys.length)];
+//     const newStats = { ...stats, [randomStatKey]: stats[randomStatKey] + 1 };
 
-//     if (newExp >= level * 100) {
-//       setLevel((l) => l + 1);
-//       setExp(newExp - level * 100);
-//     } else setExp(newExp);
+//     const getExpForLevel = (level) =>
+//       Math.floor(1000 * Math.pow(1.1, level - 1));
 
-//     localStorage.setItem(STORAGE_CHEST, todayKey);
-//     setChestClaimedDate(todayKey);
+//     let newLevel = level;
+//     let remainingExp = newExp;
+//     let expToNext = getExpForLevel(newLevel);
+
+//     while (remainingExp >= expToNext) {
+//       remainingExp -= expToNext;
+//       newLevel++;
+//       expToNext = getExpForLevel(newLevel);
+//     }
+
+//     setStats(newStats);
+//     setLevel(newLevel);
+//     setExp(remainingExp);
 //     setChestOpened(true);
 //     setPopup("reward");
-//     pushToast("Chest opened — rewards claimed!");
-//   };
+//     pushToast("Chest opened — XP & stat gained!");
+//     saveProgress(newLevel, remainingExp, newStats);
+
+//   try {
+//     await updateUserData(userMessage.id,{
+//       xp: remainingExp,
+//       level: newLevel,
+//       stats: newStats,
+//       dailyQuest: {
+//         quests: quests,
+//         chestOpened: true,
+//         lastQuestDate: today,
+//       },
+//     });
+
+//     console.log("Quest data saved successfully");
+//   } catch (err) {
+//     console.error("Error saving quest data:", err);
+//   }
+// };
 
 //   const cancelPlank = () => {
 //     if (activeQuest === null) return;
-//     // If plank has already reached completion time (isPlankReady), cancelling should just close modal without marking failed
 //     if (isPlankReady) {
 //       setActiveQuest(null);
 //       setActiveStartDuration(null);
@@ -825,55 +926,62 @@ export default DailyQuest;
 //       pushToast("Closed");
 //       return;
 //     }
-//     // compute elapsed time before cancel: elapsed = startedDuration - remaining timer
-//     const startedDur = activeStartDuration ?? (quests[activeQuest]?.duration ?? 0);
+//     const startedDur =
+//       activeStartDuration ?? quests[activeQuest]?.duration ?? 0;
 //     const elapsed = startedDur - (timer ?? 0);
 //     setQuests((prev) => {
 //       const copy = [...prev];
-//       // mark this quest as failed and clear started flag
-//       copy[activeQuest] = { ...copy[activeQuest], started: false, failed: true, completed: false };
+//       copy[activeQuest] = {
+//         ...copy[activeQuest],
+//         started: false,
+//         failed: true,
+//         completed: false,
+//       };
 //       return copy;
 //     });
 //     setActiveQuest(null);
 //     setActiveStartDuration(null);
 //     setTimer(null);
-//     pushToast(`Plank canceled — marked failed after ${Math.max(0, Math.round(elapsed))}s`);
+//     pushToast(
+//       `Plank canceled — marked failed after ${Math.max(
+//         0,
+//         Math.round(elapsed)
+//       )}s`
+//     );
 //   };
 
-//   // Finish handler: apply completion/bonus and close modal (only shown when isPlankReady === true)
 //   const finishPlank = () => {
 //     if (activeQuest === null) return;
-//     const elapsed = activeStartDuration ?? (quests[activeQuest]?.duration ?? 0);
+//     const elapsed = activeStartDuration ?? quests[activeQuest]?.duration ?? 0;
 //     setQuests((prev) => {
 //       const copy = [...prev];
 //       const q = { ...copy[activeQuest] };
 //       q.completed = true;
 //       q.started = false;
 //       q.failed = false;
-//       if (elapsed > 40) {
-//         const bonus = Math.round(q.exp * 0.5) || 10;
-//         q.exp = q.exp + bonus;
-//       }
 //       copy[activeQuest] = q;
 //       return copy;
 //     });
+//     addQuestToHistory(quests[activeQuest].name);
 //     setActiveQuest(null);
 //     setActiveStartDuration(null);
 //     setTimer(null);
 //     setIsPlankReady(false);
-//     pushToast("Plank finished! Rewards applied.");
+//     pushToast("Plank completed!");
 //   };
 
+
 //   return (
-//     <div
+//     <div 
 //       style={{
-//         maxWidth: 500,
-//         width: "95%",
-//         margin: "0 auto",
+//         maxWidth: 600,
+//         width: "100%",
+//         margin: "0 ",
+//         minHeight: 400,
 //         background:
-//           "linear-gradient(145deg, rgba(15,23,42,0.95), rgba(3,7,18,0.95))",
+//           "linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(3, 7, 18, 0.95))",
 //         borderRadius: 20,
-//         padding: "2rem",
+//         padding: "1rem 1.3rem",
 //         color: "#fff",
 //         boxShadow: "0 12px 35px rgba(0,0,0,0.4)",
 //         border: "1px solid rgba(255,255,255,0.05)",
@@ -881,12 +989,14 @@ export default DailyQuest;
 //         display: "flex",
 //         flexDirection: "column",
 //         gap: "1.5rem",
+//         alignItems: "center",
 //       }}
 //     >
+//       {/* Header */}
 //       <motion.div
 //         style={{
 //           width: "100%",
-//           maxWidth: 460,
+//           maxWidth: 530,
 //           display: "flex",
 //           flexDirection: "column",
 //           gap: 16,
@@ -895,7 +1005,6 @@ export default DailyQuest;
 //         animate={{ opacity: 1, y: 0 }}
 //         transition={{ duration: 0.6 }}
 //       >
-//         {/* Header */}
 //         <div
 //           style={{
 //             display: "flex",
@@ -909,15 +1018,15 @@ export default DailyQuest;
 //               alignItems: "center",
 //               gap: 8,
 //               fontWeight: 800,
-//               color: "#fbbf24",
-//               fontSize: 18,
+//               color: "#4178f0ff",
+//               fontSize: 22,
 //             }}
 //           >
 //             <GiTreasureMap /> Daily Quests
 //           </div>
 //         </div>
 
-//         {/* Quests List */}
+//         {/* Quest List */}
 //         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
 //           {quests.map((q, i) => (
 //             <motion.div
@@ -927,8 +1036,9 @@ export default DailyQuest;
 //                 display: "flex",
 //                 justifyContent: "space-between",
 //                 alignItems: "center",
-//                 padding: "10px 12px",
+//                 padding: "8px 10px",
 //                 borderRadius: 12,
+//                 height: 60,
 //                 border: q.completed
 //                   ? "1px solid rgba(34,197,94,0.7)"
 //                   : q.failed
@@ -937,14 +1047,20 @@ export default DailyQuest;
 //                 background: q.completed
 //                   ? "linear-gradient(90deg,#052e21,#083d2a)"
 //                   : q.failed
-//                   ? "linear-gradient(90deg,#3b0a0a,#2b0a0a)" 
+//                   ? "linear-gradient(90deg,#3b0a0a,#2b0a0a)"
 //                   : "rgba(255,255,255,0.02)",
-//                 color: q.completed ? "#dcfce7" : q.failed ? "#ffd7d7" : "#e6eefb",
+//                 color: q.completed
+//                   ? "#dcfce7"
+//                   : q.failed
+//                   ? "#ffd7d7"
+//                   : "#e6eefb",
 //               }}
 //             >
 //               <div>
-//                 <div style={{ fontWeight: 500 }}>{q.name}</div>
-//                 <div style={{ fontSize: 12, color: "#94a3b8" }}>
+//                 <div style={{ fontSize: "1.3rem", fontWeight: 500 }}>
+//                   {q.name}
+//                 </div>
+//                 <div style={{ fontSize: "0.9rem", color: "#94a3b8" }}>
 //                   {q.name === "Plank" ? `${q.duration}s` : `${q.duration} reps`}
 //                 </div>
 //               </div>
@@ -955,10 +1071,11 @@ export default DailyQuest;
 //                     style={{
 //                       background: "rgba(148,163,184,0.12)",
 //                       color: "#93a3b8",
-//                       padding: "6px 12px",
+//                       padding: "6px 8px",
 //                       borderRadius: 10,
 //                       border: "none",
-//                       fontWeight: 800,
+//                       fontSize: "1.2rem",
+//                       fontWeight: 600,
 //                       display: "flex",
 //                       alignItems: "center",
 //                       gap: 6,
@@ -972,16 +1089,32 @@ export default DailyQuest;
 //                     onClick={() => startQuest(i)}
 //                     disabled={!!activeQuest}
 //                     style={{
-//                       background: !!activeQuest ? "rgba(148,163,184,0.12)" : "#f59e0b",
-//                       color: !!activeQuest ? "#93a3b8" : "#07121a",
-//                       padding: "6px 12px",
+//                       // background: !!activeQuest
+//                       //   ? "rgba(148,163,184,0.12)"
+//                       //   : "linear-gradient(90deg, rgba(99,102,241,1), rgba(168,85,247,1))",
+//                       color: !!activeQuest ? "#93a3b8" : "#ffffffff",
+//                       padding: "0.4rem 1rem",
+//                       border: "1px solid #0bdcf8ff ",
 //                       borderRadius: 10,
-//                       border: "none",
-//                       fontWeight: 800,
+//                       fontSize: "1.3rem",
+//                       fontWeight: 600,
 //                       cursor: !!activeQuest ? "not-allowed" : "pointer",
 //                     }}
+//                     onMouseOver={(e) => {
+//                       e.currentTarget.style.background =
+//                         "linear-gradient(90deg, #1e3a8a, #06b6d4)";
+//                       e.currentTarget.style.boxShadow = "0 0 12px #06b6d4";
+//                     }}
+//                     onMouseOut={(e) => {
+//                       e.currentTarget.style.background = "#02013b";
+//                       e.currentTarget.style.boxShadow = "none";
+//                     }}
 //                   >
-//                     {q.name === "Plank" && q.started ? "In Progress" : q.failed ? "Retry" : "Start"}
+//                     {q.name === "Plank" && q.started
+//                       ? "In Progress"
+//                       : q.failed
+//                       ? "Retry"
+//                       : "Start"}
 //                   </button>
 //                 )}
 //               </div>
@@ -989,31 +1122,28 @@ export default DailyQuest;
 //           ))}
 //         </div>
 
-//         {/* Chest Button */}
+//         {/* Open Chest Button */}
 //         <button
 //           onClick={openChest}
-//           disabled={chestClaimedDate === todayKey}
 //           style={{
 //             width: "100%",
-//             padding: "12px 14px",
+//             padding: "0.5rem 1rem",
 //             borderRadius: 12,
-//             fontWeight: 900,
-//             background: chestClaimedDate === todayKey ? "#374151" : "#10b981",
-//             color: chestClaimedDate === todayKey ? "#9ca3af" : "#001f14",
+//             fontWeight: 700,
+//             fontSize: "1.5rem",
+//             background: chestOpened
+//               ? "#374151"
+//               : "linear-gradient(90deg, #93a8e2ff, #06b6d4)",
+//             color: chestOpened ? "#9ca3af" : "#001f14",
 //             border: "none",
-//             cursor: chestClaimedDate === todayKey ? "not-allowed" : "pointer",
+//             cursor: "pointer",
 //             display: "flex",
 //             alignItems: "center",
 //             justifyContent: "center",
 //             gap: 10,
 //           }}
 //         >
-//           <GiChest size={20} />{" "}
-//           {chestClaimedDate === todayKey
-//             ? "Reward Claimed Today"
-//             : chestOpened
-//             ? "Chest Opened!"
-//             : "Open Reward Chest"}
+//           <GiChest size={26} /> {chestOpened ? "Chest Opened!" : "Open Chest"}
 //         </button>
 //       </motion.div>
 
@@ -1106,11 +1236,12 @@ export default DailyQuest;
 //                 }}
 //               />
 //             </div>
-//             <div style={{ fontSize: 13, color: "#9ca3baf", marginBottom: 8 }}>
-//               {isPlankReady ? "Plank time complete — tap Finish to claim rewards." : "Hold steady until the timer ends."}
+//             <div style={{ fontSize: 13, color: "#9ca3af", marginBottom: 8 }}>
+//               {isPlankReady
+//                 ? "Plank time complete — tap Finish to claim rewards."
+//                 : "Hold steady until the timer ends."}
 //             </div>
 //             <div style={{ display: "flex", gap: 10 }}>
-//               {/* Show Cancel while counting down; when ready show Finish button instead */}
 //               {!isPlankReady ? (
 //                 <button
 //                   onClick={cancelPlank}
@@ -1161,17 +1292,24 @@ export default DailyQuest;
 //             background: "rgba(2,6,23,0.7)",
 //             zIndex: 99,
 //             padding: 16,
+//             fontSize: "1.2rem",
+//             gap: "1rem",
 //           }}
 //         >
 //           <motion.div
 //             style={{
-//               width: "100%",
-//               maxWidth: 420,
-//               background: "#071022",
-//               borderRadius: 14,
-//               padding: 18,
+//               gap: "2rem",
+//               background: "#00002e7b",
+//               backdropFilter: "blur(2px)",
+//               padding: "1rem",
+//               border: "1px solid #0bdcf8ff",
+//               borderRadius: "1rem",
+//               maxWidth: "350px",
+//               width: "90%",
+//               height: "16rem",
 //               textAlign: "center",
-//               color: "#e6eefb",
+//               color: "#fff",
+//               boxShadow: "0px 4px 20px rgba(0,0,0,0.2)",
 //             }}
 //             initial={{ scale: 0.9, opacity: 0 }}
 //             animate={{ scale: 1, opacity: 1 }}
@@ -1203,8 +1341,8 @@ export default DailyQuest;
 //                 />
 //                 <div style={{ fontWeight: 900, marginBottom: 6 }}>Warning</div>
 //                 <div style={{ color: "#94a3b8" }}>
-//                   {chestClaimedDate === todayKey
-//                     ? "Reward already claimed today!"
+//                   {chestOpened
+//                     ? "Reward already claimed!"
 //                     : "Complete all quests first!"}
 //                 </div>
 //               </>
@@ -1234,7 +1372,6 @@ export default DailyQuest;
 //           initial={{ opacity: 0, y: -8 }}
 //           animate={{ opacity: 1, y: 0 }}
 //           style={{
-//             display: "flex",
 //             position: "fixed",
 //             top: 17,
 //             left: "50%",
@@ -1254,4 +1391,4 @@ export default DailyQuest;
 //   );
 // };
 
-// export default DailyQuest; 
+// export default DailyQuest;

@@ -53,14 +53,14 @@ const Exercises = () => {
 
         {/* Exercises Content */}
         <div style={{ textAlign: "center", marginTop: "1.3rem", height: "96vh" }}>
-          <h1 style={{ fontWeight: "600", fontSize: "2rem" }}>
-            Welcome, {user?.firstName || "User"} 👋
+          <h1 style={{ fontWeight: "600", fontSize: "1.6rem", color: "#fff", marginBottom: "1rem"}}>
+            Exercises
           </h1>
           {/* <p style={{ color: "#aaa", fontSize: "1rem", marginTop: "0.5rem" }}>
             Exercise page coming soon.
           </p> */}
 
-          <ExerciseList />
+          <ExerciseList workoutType={location.state?.workoutType} />
         </div>  
 
 
@@ -79,6 +79,7 @@ const Exercises = () => {
             borderRadius: "9999px",
             padding: "0.6rem 1rem",
             width: "18rem",
+            height: "3.5rem",
           }}
         >
           {navItems.map((item) => {
@@ -93,8 +94,8 @@ const Exercises = () => {
                   cursor: "pointer",
                   padding: "0.5rem",
                   borderRadius: isActive ? "3rem" : "50%",
-                  height: "3rem",
-                  width: isActive ? "3rem" : "3rem",
+                  height: "2.5rem",
+                  width: isActive ? "2.5rem" : "2.5rem",
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",

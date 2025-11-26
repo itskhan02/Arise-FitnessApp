@@ -1,11 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { SignedIn, SignedOut, SignInButton, useUser } from "@clerk/clerk-react";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  useUser,
+} from "@clerk/clerk-react";
 import { Home, User2 } from "lucide-react";
 import { BsBarChart } from "react-icons/bs";
 import { CgGym } from "react-icons/cg";
 import { useLocation, useNavigate } from "react-router-dom";
 import UserLevel from "../components/UserLevel";
 import UserData from "../components/UserData";
+import Beginner from "/public/beginner.png";
+import Intermediate from "/public/intermediate.png";
+import Expert from "/public/expert.png";
 
 const navItems = [
   { icon: Home, label: "Home", path: "/home" },
@@ -17,7 +25,7 @@ const navItems = [
 const Profile = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
 
   const [details, setDetails] = useState({
     fullName: "",
@@ -30,9 +38,6 @@ const Profile = () => {
     gender: "",
   });
 
-  const [isEditingName, setIsEditingName] = useState(false);
-  const [tempName, setTempName] = useState("");
-
   const calculateAge = (dob) => {
     const birthDate = new Date(dob);
     const today = new Date();
@@ -42,24 +47,40 @@ const Profile = () => {
     return age;
   };
 
-  // Load data from Clerk or sessionStorage
   useEffect(() => {
-    if (user) {
+    if (isLoaded && user) {
       const savedDetails = JSON.parse(sessionStorage.getItem("userDetails")) || {};
+      const dob =
+        savedDetails.dob || sessionStorage.getItem("userDOB") || "2000-01-01";
+
       const initialDetails = {
-        fullName: user.fullName || "",
-        dob: savedDetails.dob || sessionStorage.getItem("userDOB") || "2000-01-01",
-        age: calculateAge(savedDetails.dob || sessionStorage.getItem("userDOB") || "2000-01-01"),
-        height: Math.round(parseFloat(sessionStorage.getItem("originalHeight"))) || 170,
+        fullName: user.fullName || savedDetails.fullName || user.firstName || "",
+        dob,
+        age: calculateAge(dob),
+        height:
+          Math.round(parseFloat(sessionStorage.getItem("originalHeight"))) ||
+          170,
         weight: parseFloat(sessionStorage.getItem("userWeight")) || 65,
         level: JSON.parse(sessionStorage.getItem("userLevel")) || "Beginner",
         customImage: savedDetails.customImage || "",
         gender: sessionStorage.getItem("userGender") || "",
       };
+
       setDetails(initialDetails);
-      setTempName(initialDetails.fullName);
+      sessionStorage.setItem("userDetails", JSON.stringify(initialDetails));
     }
-  }, [user]);
+  }, [user, isLoaded]);
+
+  useEffect(() => {
+    if (isLoaded && user) {
+      const clerkFullName = user.fullName || `${user.firstName || ""} ${user.lastName || ""}`.trim();
+      if (clerkFullName && clerkFullName !== details.fullName) {
+        const updated = { ...details, fullName: clerkFullName };
+        setDetails(updated);
+        sessionStorage.setItem("userDetails", JSON.stringify(updated));
+      }
+    }
+  }, [user?.fullName, user?.firstName, user?.lastName, isLoaded]);
 
   const handleFieldChange = (field, value) => {
     const updated = { ...details, [field]: value };
@@ -71,32 +92,33 @@ const Profile = () => {
     }
   };
 
-  const handleNameSave = async () => {
-    try {
-      if (user && tempName.trim()) {
-        await user.update({ fullName: tempName.trim() });
-        handleFieldChange("fullName", tempName.trim());
-        setIsEditingName(false);
+  const handleImageChange = async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+
+    reader.onload = async () => {
+      handleFieldChange("customImage", reader.result);
+      try {
+
+        await user.update({ imageUrl: reader.result });
+      } catch (err) {
+        console.error("Failed to update Clerk image:", err);
       }
-    } catch (error) {
-      console.error("Failed to update username:", error);
-    }
+    };
+
+    reader.readAsDataURL(file);
   };
 
-  const handleImageChange = async (e) => {
-    const file = e.target.files[0];
-    if (file && user) {
-      const reader = new FileReader();
-      reader.onload = async () => {
-        handleFieldChange("customImage", reader.result);
-        try {
-          await user.update({ imageUrl: reader.result });
-        } catch (err) {
-          console.error("Failed to update Clerk image:", err);
-        }
-      };
-      reader.readAsDataURL(file);
+  const getTierImage = () => {
+    const tier = (details.level || "Beginner").toLowerCase();
+    if (tier === "intermediate") {
+      return Intermediate;
     }
+    if (tier === "expert" || tier === "advanced") {
+      return Expert;
+    }
+    return Beginner;
   };
 
   const profileImage = details.customImage || user?.imageUrl;
@@ -104,6 +126,7 @@ const Profile = () => {
   return (
     <div
       style={{
+        height: "100vh",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -115,11 +138,11 @@ const Profile = () => {
         position: "relative",
         overflowY: "auto",
         overflowX: "hidden",
-
       }}
     >
       <SignedIn>
-        <div className="user-profile"
+        <div
+          className="user-profile"
           style={{
             textAlign: "center",
             display: "flex",
@@ -128,6 +151,7 @@ const Profile = () => {
             gap: "1rem",
           }}
         >
+          {/* Profile Image */}
           <div style={{ position: "relative" }}>
             <img
               src={profileImage}
@@ -171,114 +195,12 @@ const Profile = () => {
             />
           </div>
 
-          {/* Editable Full Name */}
-          <div
-            style={{
-              display: "flex",
-              flexDirection: isEditingName ? "column" : "row",
-              alignItems: "center",
-              gap: "0.5rem",
-            }}
-          >
-            {isEditingName ? (
-              <>
-                <input
-                  type="text"
-                  value={tempName}
-                  onChange={(e) => setTempName(e.target.value)}
-                  style={{
-                    fontWeight: "600",
-                    fontSize: "1.5rem",
-                    textAlign: "center",
-                    background: "transparent",
-                    border: "1px solid rgba(255,255,255,0.3)",
-                    borderRadius: "8px",
-                    padding: "0.3rem 0.5rem",
-                    color: "#fff",
-                    outline: "none",
-                    width: "80%",
-                  }}
-                />
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "0.5rem",
-                    marginTop: "0.5rem",
-                    justifyContent: "center",
-                  }}
-                >
-                  <button
-                    onClick={handleNameSave}
-                    style={{
-                      padding: "0.3rem 0.6rem",
-                      borderRadius: "0.3rem",
-                      border: "none",
-                      background: "#00c3ff",
-                      color: "#000",
-                      cursor: "pointer",
-                      fontWeight: "500",
-                      height: "1.7rem",
-                      width: "3.5rem",
-                      fontSize: "1rem",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    Save
-                  </button>
-                  <button
-                    onClick={() => {
-                      setIsEditingName(false);
-                      setTempName(details.fullName);
-                    }}
-                    style={{
-                      padding: "0.3rem 0.6rem",
-                      borderRadius: "0.3rem",
-                      border: "none",
-                      background: "#ff4d4d",
-                      color: "#000",
-                      cursor: "pointer",
-                      fontWeight: "500",
-                      height: "1.7rem",
-                      width: "5rem",
-                      fontSize: "1rem",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </>
-            ) : (
-              <>
-                <h2
-                  style={{ fontWeight: "600", fontSize: "1.5rem", margin: 1 }}
-                >
-                  {details.fullName || "User"}
-                </h2>
-                <button
-                  onClick={() => setIsEditingName(true)}
-                  style={{
-                    padding: "0.2rem 0.5rem",
-                    borderRadius: "0.3rem",
-                    border: "none",
-                    height: "1.7rem",
-                    width: "3rem",
-                    background: "#00c3ff",
-                    color: "#000",
-                    cursor: "pointer",
-                    fontWeight: "500",
-                    fontSize: "1rem",
-                  }}
-                >
-                  Edit
-                </button>
-              </>
-            )}
+          <div>
+            <h2 style={{ fontWeight: "600", fontSize: "1.5rem", margin: 1, }}>
+              {details.fullName || "User"}
+            </h2>
           </div>
+
           {details.gender && (
             <p
               style={{
@@ -293,12 +215,13 @@ const Profile = () => {
           )}
         </div>
 
-      <UserLevel />
+        {/* User Progress */}
+        <UserLevel />
 
-        {/* PERSONAL DETAILS CARD */}
-        <UserData/>
+        {/* Personal Details */}
+        <UserData />
 
-        {/* NAVIGATION */}
+        {/* Bottom Nav */}
         <div
           style={{
             position: "fixed",
@@ -311,6 +234,7 @@ const Profile = () => {
             borderRadius: "9999px",
             padding: "0.6rem 1rem",
             width: "18rem",
+            height: "3.5rem",
           }}
         >
           {navItems.map((item) => {
@@ -324,8 +248,8 @@ const Profile = () => {
                   cursor: "pointer",
                   padding: "0.5rem",
                   borderRadius: isActive ? "3rem" : "50%",
-                  height: "3rem",
-                  width: isActive ? "3rem" : "3rem",
+                  height: "2.5rem",
+                  width: "2.5rem",
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
@@ -341,7 +265,8 @@ const Profile = () => {
                 onMouseEnter={(e) => {
                   if (!isActive) {
                     e.target.style.transform = "scale(1.2)";
-                    e.target.style.boxShadow = "0 0 15px rgba(11, 220, 248, 0.6)";
+                    e.target.style.boxShadow =
+                      "0 0 15px rgba(11, 220, 248, 0.6)";
                     e.target.style.transition = "all 0.3s ease";
                   }
                 }}
@@ -352,7 +277,7 @@ const Profile = () => {
                   }
                 }}
               >
-                <Icon size={28} color={isActive ? "#fff" : "#fff8f8ff"} />
+                <Icon size={28} color="#fff" />
               </div>
             );
           })}

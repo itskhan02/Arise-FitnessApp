@@ -117,13 +117,28 @@ const DailyStreakTracker = ({
     return days;
   }, [width, today]);
 
-  const checkInToday = () => {
+  const checkInToday = async () => {
     const weekday = new Date(today).getDay();
     if (weekday === 0) return; // Sunday doesn't require check-in
+    
     if (!completedSet.has(today)) {
       const nextCompleted = new Set(completedSet);
       nextCompleted.add(today);
       handleSetCompleted(nextCompleted);
+
+      try {
+        const clerkUserId = userName;
+        if (!clerkUserId) return;
+
+        await updateUserData(clerkUserId, { "streak.checkedDays": Array.from(nextCompleted),
+          "streak.lastActivity": new Date(),
+        });
+        
+        console.log("Streak updated successfully");
+      } catch (err) {
+        console.error("Error updating streak:", err);
+      }
+      
     }
   };
 

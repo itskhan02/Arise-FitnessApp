@@ -1,31 +1,50 @@
 import React, { useEffect, useState } from "react";
-import { HiMiniFire } from 'react-icons/hi2';
+import { HiMiniFire } from "react-icons/hi2";
 
-const Calories = ({ exercises, userWeight = 70 }) => {
-  const [totalCalories, setTotalCalories] = useState(0);
+const TOTAL_KEY = "totalCalories";
+const HISTORY_KEY = "calorieHistory";
 
-  // If no exercise data passed from props, use some sample data
-  const defaultExercises = [
-    { name: "Push-ups", met: 8, time: 15 },
-    { name: "Running", met: 10, time: 20 },
-    { name: "Yoga", met: 4, time: 30 },
-  ];
-
-  const activeExercises = exercises && exercises.length > 0 ? exercises : defaultExercises;
+const Calories = ({ userWeight = 70 }) => {
+  const [totalCalories, setTotalCalories] = useState(() => {
+    const saved = localStorage.getItem(TOTAL_KEY);
+    return saved ? parseFloat(saved) : 0;
+  });
 
   useEffect(() => {
-    let total = 0;
-    activeExercises.forEach((ex) => {
-      // Formula: Calories = MET × weight(kg) × time(hours)
-      const calories = ex.met * userWeight * (ex.time / 60);
-      total += calories;
-    });
-    setTotalCalories(total.toFixed(2));
-  }, [activeExercises, userWeight]);
+    // Handler for custom event dispatched from ExerciseList
+    const handleCaloriesUpdate = (event) => {
+      const { caloriesBurned, newTotal } = event.detail || {};
+      if (typeof newTotal === "number") {
+        setTotalCalories(newTotal);
+      } else if (typeof caloriesBurned === "number") {
+        // fallback: read from storage
+        const saved = parseFloat(localStorage.getItem(TOTAL_KEY)) || 0;
+        setTotalCalories(saved);
+      }
+    };
+
+    // Handler for storage events (keeps multiple tabs/windows in sync)
+    const handleStorage = (e) => {
+      if (!e.key) return;
+      if (e.key === TOTAL_KEY) {
+        const val = e.newValue ? parseFloat(e.newValue) : 0;
+        setTotalCalories(val);
+      }
+    };
+
+    window.addEventListener("caloriesUpdated", handleCaloriesUpdate);
+    window.addEventListener("storage", handleStorage);
+
+    return () => {
+      window.removeEventListener("caloriesUpdated", handleCaloriesUpdate);
+      window.removeEventListener("storage", handleStorage);
+    };
+  }, []);
 
   return (
-    <div className="calorie-tracker"
-    style={{
+    <div
+      className="calorie-tracker"
+      style={{
         maxWidth: 500,
         margin: "0",
         background:
@@ -37,31 +56,33 @@ const Calories = ({ exercises, userWeight = 70 }) => {
         border: "1px solid rgba(255,255,255,0.05)",
         backdropFilter: "blur(12px)",
         lineHeight: "2",
-        }}>
-      <h5 style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "0.5rem", color: "#4178f0ff", fontWeight: "600", fontSize: "1.4rem" }}>
-        Calories Burned <HiMiniFire size={26} color="rgb(220, 143, 65)"/>{" "}
+      }}
+    >
+      <h5
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: "0.5rem",
+          color: "#4178f0ff",
+          fontWeight: "600",
+          fontSize: "1.4rem",
+        }}
+      >
+        Calories Burned <HiMiniFire size={26} color="rgb(220, 143, 65)" />{" "}
       </h5>
-      <span style={{ display: "flex", justifyContent: "center", alignItems: "center", color: "#f56a37ff" }}>{totalCalories} kcal</span>
+      <span
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          color: "#f56a37ff",
+        }}
+      >
+        {Number.isFinite(totalCalories) ? totalCalories.toFixed(0) : "0"} kcal
+      </span>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    maxWidth: "450px",
-    margin: "50px auto",
-    padding: "25px",
-    borderRadius: "12px",
-    background: "#2c2c54",
-    color: "#fff",
-    textAlign: "center",
-    fontFamily: "Poppins, sans-serif",
-    boxShadow: "0 4px 15px rgba(0,0,0,0.3)",
-  },
-  listItem: {
-    marginBottom: "10px",
-    fontSize: "16px",
-  },
 };
 
 export default Calories;

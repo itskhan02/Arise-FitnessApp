@@ -115,6 +115,7 @@ const ProgressChart = () => {
       style={{
         width: "100%",
         maxWidth: 600,
+        height: 350,
         background: "linear-gradient(145deg, rgba(15,23,42,0.95), rgba(3,7,18,0.95))",
         borderRadius: 20,
         padding: "1.5rem 1rem",
@@ -125,7 +126,8 @@ const ProgressChart = () => {
       <h3 style={{ color: "#4178f0ff", fontWeight: 600, fontSize: "1.4rem", marginBottom: "1rem" }}>
         Engagement (Last 30 Days)
       </h3>
-      <Line data={chartData} options={options} />
+      <Line data={chartData} options={options} 
+        style={{ height: "220px", }} />
     </div>
   );
 };
