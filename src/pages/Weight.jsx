@@ -5,7 +5,6 @@ import { MoveLeft, MoveRight } from "lucide-react";
 const Weight = () => {
   const navigate = useNavigate();
 
-  // DEBUG: Log what's actually in sessionStorage
   useEffect(() => {
     console.log("Saved weight from sessionStorage:", sessionStorage.getItem("userWeight"));
     console.log("Saved unit from sessionStorage:", sessionStorage.getItem("weightUnit"));

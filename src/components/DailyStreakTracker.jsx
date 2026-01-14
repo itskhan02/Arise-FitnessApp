@@ -3,6 +3,8 @@ import { Check } from "lucide-react";
 import { motion } from "framer-motion";
 import { HiMiniFire } from 'react-icons/hi2';
 import { PiHandWavingFill } from 'react-icons/pi';
+import { useAuth } from "@clerk/clerk-react";
+
 
 const fmt = (d) => d.toISOString().slice(0, 10);
 
@@ -56,6 +58,8 @@ const DailyStreakTracker = ({
 
 
   const [completedSet, setCompletedSet] = useState(() => new Set(initialCheckedDays || []));
+  const { getToken } = useAuth();
+
 
   useEffect(() => {
     if (initialCheckedDays && initialCheckedDays.length > 0) {
@@ -117,30 +121,32 @@ const DailyStreakTracker = ({
     return days;
   }, [width, today]);
 
-  const checkInToday = async () => {
-    const weekday = new Date(today).getDay();
-    if (weekday === 0) return; // Sunday doesn't require check-in
-    
-    if (!completedSet.has(today)) {
-      const nextCompleted = new Set(completedSet);
-      nextCompleted.add(today);
-      handleSetCompleted(nextCompleted);
+ const checkInToday = async () => {
+  const weekday = new Date(today).getDay();
+  if (weekday === 0) return;
 
-      try {
-        const clerkUserId = userName;
-        if (!clerkUserId) return;
+  if (!completedSet.has(today)) {
+    const nextCompleted = new Set(completedSet);
+    nextCompleted.add(today);
+    handleSetCompleted(nextCompleted);
 
-        await updateUserData(clerkUserId, { "streak.checkedDays": Array.from(nextCompleted),
-          "streak.lastActivity": new Date(),
-        });
-        
-        console.log("Streak updated successfully");
-      } catch (err) {
-        console.error("Error updating streak:", err);
-      }
-      
+    try {
+      const token = await getToken();
+      await fetch("http://localhost:5000/api/user/streak", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          checkedDays: Array.from(nextCompleted),
+        }),
+      });
+    } catch (err) {
+      console.error("Failed to sync streak:", err);
     }
-  };
+  }
+};
 
   const isPast = (s) => s < today;
 

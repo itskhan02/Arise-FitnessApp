@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '@clerk/clerk-react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Landing from './components/Landing';
 import './components/Css/Style.css';
-import Gender from './pages/Gender'; // <-- fix import path
+import Gender from './pages/Gender'; 
 import Goal from './pages/Goal';
 import Equipment from './pages/Equipment';
 import Difficulty from './pages/Difficulty';
@@ -24,7 +24,18 @@ import Profile from './pages/Profile';
 import ExerciseVideo from './pages/ExerciseVideo';
 
 const App = () => {
-  const { isSignedIn } = useAuth(); 
+  // safe useAuth: if Clerk provider isn't mounted, the hook can throw — catch and provide safe fallbacks
+  let getToken = async () => null;
+  let isSignedIn = false;
+  try {
+    const auth = useAuth();
+    getToken = auth.getToken;
+    isSignedIn = auth.isSignedIn;
+  } catch (err) {
+    console.warn("useAuth unavailable (Clerk provider missing?)", err);
+  }
+  // small mount log to help diagnose blank screen
+  console.log("App mounted. isSignedIn:", isSignedIn);
 
   return (
     <>

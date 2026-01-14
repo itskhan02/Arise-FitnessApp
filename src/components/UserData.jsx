@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
 import { X } from "lucide-react";
+import { useAuth } from "@clerk/clerk-react";
+
 
 const UserData = () => {
   const location = useLocation();
@@ -29,6 +31,9 @@ const UserData = () => {
     return age;
   };
 
+  const { getToken } = useAuth();
+
+
   useEffect(() => {
     if (user) {
       const savedDetails = JSON.parse(sessionStorage.getItem("userDetails")) || {};
@@ -54,14 +59,26 @@ const UserData = () => {
     }
   }, [user]);
 
-  const handleWeightChange = (e) => {
-    const newWeight = e.target.value;
-    setDetails(prev => ({ ...prev, weight: newWeight }));
-    sessionStorage.setItem("userWeight", newWeight);
-    // Also update the consolidated details object if it exists
-    const userDetails = JSON.parse(sessionStorage.getItem("userDetails")) || {};
-    sessionStorage.setItem("userDetails", JSON.stringify({ ...userDetails, weight: newWeight }));
-  };
+  const handleWeightChange = async (e) => {
+  const newWeight = e.target.value;
+  setDetails(prev => ({ ...prev, weight: newWeight }));
+  sessionStorage.setItem("userWeight", newWeight);
+
+  try {
+    const token = await getToken();
+    await fetch("http://localhost:5000/api/user/weight", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ weightKg: newWeight }),
+    });
+  } catch (err) {
+    console.error("Failed to update weight:", err);
+  }
+};
+
 
   return (
     <div

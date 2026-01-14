@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { MoveLeft, MoveRight } from "lucide-react";
+import { useAuth } from "@clerk/clerk-react";
+
 
 const difficulty = [
   { key: "beginner", name: "Beginner" },
@@ -21,6 +23,9 @@ const Difficulty = () => {
   const [goals, setGoals] = useState([]);
   const [selectedEquipment, setSelectedEquipment] = useState("");
   const [focusAreas, setFocusAreas] = useState([]);
+
+  const { getToken } = useAuth();
+
 
   useEffect(() => {
     const savedDifficulty = sessionStorage.getItem("userDifficulty");
@@ -45,12 +50,50 @@ const Difficulty = () => {
 
   const handleBack = () => navigate(-1);
 
-  const handleNext = () => {
-    if (selectedDifficulty) {
-      sessionStorage.setItem("userDifficulty", JSON.stringify(selectedDifficulty));
-      navigate("/workout-day");
-    }
-  };
+  const handleNext = async () => {
+  if (!selectedDifficulty) return;
+
+  // keep sessionStorage (optional but fine)
+  sessionStorage.setItem(
+    "userDifficulty",
+    JSON.stringify(selectedDifficulty)
+  );
+
+  // 🔹 Read ALL onboarding data (already saved by previous screens)
+  const dob = sessionStorage.getItem("userDOB");
+  const age = Number(sessionStorage.getItem("userAge"));
+  const gender = sessionStorage.getItem("userGender");
+  const heightCm = Number(sessionStorage.getItem("originalHeight"));
+  const weightKg = Number(sessionStorage.getItem("userWeight"));
+  const difficulty = selectedDifficulty;
+
+  try {
+    const token = await getToken();
+
+    await fetch("http://localhost:5000/api/user/profile", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        dob,
+        age,
+        gender,
+        heightCm,
+        weightKg,
+        difficulty,
+      }),
+    });
+
+    // ✅ Profile saved permanently — now continue
+    navigate("/workout-day");
+  } catch (err) {
+    console.error("Failed to save onboarding profile:", err);
+    alert("Something went wrong. Please try again.");
+  }
+};
+
 
   return (
     <div

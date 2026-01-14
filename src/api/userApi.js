@@ -35,4 +35,57 @@ export const openChestApi = async (clerkUserId) => {
   return res.data;
 };
 
+export async function saveDailyQuest(tokenOrClerkId, dailyQuest) {
+  if (!tokenOrClerkId || !dailyQuest) return null;
+  const headers = { "Content-Type": "application/json" };
+  // token vs clerk id detection (token starts with typical prefixes)
+  if (
+    String(tokenOrClerkId || "").startsWith("ey") ||
+    String(tokenOrClerkId || "").startsWith("pk_") ||
+    String(tokenOrClerkId || "").startsWith("sk_")
+  ) {
+    headers.Authorization = `Bearer ${tokenOrClerkId}`;
+  } else {
+    headers["x-clerk-user-id"] = tokenOrClerkId;
+  }
+  return safeFetch(`${API_BASE.replace(/\/+$/, "")}/user/daily-quest`, {
+    method: "PATCH",
+    headers,
+    body: JSON.stringify({ dailyQuest }),
+  });
+}
+
+export async function completeQuest(tokenOrClerkId, quest) {
+  if (!tokenOrClerkId || !quest) return null;
+  const headers = { "Content-Type": "application/json" };
+  if (
+    String(tokenOrClerkId || "").startsWith("ey") ||
+    String(tokenOrClerkId || "").startsWith("pk_") ||
+    String(tokenOrClerkId || "").startsWith("sk_")
+  ) {
+    headers.Authorization = `Bearer ${tokenOrClerkId}`;
+  } else {
+    headers["x-clerk-user-id"] = tokenOrClerkId;
+  }
+  return safeFetch(`${API_BASE.replace(/\/+$/, "")}/user/complete-quest`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ quest }),
+  });
+}
+
+
+
+
+// export default {
+//   getMe,
+//   getUserData,
+//   updateUserData,
+//   openChestApi,
+//   saveDailyQuest,
+//   completeQuest,
+// };
+
+
+
 

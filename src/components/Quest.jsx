@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { GiTreasureMap, GiChest } from "react-icons/gi";
 import { FaClock, FaExclamationTriangle, FaTimes, FaCheck } from "react-icons/fa";
-import { openChestApi } from "../api/userApi";
 
 
 
@@ -96,6 +95,9 @@ const DailyQuest = () => {
       }
     }
   }, []);
+
+  // add clerkUserId (try localStorage fallback)
+  const clerkUserId = localStorage.getItem("clerkUserId") || null;
 
   useEffect(() => {
     const progressHistoryRaw = localStorage.getItem(USER_PROGRESS_KEY);
@@ -196,54 +198,83 @@ const DailyQuest = () => {
     }
   };
 
- const openChest = async () => {
-  if (!user || !user.id) {
-    pushToast("User not logged in");
-    return;
-  }
+  const openChest = () => {
+    if (chestOpened) {
+      setPopup("warning");
+      pushToast("Chest already opened today!");
+      return;
+    }
 
-  if (chestOpened) {
-    setPopup("warning");
-    pushToast("Chest already opened today!");
-    return;
-  }
+    const allCompleted =
+      quests.length > 0 && quests.every((q) => q.completed && !q.failed);
+    if (!allCompleted) {
+      setPopup("warning");
+      pushToast("Complete all quests first!");
+      return;
+    }
 
-  const allCompleted =
-    quests.length > 0 && quests.every((q) => q.completed && !q.failed);
+    const totalExp = quests.reduce((s, q) => s + q.exp, 0);
+    const newExp = exp + totalExp;
 
-  if (!allCompleted) {
-    setPopup("warning");
-    pushToast("Complete all quests first!");
-    return;
-  }
+    const statKeys = Object.keys(stats);
+    const randomStatKey = statKeys[Math.floor(Math.random() * statKeys.length)];
+    const newStats = { ...stats, [randomStatKey]: stats[randomStatKey] + 1 };
 
-  try {
-    const updated = await openChestApi(user.id);
+    const getExpForLevel = (level) =>
+      Math.floor(1000 * Math.pow(1.1, level - 1));
+    let newLevel = level;
+    let remainingExp = newExp;
+    let expToNext = getExpForLevel(newLevel);
 
-    setXp(updated.xp);
-    setLevel(updated.level);
-    setStats(updated.stats);
+    while (remainingExp >= expToNext) {
+      remainingExp -= expToNext;
+      newLevel++;
+      expToNext = getExpForLevel(newLevel);
+    }
+
+    setStats(newStats);
+    setLevel(newLevel);
+    setExp(remainingExp);
     setChestOpened(true);
-
-    window.dispatchEvent(new CustomEvent("userProgressUpdated"));
-    window.dispatchEvent(new CustomEvent("statsUpdated", { detail: updated.stats }));
-
     setPopup("reward");
-    pushToast("Chest opened! Saved to DB.");
-  } catch (err) {
-    console.error("❌ Chest save error:", err.response?.data || err);
+    saveDailyQuestData(quests, true); // Explicitly save chest state
+    pushToast("Chest opened — XP & stat gained!");
+    saveProgress(newLevel, remainingExp, newStats);
+  };
 
-    // 🟩 FIXED TOAST
-    const msg =
-      err.response?.data?.error ||
-      err.response?.data?.message ||
-      err.message ||
-      "Failed to save chest";
-
-    pushToast(msg);
-  }
-};
-
+  const cancelPlank = () => {
+    if (activeQuest === null) return;
+    if (isPlankReady) {
+      setActiveQuest(null);
+      setActiveStartDuration(null);
+      setTimer(null);
+      setIsPlankReady(false);
+      pushToast("Closed");
+      return;
+    }
+    const startedDur =
+      activeStartDuration ?? quests[activeQuest]?.duration ?? 0;
+    const elapsed = startedDur - (timer ?? 0);
+    setQuests((prev) => {
+      const copy = [...prev];
+      copy[activeQuest] = {
+        ...copy[activeQuest],
+        started: false,
+        failed: true,
+        completed: false,
+      };
+      return copy;
+    });
+    setActiveQuest(null);
+    setActiveStartDuration(null);
+    setTimer(null);
+    pushToast(
+      `Plank canceled — marked failed after ${Math.max(
+        0,
+        Math.round(elapsed)
+      )}s`
+    );
+  };
 
   const finishPlank = () => {
     if (activeQuest === null) return;

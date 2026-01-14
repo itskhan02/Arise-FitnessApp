@@ -3,8 +3,6 @@ import { FaComments, FaTimes } from "react-icons/fa";
 import { BiSend } from "react-icons/bi";
 import IMG1 from "/Bot.png";
 import IMG2 from "/bot1.png";
-import BG from "/Botbg.png";
-
 
 const FitBot = ({ userImage }) => {
   const [open, setOpen] = useState(false);
